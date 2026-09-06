@@ -16,7 +16,7 @@ namespace Husk
 
     public enum NetworkBuildingState { Storage, Damaged, Repairing, Disabled, WaitingForMaterial, Operational }
 
-    // Phase 2 adapter: existing clocks own production arithmetic. No population or quantity routing.
+    // Existing production clocks with opt-in Phase 3 storage and population; no quantity routing.
     public sealed class NetworkedCity
     {
         public static readonly Vector2Int SolarPosition = new(-2, 1), ElectricBridge = new(-1, 1),
@@ -30,6 +30,10 @@ namespace Husk
         public BoatConstruction WaterRepair { get; }
         public BoatConstruction RecyclerRepair { get; }
         public FishingHarbor Harbor { get; private set; }
+        public CityPopulation Population { get; }
+        public bool UsesStorageNetwork => Population != null;
+        private readonly PopulationSettings populationSettings;
+        private double simulationRemainder;
         private readonly NetworkProductionSettings settings;
         private readonly Dictionary<Vector2Int, Pipeline> sources = new();
         private readonly Dictionary<Vector2Int, NetworkBuildingState> states = new();
@@ -37,10 +41,12 @@ namespace Husk
         private readonly ModuleBuilding[] resolutionOrder = { ModuleBuilding.Solar, ModuleBuilding.Recycler,
             ModuleBuilding.WaterPlant, ModuleBuilding.FishingHarbor, ModuleBuilding.House, ModuleBuilding.TownHall };
 
-        public NetworkedCity(ModuleLayout layout, NetworkProductionSettings settings)
+        public NetworkedCity(ModuleLayout layout, NetworkProductionSettings settings, PopulationSettings populationSettings = null)
         {
             Layout = layout ?? throw new ArgumentNullException(nameof(layout));
             this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            this.populationSettings = populationSettings;
+            if (populationSettings != null) Population = new CityPopulation(populationSettings);
             if (settings.waterRepairWood < 0 || settings.recyclerRepairWood < 0) throw new ArgumentOutOfRangeException(nameof(settings));
             Network = new ModuleNetwork(layout, useTestSupply: false);
             WaterRepair = new BoatConstruction(settings.waterRepairSeconds);
@@ -50,7 +56,7 @@ namespace Husk
             Resolve();
         }
 
-        public static ModuleLayout CreateLayout(int wood = 100, int recyclableMaterial = 100)
+        public static ModuleLayout CreateLayout(int wood = 100, int recyclableMaterial = 100, bool cityHallStorage = false)
         {
             var layout = new ModuleLayout(new ResourceState(startingWood: wood, startingRecyclableMaterial: recyclableMaterial));
             layout.AddInitial(SolarPosition, Pipeline.F | Pipeline.M | Pipeline.E, ModuleBuilding.Solar);
@@ -61,11 +67,21 @@ namespace Husk
             layout.AddInitial(HarborPosition, Pipeline.F | Pipeline.W | Pipeline.M, ModuleBuilding.FishingHarbor);
             layout.AddInitial(WaterBridge, Pipeline.F | Pipeline.W | Pipeline.M);
             layout.AddInitial(HousePosition, Pipeline.F | Pipeline.W | Pipeline.M, ModuleBuilding.House);
-            layout.AddInitial(TownHallPosition, Pipeline.F | Pipeline.W | Pipeline.M, ModuleBuilding.TownHall);
+            layout.AddInitial(TownHallPosition, cityHallStorage ? Pipeline.All : Pipeline.F | Pipeline.W | Pipeline.M, ModuleBuilding.TownHall);
+            if (cityHallStorage) layout.AddInitial(new Vector2Int(-1, -1), Pipeline.F | Pipeline.W | Pipeline.M);
             layout.ReservePort(HarborPosition, new Vector2Int(0, -2));
             return layout;
         }
         public void BindHarbor(FishingHarbor harbor) { Harbor = harbor; Resolve(); }
+        public bool TryBuildHouse(Vector2Int position, out string reason)
+        {
+            if (Population == null) { reason = "Housing belongs to Phase 3."; return false; }
+            bool built = Layout.TryOccupy(position, ModuleBuilding.House, out reason);
+            Resolve(); return built; // Provisional free / instant test placement; no new residents.
+        }
+        public bool CanDeposit(Vector2Int position, Pipeline category) => !UsesStorageNetwork ||
+            (Layout.Cells.TryGetValue(TownHallPosition, out var hall) && hall.IsSpecialCityHall &&
+            Network.Connected(position, TownHallPosition, category));
         public NetworkBuildingState State(Vector2Int position) => states.TryGetValue(position, out var state) ? state : NetworkBuildingState.Disabled;
         public Pipeline MissingInputs(Vector2Int position) => missingInputs.TryGetValue(position, out var missing) ? missing : Pipeline.None;
         public Pipeline ActiveOutput(Vector2Int position) => sources.TryGetValue(position, out var output) ? output : Pipeline.None;
@@ -93,6 +109,14 @@ namespace Husk
             // This phase's dependency order is E -> M -> W/F -> House. Rebuild from zero:
             // old output never sustains a source whose upstream input has disappeared.
             sources.Clear(); states.Clear(); missingInputs.Clear();
+            if (UsesStorageNetwork && Layout.Cells.TryGetValue(TownHallPosition, out var hall) && hall.IsSpecialCityHall)
+            {
+                Pipeline stock = Pipeline.None;
+                if (Storage.FoodAvailable > 0) stock |= Pipeline.F;
+                if (Storage.GetExact(ResourceKind.Water) > 0) stock |= Pipeline.W;
+                if (Storage.GetExact(ResourceKind.Wood) + Storage.GetExact(ResourceKind.Iron) + Storage.GetExact(ResourceKind.RecyclableMaterial) > 0) stock |= Pipeline.M;
+                if (stock != Pipeline.None) sources.Add(TownHallPosition, stock);
+            }
             foreach (var building in resolutionOrder)
                 foreach (var pair in Layout.Cells)
                 {
@@ -109,16 +133,40 @@ namespace Husk
                         : NetworkBuildingState.Operational;
                     states.Add(pair.Key, state);
                     var output = state == NetworkBuildingState.Operational ? BuildingPipelines.Outputs(building) : Pipeline.None;
+                    if (UsesStorageNetwork && output != Pipeline.None && output != Pipeline.E)
+                    {
+                        // Storage quantity and deposit path govern usable item supply, not producer activation.
+                        if (!CanDeposit(pair.Key, output) || (output == Pipeline.F && Storage.FoodAvailable <= 0) ||
+                            (output == Pipeline.W && Storage.GetExact(ResourceKind.Water) <= 0)) output = Pipeline.None;
+                    }
                     // Output availability follows operational inputs; concrete Fish credits only at boat arrival.
                     if (output != Pipeline.None) sources.Add(pair.Key, output);
                 }
             Network.SetOperationalSources(sources);
-            if (Harbor != null) Harbor.SetNetworkAvailable(State(HarborPosition) == NetworkBuildingState.Operational);
+            if (Harbor != null) Harbor.SetNetworkAvailable(State(HarborPosition) == NetworkBuildingState.Operational && CanDeposit(HarborPosition, Pipeline.F));
+            Population?.ResolveHousing(Layout, this);
         }
 
         public void Tick(float deltaTime)
         {
             if (float.IsNaN(deltaTime) || float.IsInfinity(deltaTime) || deltaTime < 0) throw new ArgumentOutOfRangeException(nameof(deltaTime));
+            if (Population == null) { TickProduction(deltaTime); return; }
+            Resolve();
+            simulationRemainder += deltaTime;
+            double quantum = populationSettings.simulationQuantum;
+            while (simulationRemainder + 1e-7 >= quantum)
+            {
+                // Demand exists globally, but successful debit requires at least one supplied House.
+                // Consumption precedes production in each quantum; newly delivered stock is usable next quantum.
+                if (Population.OperationalHouses > 0)
+                    Storage.ConsumeFoodAndWater(Population.FoodDemand * quantum, Population.WaterDemand * quantum);
+                TickProduction((float)quantum);
+                Population.Tick(quantum);
+                simulationRemainder = Math.Max(0, simulationRemainder - quantum);
+            }
+        }
+        private void TickProduction(float deltaTime)
+        {
             Resolve();
             double remaining = deltaTime;
             while (remaining > 0)
@@ -128,10 +176,10 @@ namespace Husk
                 if (RecyclerRepair.IsBuilding) step = Math.Min(step, RecyclerRepair.Duration - RecyclerRepair.Elapsed);
                 // Split at concrete input exhaustion boundaries so a long frame cannot produce downstream
                 // after Recycler consumed its last batch. The original conversion remains atomic.
-                bool recycling = State(RecyclerPosition) == NetworkBuildingState.Operational;
+                bool recycling = State(RecyclerPosition) == NetworkBuildingState.Operational && CanDeposit(RecyclerPosition, Pipeline.M);
                 if (recycling) step = Math.Min(step, Recycler.IntervalSeconds * (1 - Recycler.ProcessingProgress));
                 float seconds = (float)step;
-                if (State(WaterPosition) == NetworkBuildingState.Operational) Storage.Add(ResourceKind.Water, Water.Tick(seconds));
+                if (State(WaterPosition) == NetworkBuildingState.Operational && CanDeposit(WaterPosition, Pipeline.W)) Storage.Add(ResourceKind.Water, Water.Tick(seconds));
                 if (recycling) Recycler.Tick(seconds, Storage);
                 else if (Recycler.IsOperational && State(RecyclerPosition) == NetworkBuildingState.WaitingForMaterial) Recycler.Tick(0, Storage);
                 if (Harbor != null) Harbor.AdvanceSimulation(seconds);

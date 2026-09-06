@@ -14,6 +14,9 @@ namespace Husk
         [Header("Phase 2 integration (off preserves Phase 1 fixture scene)")]
         [SerializeField] private bool networkedProduction;
         [SerializeField] private NetworkProductionSettings productionSettings = new();
+        [Header("Phase 3 housing / City Hall storage (off preserves earlier scenes)")]
+        [SerializeField] private bool populationSimulation;
+        [SerializeField] private PopulationSettings populationSettings = new();
         [Header("Provisional F / W / M / E palette")]
         [SerializeField] private Color foodColor = new(0.35f, 1f, 0.32f);
         [SerializeField] private Color waterColor = new(0.1f, 0.75f, 1f);
@@ -46,8 +49,9 @@ namespace Husk
         private void Awake()
         {
             if (view == null) view = Camera.main;
-            Layout = networkedProduction ? NetworkedCity.CreateLayout(startingWood, productionSettings.startingRecyclableMaterial) : CreateFresh(startingWood);
-            if (networkedProduction) City = new NetworkedCity(Layout, productionSettings);
+            Layout = networkedProduction ? NetworkedCity.CreateLayout(populationSimulation ? 100 : startingWood,
+                populationSimulation ? 100 : productionSettings.startingRecyclableMaterial, populationSimulation) : CreateFresh(startingWood);
+            if (networkedProduction) City = new NetworkedCity(Layout, productionSettings, populationSimulation ? populationSettings : null);
             Network = City != null ? City.Network : new ModuleNetwork(Layout);
             deckMaterial = MakeMaterial(new Color(0.36f, 0.43f, 0.45f), false);
             hullMaterial = MakeMaterial(new Color(0.12f, 0.2f, 0.24f), false);
@@ -91,6 +95,7 @@ namespace Husk
         {
             selected = position;
             if (Layout.Cells.TryGetValue(position, out var cell)) pending = cell.Pipelines;
+            else if (!BuildingPipelines.IsStandard(pending)) pending = Pipeline.F | Pipeline.W | Pipeline.M;
             feedback = Layout.Cells.ContainsKey(position) ? "Inspect or reconfigure this Module." : Layout.BuildFailure(position, pending);
             if (feedback.Length == 0) feedback = "Valid sea target. Build costs 1 Core + 10 Wood.";
             RefreshCursor();
@@ -108,6 +113,14 @@ namespace Husk
             if (placed) pending = Layout.Cells[selected].Pipelines;
             feedback = placed ? "Solar placed; required E added and locked automatically." : reason;
             RefreshVisuals(); RefreshCursor(); return placed;
+        }
+        public bool BuildHouseSelected()
+        {
+            if (City?.Population == null) return false;
+            bool built = City.TryBuildHouse(selected, out string reason);
+            if (built) pending = Layout.Cells[selected].Pipelines;
+            feedback = built ? "House built (provisional free / instant). F + W added and locked; population unchanged." : reason;
+            RefreshVisuals(); RefreshCursor(); return built;
         }
         public bool BuildSelected()
         {
@@ -247,14 +260,20 @@ namespace Husk
             GUI.Box(PanelRect, "");
             GUILayout.BeginArea(new Rect(20, 18, 242, PanelRect.height - 16));
             scroll = GUILayout.BeginScrollView(scroll);
-            GUILayout.Label(City == null ? "HUSK V1 / PHASE 1" : "HUSK V1 / PHASE 2", GUI.skin.box);
-            GUILayout.Label(City == null ? "Module + Network foundation" : "Networked production / starting city", labelStyle);
+            GUILayout.Label(City == null ? "HUSK V1 / PHASE 1" : City.Population != null ? "HUSK V1 / PHASE 3" : "HUSK V1 / PHASE 2", GUI.skin.box);
+            if (City?.Population != null)
+            {
+                var people = City.Population;
+                GUILayout.Label("Population " + people.Display, GUI.skin.box);
+                GUILayout.Label($"Houses {people.OperationalHouses}/{people.HouseCount} Operational | capacity {people.EffectiveCapacity}\nDemand Food {people.FoodDemand:0.##}/s | Water {people.WaterDemand:0.##}/s\nFood stock {Layout.Storage.FoodAvailable:0.##} | Water {Layout.Storage.GetExact(ResourceKind.Water):0.##}\nGrowth +{populationSettings.growthFraction:P0} / {populationSettings.growthInterval:0.#}s ({people.GrowthElapsed:0.#}s)", labelStyle);
+            }
+            else GUILayout.Label(City == null ? "Module + Network foundation" : "Networked production / starting city", labelStyle);
             GUILayout.Label($"Core {Layout.Storage.Get(ResourceKind.ModuleCore)}   Wood {Layout.Storage.Get(ResourceKind.Wood)}", labelStyle);
             GUILayout.Label("Click sea to select target; click floor / building to inspect.", labelStyle);
             GUILayout.Label($"Selected cell: {selected.x}, {selected.y}", labelStyle);
             bool exists = Layout.Cells.TryGetValue(selected, out var cell);
             GUILayout.Label(exists ? "Occupancy: " + cell.Building : "Sea / non-built", labelStyle);
-            GUILayout.Label("Choose exactly 3 pipelines:", labelStyle);
+            GUILayout.Label(exists && cell.IsSpecialCityHall ? "Special City Hall: fixed 4/4" : "Choose exactly 3 pipelines:", labelStyle);
             GUILayout.BeginHorizontal();
             foreach (var type in ModuleNetwork.Types)
             {
@@ -266,7 +285,7 @@ namespace Husk
             GUI.enabled = true;
             GUILayout.EndHorizontal();
             if (exists && cell.LockedPipelines != Pipeline.None)
-                GUILayout.Label("Locked INPUT + OUTPUT: " + cell.LockedPipelines, labelStyle);
+                GUILayout.Label((cell.IsSpecialCityHall ? "Fixed support: " : "Locked INPUT + OUTPUT: ") + cell.LockedPipelines, labelStyle);
             string failure = exists ? (BuildingPipelines.Allows(cell.Building, pending) ? "" : "Keep 3/4 and all building INPUT + OUTPUT.") : Layout.BuildFailure(selected, pending);
             GUILayout.Label(failure.Length == 0 ? (exists ? "Configuration valid" : "Valid build: 1 Core + 10 Wood") : failure, labelStyle);
             GUI.enabled = failure.Length == 0;
@@ -278,6 +297,7 @@ namespace Husk
             {
                 if (City != null && cell.Building == ModuleBuilding.None)
                 {
+                    if (City.Population != null && GUILayout.Button("Build House", GUILayout.Height(30))) BuildHouseSelected();
                     if (GUILayout.Button("Place Solar (test)", GUILayout.Height(28))) PlaceSolarSelected();
                     GUILayout.Label("Provisional free / instant placement; required pipelines configure automatically.", labelStyle);
                 }
@@ -286,8 +306,8 @@ namespace Husk
                 {
                     GUILayout.Label("TOWN HALL / unlimited Item Storage", labelStyle);
                     foreach (ResourceKind item in System.Enum.GetValues(typeof(ResourceKind)))
-                        GUILayout.Label($"{(item == ResourceKind.ModuleCore ? "Module Core" : item == ResourceKind.RecyclableMaterial ? "Recyclable Material" : item.ToString())}: {Layout.Storage.Get(item)}", labelStyle);
-                    GUILayout.Label("Town Hall I/O: TBD; no network source inferred.", labelStyle);
+                        GUILayout.Label($"{(item == ResourceKind.ModuleCore ? "Module Core" : item == ResourceKind.RecyclableMaterial ? "Recyclable Material" : item.ToString())}: {Layout.Storage.GetExact(item):0.##}", labelStyle);
+                    GUILayout.Label(City?.UsesStorageNetwork == true ? "F/W/M: storage IN/OUT from actual stock. E: pass-through only, never stored or produced." : "Historical scene: Town Hall storage endpoint inactive.", labelStyle);
                 }
                 foreach (var type in ModuleNetwork.Types)
                     GUILayout.Label($"{type}: {Network.State(selected, type)} | component {Network.Component(selected, type)}", labelStyle);
@@ -307,7 +327,7 @@ namespace Husk
             }
             GUILayout.Label("F green / W cyan / M orange / E violet\nBright: supplied | dim: no supply\nAbsent: unsupported", labelStyle);
             GUILayout.Label("Provisional: instant build; free reconfigure; Wood100; test palette.", labelStyle);
-            if (City != null) GUILayout.Label("Sources: actual operational buildings. Availability is binary; item quantities remain separate. No population simulation.", labelStyle);
+            if (City != null) GUILayout.Label(City.Population == null ? "Sources: actual operational buildings. Availability is binary; item quantities remain separate. No population simulation." : "Demand debited once while any House is Operational; Fish first, then legacy Food. No backlog or population penalty when unsupplied.", labelStyle);
             GUILayout.Label("WASD move / RMB orbit / wheel zoom / R reset", labelStyle);
             GUILayout.EndScrollView(); GUILayout.EndArea();
             foreach (var pair in Layout.Cells)
@@ -345,7 +365,10 @@ namespace Husk
             if (cell.Building == ModuleBuilding.Recycler)
                 GUILayout.Label($"Recyclable Material {Layout.Storage.Get(ResourceKind.RecyclableMaterial)}\n{City.Recycler.InputPerCycle} Recyclable -> {City.Recycler.WoodPerCycle} Wood / {City.Recycler.IntervalSeconds:0.#}s\nCycle {City.Recycler.ProcessingProgress:P0} | completed {City.Recycler.ProcessedCycles}", labelStyle);
             if (cell.Building == ModuleBuilding.House)
-                GUILayout.Label("House needs actual F + W supply. Population / consumption belongs to Phase 3.", labelStyle);
+                GUILayout.Label(City.Population == null ? "House needs actual F + W supply. Population / consumption belongs to Phase 3." :
+                    $"Food: {Network.State(selected, Pipeline.F)} | Water: {Network.State(selected, Pipeline.W)}\nEffective capacity: {(City.State(selected) == NetworkBuildingState.Operational ? populationSettings.houseCapacity : 0)}\nResidents remain in overall population when Disabled.", labelStyle);
+            if (City.UsesStorageNetwork && BuildingPipelines.Outputs(cell.Building) != Pipeline.None && cell.Building != ModuleBuilding.Solar)
+                GUILayout.Label(City.CanDeposit(selected, BuildingPipelines.Outputs(cell.Building)) ? "Storage output path: connected" : "Storage output path: missing; production / boat clocks paused.", labelStyle);
             if (cell.Building == ModuleBuilding.FishingHarbor)
             {
                 var harbor = City.Harbor;

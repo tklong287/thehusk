@@ -11,7 +11,9 @@ namespace Husk.Editor
         public static void CreateScene() => Create(false);
         [MenuItem("Husk/Create Phase 2 Production Scene")]
         public static void CreatePhase2Scene() => Create(true);
-        private static void Create(bool production)
+        [MenuItem("Husk/Create Phase 3 Housing Scene")]
+        public static void CreatePhase3Scene() => Create(true, true);
+        private static void Create(bool production, bool population = false)
         {
             if (EditorApplication.isPlaying) throw new System.InvalidOperationException("Exit Play before scene setup.");
             if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().isDirty)
@@ -34,12 +36,13 @@ namespace Husk.Editor
             lightObject.transform.rotation = Quaternion.Euler(50, -30, 0);
             var light = lightObject.GetComponent<Light>(); light.type = LightType.Directional; light.intensity = 1.4f;
             RenderSettings.ambientLight = new Color(0.55f, 0.6f, 0.65f);
-            var prototype = new GameObject(production ? "V1 Phase 2 Networked City" : "V1 Phase 1 Module Network", typeof(ModuleNetworkPrototype));
+            var prototype = new GameObject(population ? "V1 Phase 3 Housing City" : production ? "V1 Phase 2 Networked City" : "V1 Phase 1 Module Network", typeof(ModuleNetworkPrototype));
             var serialized = new SerializedObject(prototype.GetComponent<ModuleNetworkPrototype>());
             serialized.FindProperty("view").objectReferenceValue = camera;
             serialized.FindProperty("networkedProduction").boolValue = production;
+            serialized.FindProperty("populationSimulation").boolValue = population;
             serialized.ApplyModifiedPropertiesWithoutUndo();
-            EditorSceneManager.SaveScene(scene, production ? "Assets/Scenes/V1Phase2.unity" : ScenePath);
+            EditorSceneManager.SaveScene(scene, population ? "Assets/Scenes/V1Phase3.unity" : production ? "Assets/Scenes/V1Phase2.unity" : ScenePath);
         }
     }
 }

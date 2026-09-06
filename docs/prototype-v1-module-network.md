@@ -45,13 +45,15 @@ Building nằm trên một Module. Không suy art blockout scale hoặc tên ô 
 
 ## 4. Town Hall / Item Storage — CONFIRMED
 
-Fresh V1 có **1 Town Hall**, đảm nhiệm Item Storage. Click Town Hall → hiện danh sách **concrete items** trong storage.
+Fresh V1 có **1 Town Hall / City Hall**, là **special Module 4/4 F/W/M/E**, không chịu giới hạn 3/4 của Standard Module. Click City Hall → hiện danh sách **concrete items** trong storage.
 
 Module Core bắt đầu **1 stack, 100 Module Core**. Storage unlimited; không warehouse capacity, slot limit, weight hoặc logistics-to-storage.
 
-Wood, Iron, Recyclable Material vẫn là concrete items. Không gộp chúng thành một item tên Material. Exact starting Wood **TBD**; có thể giữ current test stock hoặc dùng provisional configurable stock đủ thử Build Module, không biến exact lượng Wood thành canon.
+Fresh storage có **100 của mọi concrete storable item hiện có**, trừ Electric: Module Core, Fish, Water, Wood, Iron, Recyclable Material và Food legacy nếu vẫn là concrete item trong codebase. Không thêm generic Food nếu chưa có. Không gộp Wood/Iron/Recyclable Material thành Material. Đây là starter test stock, không final balance/scarcity.
 
-Town Hall pipeline input/output requirement **TBD**. Vai trò global construction storage không tự chứng minh Town Hall là source của một network nào. Không invent requirement hoặc supply endpoint chỉ để giải dependency.
+**F/W/M là storage IN/OUT**, nhận production vào storage và cấp stock ra đúng network qua continuous compatible paths. City Hall không phải producer và không tự tạo item: category chỉ có supply từ storage khi còn concrete item thuộc category đó. Fish thuộc F; Water thuộc W; Wood/Iron/Recyclable Material thuộc M và giữ identity. Nếu legacy Food tồn tại, nó cũng là concrete Food item, không đồng nhất F với một stock duy nhất.
+
+**E chỉ PASS-THROUGH**: không Electric item, không Electric quantity100, không produce/store E, không battery. E supply phải từ Solar hoặc actual Electric producer qua topology. Cả bốn supported pipelines của City Hall được giữ cố định; không áp dụng UI/validation 3/4 cho special Module này. Battery là future consideration ngoài V1.
 
 ## 5. Pipeline categories và standard Module — CONFIRMED
 
@@ -77,9 +79,9 @@ Resource chỉ truyền trên continuous path mà mọi Module đều support c�
 | Recycler | E | M | E + M | F hoặc W |
 | Solar Power Plant | Không | E | E | Hai trong F/W/M |
 | House | F + W | Không | F + W | M hoặc E |
-| Town Hall | TBD | TBD | TBD | Chưa chốt requirement |
+| Town Hall / City Hall | Storage nhận F/W/M, không operational input prerequisite | Storage cấp F/W/M khi có stock; không E source | Special F/W/M/E (4/4); E pass-through | Không, giữ cả bốn |
 
-Module chứa building bắt buộc support toàn bộ INPUT + OUTPUT của building. Phân biệt required input, produced output và optional pass-through; output không phải nhu cầu tiêu thụ. Town Hall storage role không thay thế quyết định I/O còn mở.
+Standard Module chứa building bắt buộc support toàn bộ INPUT + OUTPUT của building. Phân biệt required input, produced output và optional pass-through; output không phải nhu cầu tiêu thụ. City Hall là special storage endpoint, storage IN không phải operational prerequisite và E support không phải E output.
 
 Ba khái niệm riêng biệt:
 
@@ -87,7 +89,7 @@ Ba khái niệm riêng biệt:
 - **OperationalRequirements = Inputs only**: chỉ kiểm supply cho input, cộng Damaged/Repair và concrete production conditions hiện có.
 - **LockedPipelines = Inputs ∪ Outputs**: không được tắt/remove các pipeline này trong UI hoặc domain khi building còn trên Module. Optional/pass-through vẫn editable theo rule 3/4.
 
-Khi place building lên Module trống, tự thêm required pipelines và giữ tối đa cấu hình cũ. Nếu vượt ba slots, tự bỏ optional pipeline theo priority nội bộ ổn định; cùng config + building luôn ra cùng kết quả, vẫn đúng 3/4. Không popup, không hỏi chọn pipeline bỏ và không bắt configure thủ công trước placement. Exact drop priority là implementation detail, không phải design canon. Required pipelines được lock ngay sau placement, dựa trên occupancy hiện tại; không thêm demolition/refund hoặc lock framework.
+Với building trên Standard Module, khi place lên Module trống, tự thêm required pipelines và giữ tối đa cấu hình cũ. Nếu vượt ba slots, tự bỏ optional pipeline theo priority nội bộ ổn định; cùng config + building luôn ra cùng kết quả, vẫn đúng 3/4. Không popup, không hỏi chọn pipeline bỏ và không bắt configure thủ công trước placement. Exact drop priority là implementation detail, không phải design canon. Required pipelines được lock ngay sau placement, dựa trên occupancy hiện tại; không thêm demolition/refund hoặc lock framework.
 
 ## 7. Connectivity, actual supply và Operational
 
@@ -126,7 +128,7 @@ Khi path/source mất supply, cập nhật downstream thực sự bị ảnh hư
 
 Water Plant/Recycler: **Damaged → Repair → kiểm network inputs → có thể Operational**. Exact repair cost/time từng building **TBD**; reuse provisional construction/activation mechanics nếu phù hợp nhưng không gọi đó là final repair balance.
 
-Starting Population target là **100/100**. Trong integration phải chứng minh starting supply thật phù hợp House F/W và hai producer Damaged; không hardcode Operational hoặc invent Town Hall I/O để làm đẹp HUD. Phase 2 kiểm tra và báo rõ fresh House Disabled vì chưa có F/W khi hai producer Damaged; chưa có population HUD/simulation nên chưa chứng minh target 100/100. Startup source/stock policy cần quyết định trước implementation/acceptance phần population Phase 3, không tự đổi target hoặc thêm nguồn trong corrective task Phase 2.
+Starting Population là **100/100**. Starter Food/Fish và Water100 trong City Hall cấp initial F/W qua continuous compatible paths tới starting House; House Operational ngay fresh start. Water Plant/Recycler vẫn Damaged, không cần hoạt động để đạt starting capacity100. Ngắt F hoặc W route vẫn làm House mất supply dù global storage còn stock; hết concrete stock tương ứng thì City Hall mất supply loại đó. Không hardcode Operational hoặc capacity; effective capacity chỉ từ actual supplied Houses. Đây là quyết định user giải quyết blocker startup của Phase2.
 
 Starting city được tích hợp ở Phase 2; population/consumption đầy đủ ở Phase 3. Đây là thứ tự implementation, không tutorial/unlock progression.
 
@@ -208,14 +210,12 @@ Ghi evidence và nhận xét từng câu; không tự kết luận cần đổi 
 - Có đổi pipeline configuration sau build không; cost/time reconfiguration.
 - Exact F/W/M/E colors.
 - Module construction time.
-- Exact starting Wood.
-- Town Hall pipeline requirements.
 - Population rounding/display.
 - Future overcrowding/Trị an formula.
 - Future food preferences.
 - Future 2/4 vs 3/4 sau playtest.
 
-Không giữ các câu hỏi draft đã được user giải quyết: Fish trực tiếp đáp ứng Food, cost Module đã chốt, building I/O đã chốt ngoài Town Hall, House thiếu supply bị Disabled và population vẫn tăng. Cấu hình trước khi build không tự cấp quyền free reconfiguration sau build. Scenario rerouting phải theo workflow được chốt; không tự thêm demolition/refund.
+Không giữ các câu hỏi draft đã được user giải quyết: Fish trực tiếp đáp ứng Food, cost Module đã chốt, building I/O và City Hall storage/pass-through đã chốt, House thiếu supply bị Disabled và population vẫn tăng. Cấu hình trước khi build không tự cấp quyền free reconfiguration sau build. Scenario rerouting phải theo workflow được chốt; không tự thêm demolition/refund.
 
 ## 15. Non-goals và Future Considerations
 
@@ -225,4 +225,4 @@ Không implement Hub, Gas, Network/Data hoặc 2/4 trong V1. Không throughput/n
 
 ## 16. Validation và handoff
 
-Manager tự review toàn bộ source/diff/metas, Unity compile/Console/runtime/tests và từng criterion trước checkpoint; không dùng report Implementer làm acceptance duy nhất. Corrective task Phase 2 bao gồm lock và auto-reconfiguration theo contract trên, không bắt đầu Build House/population/consumption Phase 3. Giữ scope đúng phase và dừng cho user playtest.
+Manager tự review toàn bộ source/diff/metas, Unity compile/Console/runtime/tests và từng criterion trước checkpoint; không dùng report Implementer làm acceptance duy nhất. Task Phase3 tích hợp City Hall special storage module và House/population/consumption theo quyết định mới, không bắt đầu Phase4. Giữ scope đúng phase và dừng cho user playtest.

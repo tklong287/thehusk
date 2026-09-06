@@ -30,6 +30,7 @@ namespace Husk
         public static Pipeline RequiredModule(ModuleBuilding building) => Inputs(building) | Outputs(building);
         public static Pipeline ForPlacement(ModuleBuilding building, Pipeline existing)
         {
+            if (building == ModuleBuilding.TownHall) return Pipeline.All;
             var result = existing | RequiredModule(building);
             // Stable internal preference: retain earlier F/W/M/E optional lanes. Not gameplay balance.
             for (int bit = (int)Pipeline.E; !IsStandard(result) && bit > 0; bit >>= 1)
@@ -45,7 +46,7 @@ namespace Husk
             return count == 3;
         }
         public static bool Allows(ModuleBuilding building, Pipeline pipelines) =>
-            IsStandard(pipelines) && Enum.IsDefined(typeof(ModuleBuilding), building)
+            (IsStandard(pipelines) || (building == ModuleBuilding.TownHall && pipelines == Pipeline.All)) && Enum.IsDefined(typeof(ModuleBuilding), building)
             && (pipelines & RequiredModule(building)) == RequiredModule(building);
     }
 
@@ -54,7 +55,8 @@ namespace Husk
         public Vector2Int Position { get; }
         public Pipeline Pipelines { get; internal set; }
         public ModuleBuilding Building { get; internal set; }
-        public Pipeline LockedPipelines => BuildingPipelines.RequiredModule(Building);
+        public bool IsSpecialCityHall => Building == ModuleBuilding.TownHall && Pipelines == Pipeline.All;
+        public Pipeline LockedPipelines => IsSpecialCityHall ? Pipeline.All : BuildingPipelines.RequiredModule(Building);
         // Explicit development supply fixture, independent of concrete storage and building output.
         public Pipeline TestSupply { get; internal set; }
         public bool Supports(Pipeline type) => (Pipelines & type) == type && type != Pipeline.None;
@@ -125,6 +127,8 @@ namespace Husk
         public bool TryConfigure(Vector2Int position, Pipeline pipelines, out string reason)
         {
             if (!cells.TryGetValue(position, out var cell)) { reason = "No Module at this location."; return false; }
+            if (cell.IsSpecialCityHall && pipelines != Pipeline.All)
+            { reason = "City Hall keeps all four pipelines; E is pass-through only."; return false; }
             if (!BuildingPipelines.Allows(cell.Building, pipelines))
             { reason = "Requires 3/4 including building INPUT + OUTPUT: " + (BuildingPipelines.Inputs(cell.Building) | BuildingPipelines.Outputs(cell.Building)); return false; }
             cell.Pipelines = pipelines;

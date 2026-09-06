@@ -6,7 +6,7 @@ ACTIVE
 
 ## Current Phase
 
-V1 Phase 3 — House + Population + Consumption (TODO, chưa bắt đầu)
+V1 Phase 4 — Integrated Network Planning Playtest (TODO, chưa bắt đầu)
 
 ## Phase Status
 
@@ -14,22 +14,22 @@ V1 Phase 3 — House + Population + Consumption (TODO, chưa bắt đầu)
 |---|---|---|
 | V1 Phase 1 | Module Construction + Pipeline Network | DONE |
 | V1 Phase 2 | Networked Production + Starting City | DONE |
-| V1 Phase 3 | House + Population + Consumption | TODO |
+| V1 Phase 3 | House + Population + Consumption | DONE |
 | V1 Phase 4 | Integrated Network Planning Playtest | TODO |
 
 ## Last Completed Task
 
-V1 Phase 2 — Networked Production + Starting City, gồm corrective building/pipeline contract: PASS ngày 2026-09-07 (Asia/Saigon), sau independent Manager review, 84/84 EditMode tests và runtime acceptance.
+V1 Phase 3 — House + Population + Consumption: PASS ngày 2026-09-07 (Asia/Saigon), gồm City Hall special storage; independent Manager review, 112/112 EditMode tests và runtime acceptance. Last Completed Phase: V1 Phase 3.
 
 V0 giữ Overall Status COMPLETE và Phase 0–7 DONE trong docs/manager-status.md; spec/checklist/status V0 là lịch sử giữ nguyên. Không chuyển evidence 36 tests V0 thành acceptance V1.
 
 ## Current Phase Goal
 
-Phase 2 hoàn tất theo latest corrective task, dừng cho user playtest. Current Phase 3 vẫn TODO; chưa triển khai Build House, population hoặc consumption.
+Phase3 đã nghiệm thu. Dừng cho user playtest; Phase4 vẫn TODO và chưa triển khai.
 
 ## Current Blockers
 
-Không còn blocker cho corrective contract/Phase 2 checkpoint. Startup audit đã xác nhận House Disabled khi Water/Recycler Damaged; criterion Phase 2 về kiểm tra và báo rủi ro startup đã thực hiện. Chưa chứng minh target population 100/100 và không suy diễn user đã chốt cách cấp F/W ban đầu. Source/stock policy để đạt target đó vẫn là quyết định cần giải quyết trước phần population Phase 3.
+Startup blocker RESOLVED bởi latest explicit user decision: City Hall special4/4, F/W/M storage IN/OUT từ stock thật; E pass-through only. Mọi concrete storable item hiện có bắt đầu100, không Electric item. F/W paths từ City Hall cấp starting House100/100 trong khi Water/RecyclerDamaged. Không còn blocker đã biết; Phase3 implementation/validation đã PASS.
 
 Open questions bên dưới phải được giữ mở; nếu exact workflow/acceptance sau này phụ thuộc câu trả lời, báo Manager/user trước phần việc phụ thuộc. Không đánh dấu phase DONE dựa trên assumption chưa được phép.
 
@@ -42,7 +42,7 @@ Open questions bên dưới phải được giữ mở; nếu exact workflow/acc
 | Starting Module Core | 1 stack 100 Module Core |
 | Module build cost | 1 Module Core + 10 Wood từ global city Item Storage |
 | Placement | Attach edge hiện có tiếp giáp biển; cấm occupied Module hoặc Fishing Harbor/port edge/vị trí |
-| Town Hall | 1, Item Storage; click xem concrete items |
+| City Hall | 1 special4/4, F/W/M stock IN/OUT, E pass-through only; mọi concrete item100, không Electric item |
 | Storage | Unlimited; không M construction logistics |
 | Fishing Harbor | 1, M input → F output |
 | Solar Power Plant | 1, không input → E output |
@@ -55,7 +55,7 @@ Open questions bên dưới phải được giữ mở; nếu exact workflow/acc
 | Food demand | 0.05 Food/s/resident, Fish trực tiếp đáp ứng qua F |
 | Water demand | 0.05 Water/s/resident |
 
-Module building phải support và lock union INPUT+OUTPUT; Operational chỉ kiểm Inputs. Placement tự thêm required và bỏ optional deterministically để giữ 3/4, không popup. Optional slots vẫn editable/pass-through. Category khác concrete item: Fish thuộc F; Wood/Iron/Recyclable Material thuộc M và giữ identity.
+Standard Module building phải support và lock union INPUT+OUTPUT; Operational chỉ kiểm Inputs. City Hall là exception special4/4 fixed, E không phải output. Placement tự thêm required và bỏ optional deterministically để giữ 3/4, không popup. Optional slots vẫn editable/pass-through. Category khác concrete item: Fish thuộc F; Wood/Iron/Recyclable Material thuộc M và giữ identity.
 
 Required input phải có continuous compatible path + actual supply; thiếu bất kỳ input nào → Disabled/Unsupplied. Repair không bypass network. House Disabled giữ residents, coi là reallocated sang Operational Houses; effective capacity giảm nhưng population và compound growth tiếp tục kể cả overcrowded/capacity = 0. Không detailed assignment hoặc penalty.
 
@@ -63,7 +63,7 @@ Visual: floor cross mỗi Module, F/W/M/E phân biệt được; supported-suppl
 
 ## Provisional / Reuse Values
 
-Boat build khoảng 5s, trip khoảng 30s, unload 5 Fish, nhiều boat độc lập và auto repeat là baseline reuse configurable/provisional. Water/Recycler rates và test stocks ngoài Module Core dùng current/provisional values nếu phù hợp, không final balance. Exact starting Wood chưa chốt.
+Boat build khoảng 5s, trip khoảng 30s, unload 5 Fish, nhiều boat độc lập và auto repeat là baseline reuse configurable/provisional. Water/Recycler rates và test stocks ngoài Module Core dùng current/provisional values nếu phù hợp, không final balance. Fresh stocks đã chốt100 mỗi concrete item hiện có; không Electric item.
 
 ## Pending User Decisions / Open Questions
 
@@ -72,14 +72,14 @@ Boat build khoảng 5s, trip khoảng 30s, unload 5 Fish, nhiều boat độc l�
 - Policy reconfigure cho các phase sau/full game: vẫn mở; Phase 1 dùng free/instant provisional theo explicit authorization.
 - Exact F/W/M/E colors.
 - Module construction time.
-- Exact starting Wood.
-- Town Hall pipeline requirements.
+- Starting stocks đã chốt100 mỗi concrete storable item; không còn open question.
+- City Hall đã chốt special4/4; F/W/M storage IN/OUT, E pass-through only.
 - Population rounding/display.
 - Future overcrowding/Trị an formula.
 - Future food preferences.
 - Future 2/4 vs 3/4 sau playtest.
 
-Phase 3 integration cần chứng minh target starting 100/100 với F/W actual supply trong khi Water Plant/Recycler Damaged. Không invent Town Hall I/O hoặc fake supplied; startup source/stock policy vẫn mở, cần quyết định trước phần implementation phụ thuộc. Phase 2 chỉ nghiệm thu House supply state thực tế và báo giới hạn này.
+Phase3 phải kiểm fresh100/100 bằng City Hall stock-backed F/W và actual topology; Water/Recycler vẫn Damaged. Các ghi chú startup pending trong Phase2 bên dưới là historical và đã được quyết định mới thay thế.
 
 ## Manager Operating Rules
 
@@ -251,3 +251,48 @@ Final contract: RequiredModule=Inputs∪Outputs, Locked=RequiredModule từ curr
 Checkpoint scope: ModuleNetworkSceneSetup.cs, FishingHarbor.cs, ModuleLayout.cs, ModuleNetwork.cs, ModuleNetworkPrototype.cs, NetworkedCity.cs+.meta, ModuleNetworkTests.cs, NetworkedCityTests.cs+.meta, V1Phase2.unity+.meta, prototype-v1-module-network.md, manager-checklist-v1.md, manager-status-v1.md. Đây là toàn bộ Phase2 + corrective chưa commit trước đó; không generated junk, Art hoặc Phase3. Commit message: `Complete V1 Phase 2 networked production`; destination origin/main, no force. Hash/push verification được report sau Git transaction.
 
 Limits: scene vẫn placeholder; Solar placement là test surface free/instant, không building construction economy. Chưa standalone player build; chưa population quantity allocation. Phase2 DONE; Current Phase3 TODO, chưa bắt đầu. Dừng cho user playtest.
+
+## Phase 3 Initial Audit / Design Resolution — 2026-09-07
+
+Baseline main=origin/main tại36d549aef2e6cf707ef904a22d85887125aae055, không tracked changes trước task; known untracked Art được latest instruction tiếp tục từ hiện trạng cho phép giữ ngoài checkpoint. Không stash/reset/stage Art. Snapshot Art56files được lưu ngoài repository để kiểm preservation.
+
+Đã reuse đúng một husk_implementer từ read-only startup audit. Manager independently xác nhận Unity MCP baseline HouseDisabled/missingF,W trong khi Water/RecyclerDamaged. User sau đó explicit quyết định City Hall special4/4 + starter stock-backed supply, giải quyết blocker; active spec được cập nhật trước implementation. Latest decision có priority trên câu Town Hall TBD/starting Wood TBD còn trong AGENTS hoặc acceptance history Phase1–2.
+
+Audit: ResourceState có7 concrete items (Food,Water,RecyclableMaterial,Wood,Iron,Fish,ModuleCore), không Electric. Giữ item identity và default100 cho cả7. ModuleLayout đã có atomic occupancy/auto-config/locked union; NetworkedCity đã có real producer endpoints, Damaged/Repair và input-only gating; House mới là supply state chưa capacity/population/BuildHouse UI. Reuse những phần này, bổ sung Phase3 có opt-in để giữ baseline scenes/tests. Engine6000.5.7f1/URP17.5.0 giữ nguyên.
+
+Phạm vi: special City Hall và stock-backed F/W/M, E pass-through; House placement/capacity; city-level double population/growth; fractional consumption once-per-city có network gating; UI và scene/test evidence. Không Phase4, battery/Electric storage, Hub, citizen assignment, penalties, quantity routing hay final balance. Đây là audit đầu task; evidence nghiệm thu cuối cùng nằm bên dưới.
+## Phase 3 Final Manager Acceptance — 2026-09-07
+
+**PASS / DONE.** Đúng một husk_implementer được reuse và bàn giao; Manager tự review implementation, scene/metas, chạy lại suite và kiểm runtime/UI. Active spec đã được cập nhật trước implementation theo quyết định City Hall mới. Không bắt đầu Phase4.
+
+| Criterion | Independent Manager evidence / result |
+|---|---|
+| City Hall / storage / topology | Fresh special All (4/4 locked), 7 concrete items đều100, không Electric item. Hall chỉ F/W/M source từ stock; E supplied qua Solar. MCP cắt E bridge: Hall E Supplied→Unsupplied, Solar vẫn Supplied. Tests actual deposit paths, stock depletion, identity, no free output/catch-up PASS. |
+| Build House | Runtime xây hai Modules (2,-2) FWM và (2,-3) FME: Core100→98, Wood100→80. Native Build House ở(2,-3) tự FWM, F/W locked; native click W không bỏ được. Capacity100→200, current121 không đổi. Tests bốn configs/occupied/sea/third pass-through PASS. |
+| Fresh population / capacity | Independent MCP fresh model và live scene:100.0/100, sáu buildings trên10Modules, Water/RecyclerDamaged, starting HouseOperational. Tất cả7 stocks=100 trong fresh model; initial scene còn100population. |
+| Compound growth | Live Advance60→110.0/100, thêm60→121.0/100; sau all-housing path loss thêm60→133.1/0. Đã thêm10000Fish/Water trong Play test để cô lập growth khỏi depletion; không lưu debug stock vào scene/defaults. |
+| Uncapped growth | 121 vượt capacity100 vẫn tăng. Khi cap0,133.1 tiếp tục146.41 (display146.4); không penalty, không mất residents hoặc thêm dân khi xây House. Tests180s=133.1 và overshoot PASS. |
+| Fractional demand | Hai Houses Operational, population133.1: advance1s trừ6.65499999999 Food và Water, đúng demand6.655 mỗi loại một lần toàn city. Fish-first rồi legacy Food; tests fractional/tiny frames/atomic/no-negative PASS. |
+| Independent inputs | Router(2,-2) FWM→FME: chỉ House mới Disabled/missingW; House gốc Operational, capacity200→100, population121 giữ nguyên. Restore FWM→200. Tests mất riêng F/W vẫn giữ state loại còn lại PASS. |
+| Reallocation | MCP model starting180, hai Houses:180/200; cắt W một House→180/100. Model cả hai mấtWater→180/0, Tick60→198/0. Live all-House route loss cũng giữ current và tiếp tục growth. |
+| UI / resource consistency | Native Game View Build House/Hall/HUD đã inspect: current/effective capacity,2/2Houses,demand,stock,required locks và F/W state nhất quán. Khi stockF/W cạn Hall chỉ outputM, cap0; restock100Fish/Water→cap200, stock không âm. |
+| Tests / debit policy | Manager Unity MCP EditMode112/112 PASS,0failed/skipped/inconclusive,1.74s; gồm84 regression +28Phase3 cases. Large/tiny tick partitions, fresh reset, production deposit pause/resume và independent boats đều PASS. |
+| Review / Unity | Full runtime/editor/test/scene/meta review; Unity6000.5.7f1, compileFailed=false, missing scripts0, scene saved/dirty=false; Play→Stop thành công. Console warn/error mới từ4997→5005 rỗng; Implementer interval4981→4997 cũng rỗng, không clear Console. Whitespace diff check PASS. |
+
+### Implementation / provisional choices / limits
+
+CityPopulation giữ double current và growth; ResourceState giữ exact double quantities, legacy integer API dùng whole items. Quantum0.05s giữ remainder, tolerance1e-7s cho float boundary; display1decimal configurable, không round simulation. House capacity100; growth10%/60s; demand0.05 mỗi loại/resident/s. Build House free/instant là provisional test workflow.
+
+Demand được tính từ toàn bộ population, debit một lần khi có ít nhất một Operational House; cap không giới hạn residents. Khi không House nào đủ cảF/W, không debit và không tích debt; live60s all-disabled giữ nguyên Food/Water. Consumption trước production mỗi quantum; delivery dùng được từ quantum kế tiếp. Fish ưu tiên rồi legacy Food (item đã tồn tại), không tạo generic Material/Electric. Khi thiếu output route về Hall, producer/boat clocks pause, giữ progress và resume không catch-up. Output stock không là activation prerequisite của producer.
+
+Scene V1Phase3 opt-in, thêm routerFWM(-1,-1) cho continuous starterF/W từHall. Historical V0/V1Phase1/V1Phase2 scene và behavior regression được giữ. Scene vẫn placeholder; chưa standalone player build. Với stock100/rates hiện tại, Water có thể cạn sau khoảng20s nếu chưa có replenishment; không rebalance/penalty hoặc free resources để kéo dài playtest. Không battery/Hub/quantity logistics/advanced citizens/Phase4.
+
+### Playtest handoff
+
+Mở Game/Husk/Assets/Scenes/V1Phase3.unity và Play. Fresh100/100; click Hall xem special4/4 và7stocks. Chọn Module trống rồi Build House: requiredF/W tự thêm/lock. Xây nhánh(2,-2) rồi(2,-3), đặt House ở cuối; đổi router(2,-2) sangFME để cắt riêngW rồi restoreFWM. Đổi bridge(1,-1) sangFME để cắtW cả nhánh, quan sát capacity0/population vẫn tăng; restore không tạo lại residents. Native UI và MCP simulation advancement đã được Manager dùng để kiểm nhanh các phút growth. Stop/Play reset toàn bộ runtime test changes.
+
+### Checkpoint scope / preservation
+
+11 implementation files: ModuleLayout.cs, ModuleNetworkPrototype.cs, NetworkedCity.cs, ResourceState.cs, CityPopulation.cs+.meta, CityPopulationTests.cs+.meta, ModuleNetworkSceneSetup.cs, V1Phase3.unity+.meta; cộng3 activeV1docs. Stage explicit14paths, inspect staged diff và git diff --cached --check trước commit. Commit message: Complete V1 Phase 3 population and housing; push origin/main, không force. Hash/push được báo sau transaction.
+
+Art56files và81protected tracked files giữ nguyênSHA256 so với snapshot trước task. Không stage/commit/untrack/discard Art;15untracked Art files vẫn ngoài checkpoint. Không engine/package/ProjectSettings/generated/IDE changes. OverallACTIVE; LastCompletedPhase3DONE; CurrentPhase4TODO chưa bắt đầu. Dừng cho user playtest.

@@ -7,7 +7,7 @@ namespace Husk
     // Gameplay state owns quantities; presentation only reads this object.
     public sealed class ResourceState
     {
-        private readonly int[] amounts = new int[7];
+        private readonly double[] amounts = new double[7];
         public event Action Changed;
 
         public ResourceState(int startingWood = 100, int startingIron = 100,
@@ -29,14 +29,34 @@ namespace Husk
             amounts[(int)ResourceKind.ModuleCore] = startingModuleCore;
         }
 
-        public int Get(ResourceKind resource) => amounts[Index(resource)];
+        // Existing production/construction APIs use whole items; consumption keeps exact fractions.
+        public int Get(ResourceKind resource) => (int)Math.Floor(GetExact(resource));
+        public double GetExact(ResourceKind resource) => amounts[Index(resource)];
+        public double FoodAvailable => GetExact(ResourceKind.Fish) + GetExact(ResourceKind.Food);
+
+        // One city demand debit, regardless of House count. Fish first, then legacy Food (provisional).
+        public void ConsumeFoodAndWater(double food, double water)
+        {
+            if (double.IsNaN(food) || double.IsInfinity(food) || food < 0 ||
+                double.IsNaN(water) || double.IsInfinity(water) || water < 0)
+                throw new ArgumentOutOfRangeException(nameof(food));
+            double fish = Math.Min(food, amounts[(int)ResourceKind.Fish]);
+            double legacy = Math.Min(food - fish, amounts[(int)ResourceKind.Food]);
+            double wet = Math.Min(water, amounts[(int)ResourceKind.Water]);
+            amounts[(int)ResourceKind.Fish] -= fish;
+            amounts[(int)ResourceKind.Food] -= legacy;
+            amounts[(int)ResourceKind.Water] -= wet;
+            if (fish + legacy + wet > 0) Changed?.Invoke();
+        }
 
         public void Add(ResourceKind resource, int amount)
         {
             int index = Index(resource);
             ValidateAmount(amount);
             if (amount == 0) return;
-            amounts[index] = checked(amounts[index] + amount);
+            double next = amounts[index] + amount;
+            if (next > int.MaxValue) throw new OverflowException();
+            amounts[index] = next;
             Changed?.Invoke();
         }
 
@@ -60,7 +80,8 @@ namespace Husk
             int input = (int)ResourceKind.RecyclableMaterial;
             int output = (int)ResourceKind.Wood;
             if (amounts[input] < recyclableMaterial) return false;
-            int nextWood = checked(amounts[output] + wood);
+            double nextWood = amounts[output] + wood;
+            if (nextWood > int.MaxValue) throw new OverflowException();
             amounts[input] -= recyclableMaterial;
             amounts[output] = nextWood;
             Changed?.Invoke();

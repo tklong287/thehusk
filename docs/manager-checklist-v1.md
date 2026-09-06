@@ -2,9 +2,9 @@
 
 ## Purpose và nguồn thiết kế
 
-Active prototype: **Prototype V1 — Module Network & Planning**. V0 Phase 0–7 COMPLETE là lịch sử, không chuyển checklist V0 thành V1. Phase 1 đã DONE và user chấp nhận; Phase 2 DONE sau corrective contract validation; Phase 3–4 TODO, chưa bắt đầu.
+Active prototype: **Prototype V1 — Module Network & Planning**. V0 Phase 0–7 COMPLETE là lịch sử, không chuyển checklist V0 thành V1. Phase 1 đã DONE và user chấp nhận; Phase 2 DONE sau corrective contract validation; Phase 3 DONE; Phase 4 TODO (chưa bắt đầu).
 
-Đọc theo priority: latest explicit user decision → AGENTS.md → docs/prototype-v1-module-network.md → checklist này → docs/manager-status-v1.md. Đúng bốn phase lớn; mỗi phase là một task coherent, không chia micro-phase. Checkbox đã đánh dấu có evidence nghiệm thu trong manager-status-v1.md; checkbox còn trống chưa được nghiệm thu.
+Đọc theo priority: latest explicit user decision → AGENTS.md → docs/prototype-v1-module-network.md → checklist này → docs/manager-status-v1.md. Đúng bốn phase lớn; mỗi phase là một task coherent, không chia micro-phase. Checkbox đã đánh dấu có evidence nghiệm thu trong manager-status-v1.md; checkbox còn trống chưa được nghiệm thu. Phase1–2 giữ acceptance history tại thời điểm checkpoint; rule City Hall/starting stock mới thay thế các ghi chú TBD lịch sử, được kiểm ở Phase3.
 
 ## V1 Phase 1 — Module Construction + Pipeline Network
 
@@ -61,7 +61,7 @@ STATUS: DONE
 
 ## V1 Phase 3 — House + Population + Consumption
 
-STATUS: TODO
+STATUS: DONE
 
 **Goal:** House demand và population khiến network placement có hậu quả quan sát được.
 
@@ -69,16 +69,18 @@ STATUS: TODO
 
 **Acceptance Criteria:**
 
-- [ ] Build House trên Module hợp lệ support F + W, slot thứ ba M hoặc E do player chọn; supported third pipeline vẫn pass-through. Không đặt trên biển/occupied site.
-- [ ] Starting Population 100/100; format current population / effective operational housing capacity. Base House capacity 100; effective capacity chỉ tính Operational Houses.
-- [ ] +10% compound/minute theo current population: 100 → 110 → 121 → 133.1 trước rounding/display. Rounding/display TBD; giữ fractional precision, không tăng theo capacity.
-- [ ] Growth không hard-cap hoặc slowdown khi vượt capacity, House Disabled hay capacity = 0. Không tự thêm residents bằng nominal capacity khi Build House.
-- [ ] Demand mỗi resident 0.05 Food/s và 0.05 Water/s; 100 residents = 5/s mỗi loại. Fish đáp ứng Food qua F; consumption dùng actual reachable supply, không debit trùng/âm hoặc truncate fractional rate mỗi frame.
-- [ ] House Operational chỉ với F + W supplied; thiếu một loại → Disabled. UI chỉ đúng input thiếu, không giả báo loại còn supply cũng mất.
-- [ ] Residents được giữ và coi là reallocated sang Operational Houses còn lại, không detailed assignment AI. 180 residents/hai House → một Disabled → 180/100; tất cả Disabled → 180/0 và growth vẫn tiếp tục.
-- [ ] UI population/resource/building supply/effective capacity/demand cập nhật nhất quán. Overcrowding là valid state, không security/mortality/happiness penalty.
-- [ ] Tests phù hợp kiểm phút liên tiếp/overshoot/frame partition, fractional consumption, nhiều House không double-spend, supply loss/recovery, capacity 0 và fresh reset. Policy stock allocation/debit thiếu nguồn được ghi rõ; hỏi nếu cần design mới.
-- [ ] Manager review source/diff/metas, compile/Console và Play/Stop trên scene thực; không unrelated dirty state, ghi evidence từng criterion.
+- [x] City Hall special4/4; F/W/M storage IN/OUT từ concrete stock, E pass-through only/no source/no storage. Fresh mọi concrete item hiện có100; starter F/W qua topology cấp House trong khi Water/RecyclerDamaged. Stock depletion/path loss và recovery phản ánh đúng network.
+
+- [x] Build House trên Module hợp lệ support F + W, slot thứ ba M hoặc E do player chọn; supported third pipeline vẫn pass-through. Không đặt trên biển/occupied site.
+- [x] Starting Population 100/100; format current population / effective operational housing capacity. Base House capacity 100; effective capacity chỉ tính Operational Houses.
+- [x] +10% compound/minute theo current population: 100 → 110 → 121 → 133.1 trước rounding/display. Rounding/display TBD; giữ fractional precision, không tăng theo capacity.
+- [x] Growth không hard-cap hoặc slowdown khi vượt capacity, House Disabled hay capacity = 0. Không tự thêm residents bằng nominal capacity khi Build House.
+- [x] Demand mỗi resident 0.05 Food/s và 0.05 Water/s; 100 residents = 5/s mỗi loại. Fish đáp ứng Food qua F; consumption dùng actual reachable supply, không debit trùng/âm hoặc truncate fractional rate mỗi frame.
+- [x] House Operational chỉ với F + W supplied; thiếu một loại → Disabled. UI chỉ đúng input thiếu, không giả báo loại còn supply cũng mất.
+- [x] Residents được giữ và coi là reallocated sang Operational Houses còn lại, không detailed assignment AI. 180 residents/hai House → một Disabled → 180/100; tất cả Disabled → 180/0 và growth vẫn tiếp tục.
+- [x] UI population/resource/building supply/effective capacity/demand cập nhật nhất quán. Overcrowding là valid state, không security/mortality/happiness penalty.
+- [x] Tests phù hợp kiểm phút liên tiếp/overshoot/frame partition, fractional consumption, nhiều House không double-spend, supply loss/recovery, capacity 0 và fresh reset. Policy stock allocation/debit thiếu nguồn được ghi rõ; hỏi nếu cần design mới.
+- [x] Manager review source/diff/metas, compile/Console và Play/Stop trên scene thực; không unrelated dirty state, ghi evidence từng criterion.
 
 **Guardrails:** Không advanced citizen mechanics, death/migration/happiness/health/growth slowdown hoặc Trị an. Không tự giải open questions thành final design.
 
@@ -133,6 +135,6 @@ STATUS: TODO
 
 ## Open questions và non-goals
 
-Giữ mở: repair cost/time riêng Water Plant và Recycler; có reconfigure sau build không và cost/time; exact F/W/M/E colors; Module construction time; exact starting Wood; Town Hall I/O; population rounding/display; future Trị an/overcrowding formula, food preferences và 2/4 vs 3/4.
+Giữ mở: repair cost/time riêng Water Plant và Recycler; có reconfigure sau build không và cost/time; exact F/W/M/E colors; Module construction time; population rounding/display; future Trị an/overcrowding formula, food preferences và 2/4 vs 3/4.
 
 Không Hub trong V1; không Gas/Data/2/4, throughput/congestion/pressure/network capacity/voltage/battery/day-night solar/distance loss, construction logistics hoặc storage capacity. Không economy balance/final art, Food Processing/class diet hoặc advanced citizen penalties. Các future considerations không tạo task chuẩn bị.
