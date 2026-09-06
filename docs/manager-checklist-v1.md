@@ -2,13 +2,13 @@
 
 ## Purpose và nguồn thiết kế
 
-Active prototype: **Prototype V1 — Module Network & Planning**. V0 Phase 0–7 COMPLETE là lịch sử, không chuyển checklist V0 thành V1. Implementation V1 chưa bắt đầu.
+Active prototype: **Prototype V1 — Module Network & Planning**. V0 Phase 0–7 COMPLETE là lịch sử, không chuyển checklist V0 thành V1. Phase 1 đã DONE; Phase 2–4 vẫn TODO, chờ user playtest và giao task tiếp theo.
 
-Đọc theo priority: latest explicit user decision → AGENTS.md → docs/prototype-v1-module-network.md → checklist này → docs/manager-status-v1.md. Đúng bốn phase lớn; mỗi phase là một task coherent, không chia micro-phase. Các checkbox dưới đây là acceptance chưa thực hiện, không phải báo cáo PASS.
+Đọc theo priority: latest explicit user decision → AGENTS.md → docs/prototype-v1-module-network.md → checklist này → docs/manager-status-v1.md. Đúng bốn phase lớn; mỗi phase là một task coherent, không chia micro-phase. Checkbox đã đánh dấu có evidence nghiệm thu trong manager-status-v1.md; checkbox còn trống chưa được nghiệm thu.
 
 ## V1 Phase 1 — Module Construction + Pipeline Network
 
-STATUS: TODO
+STATUS: DONE
 
 **Goal:** player gắn Module vào Husk và thấy pipeline connectivity/supply foundation tác động trực tiếp lên cấu trúc.
 
@@ -16,20 +16,20 @@ STATUS: TODO
 
 **Acceptance Criteria:**
 
-- [ ] Built cell là physical Module, bên ngoài là biển. Build Module attach vào edge hiện có tiếp giáp biển; occupied cell và Fishing Harbor/port blocked edge/vị trí bị từ chối.
-- [ ] Town Hall Item Storage foundation cho inspect concrete items; 1 stack 100 Module Core ở fresh start, unlimited storage. Không slot/weight/capacity/logistics system.
-- [ ] Build Module debit đúng 1 Module Core + 10 Wood từ global city storage; không yêu cầu M tới construction site. Invalid/duplicate/không đủ stock không debit một phần hoặc tạo Module trùng.
-- [ ] Exact starting Wood và construction time giữ TBD/provisional configurable; ghi preset đã thử, không biến số chưa chốt thành canon.
-- [ ] Standard Module support đúng 3/4 F/W/M/E; M = Material. UI cho configure/inspect lựa chọn và lý do invalid.
-- [ ] Building constraints foundation kiểm cả required INPUT + OUTPUT: Harbor M/F, Water E/M/W, Recycler E/M, Solar E, House F/W; optional slots player chọn. Town Hall I/O để TBD.
-- [ ] Bốn network độc lập: chỉ truyền cùng category trên continuous compatible path; không nhảy qua biển/unsupported Module hoặc convert type. Building không chặn supported pass-through.
-- [ ] Phân biệt connectivity và actual supply foundation: source mất supply làm vùng liên quan unsupplied dù path còn; alternate path/source giữ đúng vùng còn cấp.
-- [ ] Mỗi Module có floor cross/lane, bright supplied / dim supported-unsupplied / inactive unsupported phân biệt được. F/W/M/E đọc được; exact colors TBD, palette thử được ghi provisional.
-- [ ] Configure/inspect UI và pipeline floor visual là gameplay feedback; world placement và nguyên nhân mất path/supply đọc được ở camera chơi.
-- [ ] Tests phù hợp kiểm placement/port blocking/payment/3-of-4/building requirements/path/pass-through/alternate supply và fresh reset. Manager trực tiếp kiểm Unity compile, Console, Play/Stop; intended scene không unrelated dirty state.
-- [ ] Manager review source/diff/metas và từng criterion, ghi evidence cùng limits/provisional values.
+- [x] Built cell là physical Module, bên ngoài là biển. Build Module attach vào edge hiện có tiếp giáp biển; occupied cell và Fishing Harbor/port blocked edge/vị trí bị từ chối.
+- [x] Town Hall Item Storage foundation cho inspect concrete items; 1 stack 100 Module Core ở fresh start, unlimited storage. Không slot/weight/capacity/logistics system.
+- [x] Build Module debit đúng 1 Module Core + 10 Wood từ global city storage; không yêu cầu M tới construction site. Invalid/duplicate/không đủ stock không debit một phần hoặc tạo Module trùng.
+- [x] Exact starting Wood và construction time giữ TBD/provisional configurable; ghi preset đã thử, không biến số chưa chốt thành canon.
+- [x] Standard Module support đúng 3/4 F/W/M/E; M = Material. UI cho configure/inspect lựa chọn và lý do invalid.
+- [x] Building constraints foundation kiểm cả required INPUT + OUTPUT: Harbor M/F, Water E/M/W, Recycler E/M, Solar E, House F/W; optional slots player chọn. Town Hall I/O để TBD.
+- [x] Bốn network độc lập: chỉ truyền cùng category trên continuous compatible path; không nhảy qua biển/unsupported Module hoặc convert type. Building không chặn supported pass-through.
+- [x] Phân biệt connectivity và actual supply foundation: source mất supply làm vùng liên quan unsupplied dù path còn; alternate path/source giữ đúng vùng còn cấp.
+- [x] Mỗi Module có floor cross/lane, bright supplied / dim supported-unsupplied / inactive unsupported phân biệt được. F/W/M/E đọc được; exact colors TBD, palette thử được ghi provisional.
+- [x] Configure/inspect UI và pipeline floor visual là gameplay feedback; world placement và nguyên nhân mất path/supply đọc được ở camera chơi.
+- [x] Tests phù hợp kiểm placement/port blocking/payment/3-of-4/building requirements/path/pass-through/alternate supply và fresh reset. Manager trực tiếp kiểm Unity compile, Console, Play/Stop; intended scene không unrelated dirty state.
+- [x] Manager review source/diff/metas và từng criterion, ghi evidence cùng limits/provisional values.
 
-**Guardrails:** Không full production/starting-city integration của Phase 2 hoặc population Phase 3. Source fixture có thể chứng minh foundation nhưng phải ghi rõ fixture, không giả là production thật. Không tự cho đổi pipeline miễn phí sau build; nếu workflow cần quyết định còn mở thì báo Manager/user.
+**Guardrails:** Không full production/starting-city integration của Phase 2 hoặc population Phase 3. Source fixture có thể chứng minh foundation nhưng phải ghi rõ fixture, không giả là production thật. Latest explicit user task cho phép minimum reversible post-build configuration: Phase 1 dùng free/instant reconfigure provisional để thử ngắt/khôi phục path; chưa chốt policy cho phase sau hoặc full game.
 
 **Stop:** Sau acceptance, Manager cập nhật DONE và dừng cho user playtest. Không tự bắt đầu Phase 2.
 
@@ -124,7 +124,7 @@ STATUS: TODO
 
 ## Manager execution rules
 
-1. Chỉ bắt đầu phase được user giao; implementation dùng đúng một `husk_implementer` tại một thời điểm, ưu tiên tiếp tục Implementer hiện có. Task documentation này không spawn Implementer.
+1. Chỉ bắt đầu phase được user giao; implementation dùng đúng một `husk_implementer` tại một thời điểm, ưu tiên tiếp tục Implementer hiện có. Task implementation Phase 1 đã dùng một Implementer; không tự spawn phase sau.
 2. Implementer chỉ implementation; Manager sở hữu acceptance, checklist/status/progression và Git checkpoint. Không lấy report Implementer thay independent review.
 3. Manager inspect source/diff/metas; kiểm Unity compilation, Console, relevant tests và runtime qua Unity MCP. Không clear Console để che lỗi; không báo DONE chỉ vì code viết xong.
 4. Criterion FAIL giữ phase REWORK, gửi feedback và kiểm lại; design mới cần user quyết định, không tự canonize assumption.

@@ -16,13 +16,14 @@ namespace Husk.Tests
         [Test]
         public void EveryStartingResourceIsConfigurable()
         {
-            var state = new ResourceState(2, 9, 17, 23, 41, 57);
+            var state = new ResourceState(2, 9, 17, 23, 41, 57, 83);
             Assert.That(state.Get(ResourceKind.Food), Is.EqualTo(17));
             Assert.That(state.Get(ResourceKind.Water), Is.EqualTo(23));
             Assert.That(state.Get(ResourceKind.RecyclableMaterial), Is.EqualTo(41));
             Assert.That(state.Get(ResourceKind.Wood), Is.EqualTo(2));
             Assert.That(state.Get(ResourceKind.Iron), Is.EqualTo(9));
             Assert.That(state.Get(ResourceKind.Fish), Is.EqualTo(57));
+            Assert.That(state.Get(ResourceKind.ModuleCore), Is.EqualTo(83));
         }
 
         [Test]
@@ -62,6 +63,7 @@ namespace Husk.Tests
             Assert.Throws<ArgumentOutOfRangeException>(() => new ResourceState(startingWater: -1));
             Assert.Throws<ArgumentOutOfRangeException>(() => new ResourceState(startingRecyclableMaterial: -1));
             Assert.Throws<ArgumentOutOfRangeException>(() => new ResourceState(startingFish: -1));
+            Assert.Throws<ArgumentOutOfRangeException>(() => new ResourceState(startingModuleCore: -1));
             var state = new ResourceState(int.MaxValue, 5);
             Assert.Throws<ArgumentOutOfRangeException>(() => state.Add(ResourceKind.Wood, -1));
             Assert.Throws<ArgumentOutOfRangeException>(() => state.TryRemove(ResourceKind.Wood, -1));
@@ -73,7 +75,7 @@ namespace Husk.Tests
         public void UnknownResourceIsRejectedByEveryOperation()
         {
             var state = new ResourceState(0, 5);
-            foreach (var kind in new[] { (ResourceKind)(-1), (ResourceKind)6 })
+            foreach (var kind in new[] { (ResourceKind)(-1), (ResourceKind)7 })
             {
                 Assert.Throws<ArgumentOutOfRangeException>(() => state.Get(kind));
                 Assert.Throws<ArgumentOutOfRangeException>(() => state.Add(kind, 1));

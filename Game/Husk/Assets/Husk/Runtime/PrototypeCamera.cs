@@ -21,6 +21,7 @@ namespace Husk
         private FishingHarbor harbor;
         private WaterPlant waterPlant;
         private Recycler recycler;
+        private ModuleNetworkPrototype modulePrototype;
         private float initialYaw;
         private float initialPitch;
         private float initialSize;
@@ -32,6 +33,7 @@ namespace Husk
             harbor = FindAnyObjectByType<FishingHarbor>();
             waterPlant = FindAnyObjectByType<WaterPlant>();
             recycler = FindAnyObjectByType<Recycler>();
+            modulePrototype = FindAnyObjectByType<ModuleNetworkPrototype>();
             initialYaw = yaw;
             initialPitch = pitch;
             initialSize = viewSize;
@@ -42,7 +44,7 @@ namespace Husk
         private void Update()
         {
             var mouse = Mouse.current;
-            if (mouse != null)
+            if (mouse != null && (modulePrototype == null || !modulePrototype.IsScreenPointOverPanel(mouse.position.ReadValue())))
             {
                 if (mouse.rightButton.isPressed)
                 {
