@@ -1,0 +1,135 @@
+{
+  "stage": "corrected-blockout-awaiting-approval",
+  "renders": [
+    "D:\\TheHusk\\Art\\Previews\\HuskBaseModule\\01_isometric.png",
+    "D:\\TheHusk\\Art\\Previews\\HuskBaseModule\\04_top.png",
+    "D:\\TheHusk\\Art\\Previews\\HuskBaseModule\\02_front.png",
+    "D:\\TheHusk\\Art\\Previews\\HuskBaseModule\\03_side.png",
+    "D:\\TheHusk\\Art\\Previews\\HuskBaseModule\\05_underwater.png",
+    "D:\\TheHusk\\Art\\Previews\\HuskBaseModule\\06_waterline.png",
+    "D:\\TheHusk\\Art\\Previews\\HuskBaseModule\\07_adjacent.png"
+  ],
+  "blender": "5.2.1 LTS",
+  "updated_existing_source": true,
+  "mesh_objects_preserved": 54,
+  "topology_preserved": true,
+  "main_dimensions": [
+    20.0,
+    20.0,
+    8.0
+  ],
+  "main_bounds_min": [
+    -10.0,
+    -10.0,
+    -3.0
+  ],
+  "main_bounds_max": [
+    10.0,
+    10.0,
+    5.0
+  ],
+  "overall_dimensions": [
+    20.0,
+    20.0,
+    8.450000047683716
+  ],
+  "overall_bounds_min": [
+    -10.0,
+    -10.0,
+    -3.450000047683716
+  ],
+  "overall_bounds_max": [
+    10.0,
+    10.0,
+    5.0
+  ],
+  "waterline_z": 0,
+  "above_water_m": 5,
+  "main_body_below_water_m": 3,
+  "feet_height_m": 0.45,
+  "feet_count": 4,
+  "clean_transforms": true,
+  "adjacency": {
+    "X": {
+      "pitch_m": 20,
+      "boundary_gap_m": 0.0,
+      "volume_overlap_pairs": 0
+    },
+    "Y": {
+      "pitch_m": 20,
+      "boundary_gap_m": 0.0,
+      "volume_overlap_pairs": 0
+    }
+  },
+  "hierarchy": {
+    "Deck": [
+      "Deck_Panel_WS",
+      "Deck_Panel_WN",
+      "Deck_Panel_ES",
+      "Deck_Panel_EN",
+      "Deck_North_OrangeEdgeA",
+      "Deck_North_OrangeEdgeB",
+      "Deck_South_OrangeEdgeA",
+      "Deck_South_OrangeEdgeB",
+      "Deck_East_OrangeEdgeA",
+      "Deck_East_OrangeEdgeB",
+      "Deck_West_OrangeEdgeA",
+      "Deck_West_OrangeEdgeB"
+    ],
+    "Feet": [
+      "Foot_WS",
+      "Foot_WN",
+      "Foot_ES",
+      "Foot_EN"
+    ],
+    "MainBody": [
+      "MainBody_Core",
+      "MainBody_Corner_WS",
+      "MainBody_Corner_WN",
+      "MainBody_Corner_ES",
+      "MainBody_Corner_EN",
+      "MainBody_North_PanelA",
+      "MainBody_North_PanelB",
+      "MainBody_South_PanelA",
+      "MainBody_South_PanelB",
+      "MainBody_East_PanelA",
+      "MainBody_East_PanelB",
+      "MainBody_West_PanelA",
+      "MainBody_West_PanelB"
+    ],
+    "SideLocks": [
+      "SideLocks_North_Pocket",
+      "SideLocks_North_RailA",
+      "SideLocks_North_RailB",
+      "SideLocks_North_BottomStop",
+      "SideLocks_North_TopStop",
+      "SideLocks_North_RetractedSlider",
+      "SideLocks_South_Pocket",
+      "SideLocks_South_RailA",
+      "SideLocks_South_RailB",
+      "SideLocks_South_BottomStop",
+      "SideLocks_South_TopStop",
+      "SideLocks_South_RetractedSlider",
+      "SideLocks_East_Pocket",
+      "SideLocks_East_RailA",
+      "SideLocks_East_RailB",
+      "SideLocks_East_BottomStop",
+      "SideLocks_East_TopStop",
+      "SideLocks_East_RetractedSlider",
+      "SideLocks_West_Pocket",
+      "SideLocks_West_RailA",
+      "SideLocks_West_RailB",
+      "SideLocks_West_BottomStop",
+      "SideLocks_West_TopStop",
+      "SideLocks_West_RetractedSlider"
+    ],
+    "UnderwaterBody": [
+      "UnderwaterBody_Solid"
+    ]
+  },
+  "success": true,
+  "source": "D:\\TheHusk\\Art\\Blender\\HuskBaseModule.blend",
+  "instance_only": true,
+  "unity_touched": false,
+  "fbx_exported": false
+}

@@ -1,0 +1,34 @@
+{
+  "success": true,
+  "source_reopened": true,
+  "png_binary_values_only": true,
+  "alpha_zero": true,
+  "channel_overlap_pixels": 0,
+  "white_pixels_per_channel": [
+    14336,
+    14336,
+    14336
+  ],
+  "all_model_uv_samples_checked": 3030,
+  "non_pipeline_samples_black": true,
+  "lanes": {
+    "Lane_01": {
+      "connected": true,
+      "watertight": true,
+      "outward_winding_signed_volume_m3": 1.5799983072282702
+    },
+    "Lane_02": {
+      "connected": true,
+      "watertight": true,
+      "outward_winding_signed_volume_m3": 1.580000042915285
+    },
+    "Lane_03": {
+      "connected": true,
+      "watertight": true,
+      "outward_winding_signed_volume_m3": 1.5799983072282657
+    }
+  },
+  "production_material_neutral": true,
+  "production_emission_zero": true,
+  "temporary_lane_materials_removed": true
+}

@@ -1,0 +1,57 @@
+{
+  "version": "5.2.1 LTS",
+  "executable": "C:\\Program Files\\WindowsApps\\BlenderFoundation.Blender_5.2.1.0_x64__ppwjx1n5r4v9t\\Blender\\blender.exe",
+  "success": true,
+  "source": "D:\\TheHusk\\Art\\Blender\\CalibrationCube_2m.blend",
+  "export": "D:\\TheHusk\\Game\\Husk\\Assets\\Husk\\Models\\CalibrationCube_2m.fbx",
+  "dimensions_m": [
+    2.0,
+    2.0,
+    2.0
+  ],
+  "root": "CalibrationCube_2m",
+  "mesh": "CalibrationCube_2m_Mesh",
+  "transforms": "Both: position/rotation zero, scale one",
+  "source_bounds": [
+    [
+      -1,
+      -1,
+      0
+    ],
+    [
+      1,
+      1,
+      2
+    ]
+  ],
+  "axis_colors": {
+    "red": "Blender +Y forward",
+    "green": "Blender +Z up",
+    "blue": "Blender +X right"
+  },
+  "export_settings": {
+    "use_selection": true,
+    "object_types": [
+      "EMPTY",
+      "MESH"
+    ],
+    "global_scale": 1.0,
+    "apply_unit_scale": true,
+    "apply_scale_options": "FBX_SCALE_UNITS",
+    "axis_forward": "Z",
+    "axis_up": "Y",
+    "use_space_transform": true,
+    "bake_space_transform": true,
+    "use_mesh_modifiers": true,
+    "mesh_smooth_type": "FACE",
+    "use_triangles": true,
+    "use_tspace": false,
+    "colors_type": "LINEAR",
+    "prioritize_active_color": true,
+    "use_custom_props": false,
+    "bake_anim": false,
+    "add_leaf_bones": false,
+    "path_mode": "AUTO",
+    "embed_textures": false
+  }
+}

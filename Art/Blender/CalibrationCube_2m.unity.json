@@ -1,0 +1,124 @@
+{
+  "unityVersion": "6000.5.7f1",
+  "assetPath": "Assets/Husk/Models/CalibrationCube_2m.fbx",
+  "tolerance": 0.00001,
+  "bounds": {
+    "min": [
+      -1,
+      0,
+      -1
+    ],
+    "max": [
+      1,
+      2,
+      1
+    ],
+    "size": [
+      2,
+      2,
+      2
+    ]
+  },
+  "sizeError": 0,
+  "bottomError": 0,
+  "exactSize": true,
+  "cleanTransforms": true,
+  "hierarchyOK": true,
+  "outwardNormals": true,
+  "triangleWinding": true,
+  "axisChecks": {
+    "blenderPlusYToUnityPlusZ": true,
+    "blenderPlusZToUnityPlusY": true,
+    "blenderPlusXToUnityPlusX": true,
+    "redVertices": 4,
+    "greenVertices": 4,
+    "blueVertices": 4
+  },
+  "vertexCount": 24,
+  "triangleCount": 12,
+  "references": [
+    {
+      "name": "CalibrationCube_2m",
+      "type": "GameObject",
+      "guid": "8e59ec712a7c60f45943efe72ee63058",
+      "fileID": "919132149155446097"
+    },
+    {
+      "name": "CalibrationCube_2m_Mesh",
+      "type": "GameObject",
+      "guid": "8e59ec712a7c60f45943efe72ee63058",
+      "fileID": "654186876625527902"
+    },
+    {
+      "name": "CalibrationCube_2m_Mesh",
+      "type": "Mesh",
+      "guid": "8e59ec712a7c60f45943efe72ee63058",
+      "fileID": "-1461326175793148813"
+    },
+    {
+      "name": "CalibrationCube_2m",
+      "type": "Transform",
+      "guid": "8e59ec712a7c60f45943efe72ee63058",
+      "fileID": "-8679921383154817045"
+    },
+    {
+      "name": "CalibrationCube_2m_Mesh",
+      "type": "Transform",
+      "guid": "8e59ec712a7c60f45943efe72ee63058",
+      "fileID": "-7488899867985456185"
+    },
+    {
+      "name": "CalibrationCube_2m_Mesh",
+      "type": "MeshFilter",
+      "guid": "8e59ec712a7c60f45943efe72ee63058",
+      "fileID": "-6037935918575776448"
+    },
+    {
+      "name": "CalibrationCube_2m_Mesh",
+      "type": "MeshRenderer",
+      "guid": "8e59ec712a7c60f45943efe72ee63058",
+      "fileID": "3964210739263352445"
+    }
+  ],
+  "hierarchy": [
+    {
+      "name": "CalibrationCube_2m",
+      "position": "(0, 0, 0)",
+      "rotation": "(0, 0, 0, 1)",
+      "scale": "(1, 1, 1)"
+    },
+    {
+      "name": "CalibrationCube_2m_Mesh",
+      "position": "(0, 0, 0)",
+      "rotation": "(0, 0, 0, 1)",
+      "scale": "(1, 1, 1)"
+    }
+  ],
+  "importSettings": {
+    "globalScale": 1,
+    "useFileScale": true,
+    "fileScale": 1,
+    "bakeAxisConversion": true,
+    "preserveHierarchy": false,
+    "normals": "Import",
+    "compression": "Off",
+    "isReadable": false,
+    "weldVertices": true,
+    "optimization": "Everything",
+    "tangents": "CalculateMikk",
+    "importAnimation": false,
+    "animationType": "None",
+    "importCameras": false,
+    "importLights": false,
+    "materials": "None"
+  },
+  "scenes": [
+    {
+      "path": "Assets/Scenes/SampleScene.unity",
+      "isDirty": false
+    }
+  ],
+  "passed": true,
+  "reexportReferencesStable": true,
+  "reexportSettingsStable": true
+}
