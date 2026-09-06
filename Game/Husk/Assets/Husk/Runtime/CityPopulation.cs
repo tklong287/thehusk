@@ -10,7 +10,7 @@ namespace Husk
         [Min(1)] public int houseCapacity = 100;
         [Min(0.01f)] public double growthInterval = 60;
         [Min(0)] public double growthFraction = 0.1;
-        [Min(0)] public double foodPerResidentSecond = 0.05, waterPerResidentSecond = 0.05;
+        [Min(0)] public double foodPerResidentSecond = 0.01, waterPerResidentSecond = 0.01;
         [Range(0, 3)] public int displayDecimals = 1; // Presentation only; never rounds simulation.
         [Min(0.001f)] public double simulationQuantum = 0.05; // Provisional deterministic city tick.
     }

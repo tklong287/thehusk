@@ -11,7 +11,9 @@ namespace Husk.Tests
         private const Pipeline FME = Pipeline.F | Pipeline.M | Pipeline.E;
         private const Pipeline WME = Pipeline.W | Pipeline.M | Pipeline.E;
         private const Pipeline FWE = Pipeline.F | Pipeline.W | Pipeline.E;
-        private static NetworkedCity Fresh() => new(NetworkedCity.CreateLayout(cityHallStorage: true), new NetworkProductionSettings(), new PopulationSettings());
+        // Historical high-demand fixture keeps depletion and fractional arithmetic regression coverage.
+        private static NetworkedCity Fresh() => new(NetworkedCity.CreateLayout(cityHallStorage: true), new NetworkProductionSettings(),
+            new PopulationSettings { foodPerResidentSecond = 0.05, waterPerResidentSecond = 0.05 });
         private static void Configure(NetworkedCity city, Vector2Int position, Pipeline value)
         { Assert.That(city.Layout.TryConfigure(position, value, out _), Is.True); city.Resolve(); }
         private static void AssertNear(double actual, double expected) => Assert.That(actual, Is.EqualTo(expected).Within(1e-7));

@@ -380,8 +380,8 @@ MonoBehaviour:
     houseCapacity: 100
     growthInterval: 60
     growthFraction: 0.1
-    foodPerResidentSecond: 0.05
-    waterPerResidentSecond: 0.05
+    foodPerResidentSecond: 0.01
+    waterPerResidentSecond: 0.01
     displayDecimals: 1
     simulationQuantum: 0.05
   integratedPlaytest: 1

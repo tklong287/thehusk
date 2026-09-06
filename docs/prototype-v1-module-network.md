@@ -138,7 +138,7 @@ Starting city được tích hợp ở Phase 2; population/consumption đầy đ
 - Base House capacity **100**. Build House thêm 100 capacity khi House Operational; không tự thêm 100 residents theo mỗi lần xây.
 - Population tăng **+10% compound mỗi phút theo current population**: 100 → 110 → 121 → 133.1 → …; rounding/display **TBD**.
 - Population không bị hard-cap: 110/100, 121/100 là valid. Growth tiếp tục khi vượt capacity, House Disabled hoặc effective capacity = 0.
-- Mỗi resident tạo demand **0.05 Food/s + 0.05 Water/s**; 100 residents = **5 Food/s + 5 Water/s**. Fish là concrete Food item đáp ứng demand này trong V1.
+- Mỗi resident tạo demand **0.01 Food/s + 0.01 Water/s**; 100 residents = **1 Food/s + 1 Water/s**. Fish là concrete Food item đáp ứng demand này trong V1.
 - House chỉ Operational khi có F + W actual supply; thiếu một loại thì Disabled. Residents không biến mất: được coi là dồn/reallocated sang Operational Houses còn lại.
 - Không cần detailed resident assignment simulation; overall population và effective operational capacity phải đúng. Population 180, hai House capacity 200; một Disabled → 180/100. Tất cả Disabled → 180/0, population vẫn tồn tại và tăng.
 
@@ -152,7 +152,7 @@ Fishing giữ approximate V0 test loop: build boat khoảng **5s**, complete tri
 
 Water Plant E+M → W, Recycler E → M, Solar → E. Latest user tuning: active V1 Water Plant tạo20 Water/2s (10/s), giữ configurable. Reuse Water timing/output và Recycler Recyclable Material → Wood conversion khi hợp lý. Mapping network không biến conversion thành việc tạo Material item chung.
 
-Rates/build/repair timing ngoài giá trị confirmed phải configurable/provisional. V0 Water 0.5/s và boat 5 Fish/30s không tự đủ đáp ứng demand 5/s của 100 residents. Chuẩn bị test stock/supply phù hợp để đánh giá routing, ghi preset và không biến thiếu supply do preset thành kết luận topology sai hoặc thành economy balance task.
+Rates/build/repair timing ngoài giá trị confirmed phải configurable/provisional. V0 Water 0.5/s và boat 5 Fish/30s không tự đủ đáp ứng demand hiện tại 1/s của 100 residents. Chuẩn bị test stock/supply phù hợp để đánh giá routing, ghi preset và không biến thiếu supply do preset thành kết luận topology sai hoặc thành economy balance task.
 
 ## 11. Pipeline visual — CONFIRMED
 

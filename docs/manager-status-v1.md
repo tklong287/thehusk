@@ -52,8 +52,8 @@ Open questions bên dưới phải được giữ mở; nếu exact workflow/acc
 | Population | Fresh 100/100: current population / effective operational housing capacity |
 | Base House capacity | 100 |
 | Growth | +10% compound/minute theo current population |
-| Food demand | 0.05 Food/s/resident, Fish trực tiếp đáp ứng qua F |
-| Water demand | 0.05 Water/s/resident |
+| Food demand | 0.01 Food/s/resident, Fish trực tiếp đáp ứng qua F |
+| Water demand | 0.01 Water/s/resident |
 
 Standard Module building phải support và lock union INPUT+OUTPUT; Operational chỉ kiểm Inputs. City Hall là exception special4/4 fixed, E không phải output. Placement tự thêm required và bỏ optional deterministically để giữ 3/4, không popup. Optional slots vẫn editable/pass-through. Category khác concrete item: Fish thuộc F; Wood/Iron/Recyclable Material thuộc M và giữ identity.
 
@@ -356,3 +356,16 @@ Mở Game/Husk/Assets/Scenes/V1Phase4.unity và Play. Repair Water/Recycler (5Wo
 Water20/2s là quyết định user; boat5Fish/30s, repair5Wood/5s, freeinstant reconfigure/House/Solar test placement, display1decimal vàquantum0.05s vẫn là preset/provisional ngoài các giá trị đãconfirmed. Dân vẫn tăng khi cap0; demand không mất, debit dừng khi không có HouseOperational. Food có thể cạn nhanh hơn boats cấp; boat arrival vẫn phục hồi housing tạm thời, không hard-lock. Không dùng developer reset để thay bằng chứng repair/production recovery. Layout nhỏ chưa chứng minh final balance, art, districts hoặc game feel ởscale lớn; chưa standalone player build.
 
 Checkpoint gồm10files: ModuleNetworkPrototype.cs, ModuleNetworkSceneSetup.cs, IntegratedPlanningTests.cs+.meta, V1Phase4.unity+.meta, V1Phase3.unity (Water tuning), và3activeV1docs. Stage explicit paths, review staged content và git diff --cached --check trước commit. Commit: Complete V1 Phase 4 integrated network playtest; push origin/main khôngforce. Hash/push verification được báo sau transaction. DỪNG.
+
+## Post-V1 tuning — Consumption
+
+Latest user decision: mỗi resident tiêu thụ0.01 Food/s và0.01 Water/s;100dân cần1 mỗi loại/giây. Cập nhật default và cả sceneV1Phase3/V1Phase4. GiữWater20/2s,growth vàquantum0.05s. Acceptance history phía trên dùngrate0.05 tại thời điểm nghiệm thu; không rewrite evidence lịch sử.
+
+Validation: Unity MCP117/117 EditMode PASS; fresh city100dân advance1s trừ1Food và1Water (double tolerance), compileFailed=false. Hai historical testfixtures explicitrate0.05 để giữ regressiondepletion; current default/scene đều0.01.
+
+
+## User Acceptance — Final V1 Checkpoint
+
+User đã trực tiếp playtest và chấp nhận V1 Phase 4. Toàn bộ11 acceptance criteria đã PASS; V1 Phase 4 = DONE, Prototype V1 = COMPLETE. Final checkpoint bao gồm tuning consumption0.01 Food/s và0.01 Water/s mỗi resident đã được yêu cầu và validate ở lượt trước (117/117 EditMode PASS, MCP xác nhận100dân trừ1Food/1Water sau1s, compileFailed=false). Water Plant giữ20Water/2s. Lượt checkpoint này chỉ review diff, cập nhật xác nhận và kiểm Git; không chạy lại tests hoặc thay đổi gameplay.
+
+Không bắt đầu Prototype V2, không thêm feature. Art concurrent giữ ngoài commit. Checkpoint cuối được push origin/main; hash và remote verification được báo sau transaction. Dừng sau checkpoint.

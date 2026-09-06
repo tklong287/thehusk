@@ -75,7 +75,7 @@ STATUS: DONE
 - [x] Starting Population 100/100; format current population / effective operational housing capacity. Base House capacity 100; effective capacity chỉ tính Operational Houses.
 - [x] +10% compound/minute theo current population: 100 → 110 → 121 → 133.1 trước rounding/display. Rounding/display TBD; giữ fractional precision, không tăng theo capacity.
 - [x] Growth không hard-cap hoặc slowdown khi vượt capacity, House Disabled hay capacity = 0. Không tự thêm residents bằng nominal capacity khi Build House.
-- [x] Demand mỗi resident 0.05 Food/s và 0.05 Water/s; 100 residents = 5/s mỗi loại. Fish đáp ứng Food qua F; consumption dùng actual reachable supply, không debit trùng/âm hoặc truncate fractional rate mỗi frame.
+- [x] Demand mỗi resident hiện tại 0.01 Food/s và 0.01 Water/s; 100 residents = 1/s mỗi loại (user tuning sau V1; acceptance history dùng rate0.05). Fish đáp ứng Food qua F; consumption dùng actual reachable supply, không debit trùng/âm hoặc truncate fractional rate mỗi frame.
 - [x] House Operational chỉ với F + W supplied; thiếu một loại → Disabled. UI chỉ đúng input thiếu, không giả báo loại còn supply cũng mất.
 - [x] Residents được giữ và coi là reallocated sang Operational Houses còn lại, không detailed assignment AI. 180 residents/hai House → một Disabled → 180/100; tất cả Disabled → 180/0 và growth vẫn tiếp tục.
 - [x] UI population/resource/building supply/effective capacity/demand cập nhật nhất quán. Overcrowding là valid state, không security/mortality/happiness penalty.
@@ -89,6 +89,8 @@ STATUS: DONE
 ## V1 Phase 4 — Integrated Network Planning Playtest
 
 STATUS: DONE
+
+User đã playtest và chấp nhận Phase 4; Prototype V1 COMPLETE. Final checkpoint giữ consumption0.01 mỗi loại/resident/s và Water20/2s.
 
 **Goal:** đánh giá Husk có cảm giác quy hoạch/lắp ráp connected megastructure thay vì đặt các building độc lập trên đất không.
 

@@ -9,7 +9,9 @@ namespace Husk.Tests
         private const Pipeline FME = Pipeline.F | Pipeline.M | Pipeline.E;
         private const Pipeline FWE = Pipeline.F | Pipeline.W | Pipeline.E;
         private static NetworkedCity Fresh() => new(NetworkedCity.CreateLayout(cityHallStorage: true),
-            new NetworkProductionSettings { waterPerCycle = 20 }, new PopulationSettings());
+            new NetworkProductionSettings { waterPerCycle = 20 },
+            // Explicit stress demand: retain historical repair/depletion timing independent of playtest tuning.
+            new PopulationSettings { foodPerResidentSecond = 0.05, waterPerResidentSecond = 0.05 });
         private static void Configure(NetworkedCity city, Vector2Int position, Pipeline lanes)
         { Assert.That(city.Layout.TryConfigure(position, lanes, out _), Is.True); city.Resolve(); }
 
