@@ -2,202 +2,174 @@
 
 ## 1. Purpose
 
-Prototype V0 tồn tại để kiểm chứng một câu hỏi gameplay chính:
+V0 trả lời câu hỏi:
 
-> Liệu opening của Husk có tạo được cảm giác người chơi khai thác và sản xuất tài nguyên vì một nhu cầu thực tế của settlement, thay vì chỉ làm theo checklist tutorial hay không?
+> Nếu các system cơ bản của Husk chạy trực tiếp trước mắt, game có bắt đầu trông và cảm thấy giống một game thú vị hay không?
 
-Prototype này không nhằm chứng minh toàn bộ city builder.
+Đây là visual/system prototype nhỏ cho developer/user tự test. Mục tiêu là nhìn thấy và tương tác với các core loops để đánh giá feel, không xây full game hoặc vertical slice lớn.
 
-Nó chỉ cần chứng minh một early-game management loop nhỏ, rõ ràng và có thể chơi được.
+## 2. What V0 Is Testing
 
----
+Ưu tiên theo thứ tự:
 
-## 2. Core Experience
+1. Nhìn thấy game world.
+2. Camera và interaction cơ bản.
+3. Nhìn thấy building, boat và resource production hoạt động.
+4. Autonomous production loop.
+5. Visual/readability/feel.
+6. Iteration nhanh.
 
-Opening loop mong muốn:
-```text
-Settlement có nhu cầu
-        ↓
-Player nhận ra một resource đang thiếu
-        ↓
-Player xác định production building cần thiết
-        ↓
-Player thiếu building material
-        ↓
-Player sử dụng infrastructure hiện có để giải quyết bottleneck
-        ↓
-Player xây production building
-        ↓
-Production bắt đầu
-        ↓
-Nhu cầu ban đầu được giải quyết
-```
+Thứ tự implementation:
 
----
+World shell → build Fishing Boat → autonomous fishing cycle → Fish production → Water production → Recycler production → integration/feel pass.
 
-## 3. Prototype Opening State
+Thứ tự này phân chia phase triển khai, không áp đặt tutorial hoặc dependency unlock trong gameplay. Fishing là autonomous production loop đầu tiên; Water và Recycler là independent loops.
 
-Fresh start của Prototype V0 phải có:
+## 3. What V0 Is NOT Testing
 
-- Food = 0.
-- Water = 5.
-- Recyclable Material = 10.
-- Wood: chưa đủ để build Water Plant.
-- Iron: đủ để build Water Plant và vẫn còn dư sau construction.
-- Recycler có sẵn từ đầu, trong trạng thái Broken.
-- Water Plant chưa được xây.
+- Tutorial flow hoặc tutorial system.
+- Scarcity, economy balance hoặc intentional resource bottleneck.
+- Production dependency puzzle hay progression bị chặn bởi starting shortage.
 
-Exact starting Wood/Iron values là provisional và phải configurable. Starting state phải có thể tái lập khi bắt đầu fresh run.
+Balance làm sau V0. V0 success không phụ thuộc economy balance.
 
-## 4. Water as the Initial Need
+## 4. Starting Test State
 
-Water là initial problem dẫn dắt opening. Player cần feedback đủ rõ để hiểu settlement cần Water và cần một cách cung cấp Water.
+- Các resource test mặc định bắt đầu ở **100** và phải configurable.
+- Food, Water, Recyclable Material, Wood, Iron và Fish khi có trong resource state đều dùng default này.
+- Fish là resource riêng, không đồng nhất với Food. Fish production thuộc Phase 4; phase trước không cần tạo trước production behavior.
+- Storage unlimited; không dùng starting scarcity để chặn test gameplay.
+- Trong V0 tích hợp, Fishing Harbor có sẵn từ fresh run; player không cần xây Harbor. Phase 2 sở hữu việc thêm Harbor.
+- Fresh-run state có thể tái lập để kiểm behavior và feel. Costs/rates là provisional test values, không final balance.
 
-Representation của Water problem phải nhỏ, dễ hiểu và configurable. Không cần complex citizen simulation để biểu diễn nhu cầu này. Không chốt thêm consumption rate, timer hoặc hậu quả thiếu Water trong specification này.
+## 5. World / Camera Goal
 
-## 5. Water Plant
+Phase 1 phải cho người dùng nhìn thấy hình thái Husk khi mở Play Mode:
 
-Water Plant là giải pháp trực tiếp cho Water problem.
+- Prototype scene/entry point rõ ràng.
+- Water/environment tối thiểu.
+- Husk platform/module placeholder.
+- Gameplay camera quan sát usable; control/interaction tối thiểu nếu cần để quan sát.
+- Basic HUD hiển thị resource state; state độc lập presentation, values dễ chỉnh.
 
-- Player có thể xem requirement/cost trước khi build.
-- Building material cần Wood và Iron.
-- Fresh start thiếu Wood, nhưng đủ Iron và có phần dư.
-- Attempt build khi thiếu resource phải bị chặn với feedback chỉ rõ Wood bottleneck ở fresh start.
-- Khi đủ resource, construction là một action đơn giản: kiểm tra và trừ cost, chuyển Water Plant sang Built/Operational.
-- Sau build vẫn còn Iron > 0.
-- Water Plant bắt đầu cung cấp/tạo Water, với feedback cho thấy initial problem đang được giải quyết.
+Visual placeholder được chấp nhận. Không production gameplay trong Phase 1; không cần world generation hoặc camera framework.
 
-Exact build costs, production rate và production/consumption mechanism chưa được chốt; giữ provisional/configurable. Không thêm multi-stage crafting/construction, worker logistics hoặc electricity để xây/vận hành Water Plant trong V0.
+## 6. Fishing Harbor
 
-## 6. Recycler
+Fishing Harbor tồn tại sẵn ở fresh run từ Phase 2, có thể select/click và cho feedback chọn rõ ràng. Action gameplay đầu tiên là **Build Fishing Boat** tại Harbor.
 
-Recycler là infrastructure có sẵn từ fresh start, nhưng Broken. Player khám phá Recycler như cách giải quyết Wood bottleneck.
+Không yêu cầu player xây Harbor; không worker assignment hoặc fleet management framework.
 
-- Broken Recycler không thể process material.
-- Player phải thực hiện action Repair để chuyển Recycler sang Operational.
-- Repair chỉ tốn một lượng resource nhỏ; cost phải configurable.
-- Resource dùng để Repair và exact cost chưa phải canon.
-- Repair không được tạo thêm resource chain phức tạp hoặc yêu cầu Collection trước khi player học Recycler.
-- State transition Broken → Operational phải có feedback rõ.
+## 7. Fishing Boat Construction
 
-Nếu lựa chọn repair resource làm thay đổi đáng kể opening experience, phải hỏi user trước khi quyết định.
+Player chọn Harbor → Build Fishing Boat → construction khoảng **5 giây** → Fishing Boat hoàn thành và nhìn thấy được.
 
-## 7. Starter Recyclable Material
+Build progress/time và completion phải đọc được. Build time configurable. Không cần balance cost; nếu có cost thì cost provisional/configurable và starting resources đủ để test, không tạo bottleneck.
 
-Player có sẵn Recyclable Material = 10 ngay từ đầu để học Recycler. Không yêu cầu đi collection trước lần xử lý starter material.
+Phase 2 dừng ở boat completion. Autonomous departure/cycle thuộc Phase 3.
 
-Starter material phải đủ để học mechanic và, qua intended recycling, tạo đủ Wood để vượt Water Plant Wood bottleneck. Các provisional costs/conversion values phải phối hợp để flow này không bị chặn.
+## 8. Fishing Boat Autonomous Cycle
 
-## 8. Recycling Result
+Sau khi boat hoàn thành, loop tự chạy:
 
-Operational Recycler tiêu hao Recyclable Material và tạo Wood.
+At Harbor → Depart → Fishing / Out at sea → Return → Harbor → repeat.
 
-- Material giảm và Wood tăng đúng theo conversion đã cấu hình.
-- Resource state/UI cập nhật đúng.
-- Feedback thể hiện rõ input → process → output.
-- Wood nhận được giúp player đạt Water Plant requirement.
+Một complete trip/cycle khoảng **30 giây**, gồm hành trình rời Harbor và quay lại; không coi 30s là thời gian fishing cộng thêm vào một trip chưa được định nghĩa. Các chi tiết phân bổ thời gian/chuyển động là implementation detail nhỏ, tunable.
 
-Exact conversion ratio và processing values là provisional/configurable. Không xây production-chain framework tổng quát chỉ để phục vụ conversion này.
+Boat nhìn thấy được rời Husk, làm việc và quay lại. Có thể dùng waypoint, simple destination hoặc minimal state machine để behavior dễ đọc. Boat tự lặp, không cần player redispatch mỗi trip.
 
-## 9. Collection Introduction
+Không world navigation framework, pathfinding architecture không cần thiết, route logistics, fuel, maintenance hoặc fishing-area simulation phức tạp.
 
-Collection chỉ được introduce sau khi player đã học Recycler bằng starter processing và starter Recyclable Material đã cạn, theo `AGENTS.md`.
+## 9. Fish Production
 
-Khi cần thêm material, một collection action/mechanic đơn giản cho phép tăng Recyclable Material; material mới có thể tiếp tục được Recycler xử lý.
+Phase 4 hoàn tất autonomous production loop đầu tiên:
 
-Exact collection mechanic và yield chưa được chốt. V0 chỉ cần kiểm chứng learning order: dùng starter material trước, học acquisition sau. Không tạo fleet system, world exploration framework hoặc procedural scavenging/generation.
+Boat returns → unload **5 Fish** tại Harbor → Fish resource tăng → HUD cập nhật → boat tự rời đi cho cycle tiếp theo.
 
-## 10. Intended Full Opening Flow
+Cargo per trip configurable. Resource credit đúng một lần cho mỗi lần unload; nhiều consecutive cycles phải hoạt động. Feedback cho thấy rõ lúc hàng được giao.
 
-```text
-Fresh start
-→ nhận ra Water problem
-→ xem Water Plant requirement
-→ phát hiện thiếu Wood
-→ phát hiện Recycler có sẵn nhưng Broken
-→ Repair Recycler
-→ xử lý starter Recyclable Material
-→ nhận Wood
-→ đủ resource và build Water Plant bằng một action
-→ Water production bắt đầu
-→ starter Recyclable Material cạn, cần thêm material
-→ được giới thiệu Collection
-→ có material mới để tiếp tục recycling
-```
+Không cộng Fish chỉ vì boat được build; Fish production gắn với return/unload. Fish lưu riêng với Food, storage unlimited.
 
-Đây là thứ tự trải nghiệm cần kiểm chứng, không yêu cầu một tutorial framework mới.
+## 10. Water Production Loop
 
-## 11. What Prototype V0 Must Demonstrate
+Test một building-based production loop độc lập:
 
-- Nhu cầu thực tế dẫn player đến production building cần thiết.
-- Requirement của Water Plant làm Wood shortage có ý nghĩa.
-- Infrastructure có sẵn giúp giải quyết bottleneck qua Repair và recycling.
-- Starter material giúp player học Recycler trước Collection.
-- Build Water Plant hoàn tất causal chain và bắt đầu giải quyết Water problem.
-- Feedback đủ rõ để player hiểu nguyên nhân/kết quả của từng action.
-- Full opening có thể hoàn thành từ fresh run mà không cần developer can thiệp state.
+Build/select Water Plant → construction/activation đơn giản → Operational → Water tăng theo thời gian.
 
-## 12. Explicit Non-Goals
+Player đủ resources để dùng mechanic. Placement/build interaction chỉ ở mức tối thiểu nếu cần. Operational state, production và Water HUD update có feedback rõ.
 
-V0 không phải full game hoặc vertical slice lớn. Không tự implement các system ngoài scope được nêu trong `AGENTS.md`:
+Production/cost/construction values configurable, provisional. Không dùng Water shortage, Recycler prerequisite, electricity, workers, logistics hoặc construction chain phức tạp.
 
-- Tech tree.
-- Complex citizen simulation.
-- Combat.
-- Security/policing.
-- Morality system.
-- Electricity network.
-- Logistics network.
-- Fleet system.
-- World exploration.
-- Procedural generation.
-- Multiplayer.
-- Live-service systems.
-- Advanced save architecture.
-- Optimization framework cho scale tương lai.
+## 11. Recycler Production Loop
 
-Không thêm chuỗi crafting/construction nhiều bước hoặc abstraction/framework chỉ vì có thể cần sau này.
+Test resource transformation:
 
-## 13. Prototype Quality Bar
+Recyclable Material → Recycler → Wood.
 
-Ưu tiên correctness, playable iteration speed, readability và architecture vừa đủ cho prototype.
+Recycler accessible/buildable theo implementation nhỏ nhất. Processing làm Recyclable Material giảm, Wood tăng theo conversion values đã cấu hình, state/HUD và feedback cập nhật đúng.
 
-- Có entry point rõ ràng và fresh-run workflow dễ lặp lại.
-- Resource state độc lập với UI presentation; UI/developer UI đủ để quan sát và hiểu state.
-- Intended flow chơi được mà không sửa Inspector, dùng Console command hoặc manually change state giữa run.
-- Không soft-lock trong intended flow.
-- Unity compilation PASS; Console không có compile/runtime error từ implementation.
-- Manager kiểm source/diff và trực tiếp validate Console/runtime qua Unity MCP khi phù hợp; report của Implementer không tự động là evidence.
+Không cần Broken/Repair mechanic. Recycler không unlock Water Plant. Không Collection hoặc generic production-chain framework; conversion/processing values là tunable prototype values.
 
-Không cần polish hoặc system ở quy mô full game để đạt quality bar này.
+## 12. Storage Rules
 
-## 14. Provisional Values
+Storage **unlimited trong V0**: không capacity limit, storage upgrade hoặc capacity gate cản production/unload. Đây là scope rule của V0, không phải numeric capacity cần tuning.
 
-Chỉ các starting resource values sau đã được xác nhận: Food = 0, Water = 5, Recyclable Material = 10.
+Resource state vẫn phải đúng khi add/remove/query. Unlimited storage không có nghĩa bỏ qua input consumption của Recycler.
 
-Các giá trị/lựa chọn sau chưa được specification này chốt thành canon:
+## 13. Provisional/Test Values
 
-- Starting Wood và Iron.
-- Water Plant Wood/Iron costs.
-- Repair resource và repair cost.
-- Recycle conversion ratio và processing values.
-- Water production/consumption values và representation cụ thể của Water problem.
-- Collection mechanic và yield.
+| Setting | V0 default / direction |
+|---|---|
+| Starting test resources | 100 mỗi resource, configurable |
+| Storage | Unlimited; không capacity system trong V0 |
+| Fishing Boat build time | ≈ 5s, configurable |
+| Complete fishing trip/cycle | ≈ 30s, configurable |
+| Cargo per trip | 5 Fish, configurable |
+| Water production values | Provisional/configurable; chưa chốt exact rate |
+| Recycler conversion/processing values | Provisional/configurable; chưa chốt exact ratio/rate |
+| Costs/construction values | Provisional/configurable; không intentional bottleneck |
 
-Giữ gameplay values chưa chốt configurable, dễ chỉnh và ghi rõ provisional. Không rải magic number. Mọi tuning phải giữ starting Wood thiếu, Iron đủ và còn dư sau build, repair nhỏ, starter recycling vượt được Wood bottleneck, và Collection đến sau starter learning/exhaustion.
+Các số là tunable prototype values, không final balance. Chưa chốt mechanic/timing chi tiết ngoài direction trên; chỉ chọn implementation detail nhỏ, reversible và ghi rõ assumption. Quyết định gameplay mới ảnh hưởng đáng kể player experience phải hỏi user qua Manager.
 
-## 15. Scope Decision Rule
+## 14. Explicit Non-Goals
 
-Với implementation detail không ảnh hưởng đáng kể player experience, chọn giải pháp nhỏ nhất, dễ thay đổi và phù hợp architecture hiện tại.
+- Tutorial, scarcity/economy balancing, production dependency puzzle.
+- Collection, storage capacity, worker assignment, fuel, maintenance.
+- Tech tree, complex citizen simulation, combat, security/policing, morality system.
+- Electricity/logistics networks, fleet management framework.
+- World exploration, procedural generation, complex fishing-area simulation.
+- Multiplayer, live-service systems, advanced save architecture, optimization framework cho scale tương lai.
+- Unnecessary navigation/pathfinding hoặc generic production-chain framework.
 
-Với quyết định game design mới, không tự biến assumption thành canon: ghi rõ assumption/blocker và hỏi user hoặc Manager. Manager phải hỏi user khi quyết định ảnh hưởng đáng kể opening experience hoặc khi requirement mâu thuẫn.
+Không đổi Unity version/render pipeline hoặc thêm third-party package nếu chưa có yêu cầu rõ ràng. Giữ engineering/repository rules trong `AGENTS.md`.
 
-Không tự mở rộng scope, bắt đầu phase kế tiếp hoặc thêm feature để chuẩn bị tương lai. Không đổi Unity version/render pipeline hoặc thêm third-party package khi chưa có yêu cầu rõ ràng. Các non-goals chỉ được xem xét lại khi user yêu cầu scope mới.
+## 15. Integration / Feel Questions
 
-## 16. Prototype Success Condition
+Fresh-run expected capability:
 
-Prototype V0 thành công khi fresh run chứng minh toàn bộ intended opening flow: Water need dẫn tới Water Plant, Wood bottleneck dẫn tới Repair Recycler và xử lý starter material, Wood thu được cho phép build Water Plant và bắt đầu Water production; Collection chỉ được giới thiệu sau starter learning/exhaustion.
+Husk/world visible → resources available → Fishing Harbor exists → Build Fishing Boat → boat automatically fishes → Fish returns → Water production available → Recycler production available.
 
-Player hoàn thành flow mà không cần developer intervention, hiểu cause/effect qua feedback, và có thể bắt đầu fresh run để playtest lại.
+Phase 7 review:
 
-Manager chỉ xác nhận complete sau khi Phase 0–7 trong `docs/manager-checklist.md` đạt acceptance criteria, implementation phù hợp `AGENTS.md` và specification này, và fresh-run runtime validation qua Unity Editor PASS.
+- Camera readability và scale Husk/buildings/boats.
+- Boat movement có dễ thấy, dễ hiểu không?
+- Select/click, construction và production feedback.
+- HUD readability, world có cảm giác sống hay không?
+- Build khoảng 5s và fishing khoảng 30s có cảm giác thế nào?
+- Các production loops có thể hiểu bằng observation không?
+
+Ghi nhận kết quả để user đánh giá feel. Phase 7 chủ yếu integration và fix nhỏ cần để hoạt động; không thêm gameplay system mới hoặc biến thành economy balance pass.
+
+## 16. Definition of V0 Complete
+
+V0 complete khi Phase 0–7 trong `docs/manager-checklist.md` đều DONE theo specification mới, và Manager tự xác nhận:
+
+- World và core loops nhìn thấy được, tương tác được, chạy ổn và readable.
+- Player build Fishing Boat tại Harbor; sau completion boat tự depart/return/unload/repeat, không manual dispatch mỗi trip.
+- Water và Recycler production hoạt động độc lập với feedback/HUD đúng.
+- Fresh run tái lập; các resource có sẵn cho test và storage unlimited.
+- Unity compile PASS; không compile/runtime errors từ implementation; warnings được review.
+- Source/diff và runtime qua Unity MCP có evidence; không chỉ dựa vào Implementer report.
+- Integration/feel review đủ để user đánh giá game; không còn blocker chưa giải quyết.
+
+Success phụ thuộc core loops đủ trực quan và ổn định để đánh giá feel, không phụ thuộc economy balance hoặc kết luận rằng final game đã hấp dẫn. Tôn trọng checkpoint/stop của user; không tự chạy phase kế tiếp khi user yêu cầu dừng.

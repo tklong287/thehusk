@@ -2,22 +2,11 @@
 
 ## Purpose
 
-File này biến `docs/prototype-v0.md` thành các implementation phase có acceptance criteria cụ thể.
+Checklist chuyển `docs/prototype-v0.md` thành các phase cho visual/system prototype: world, interaction, autonomous production và game feel. Balance làm sau V0.
 
-Manager phải xử lý từng phase theo thứ tự.
+Phase 1–7 bên dưới thay thế checklist cũ và đều TODO. Acceptance của implementation trước design reset không tự chuyển sang checklist mới.
 
-Không được bắt đầu phase kế tiếp trước khi phase hiện tại PASS toàn bộ acceptance criteria.
-
-Report của Implementer không tự động được coi là evidence.
-
-Manager phải tự kiểm:
-- source/diff;
-- Unity compilation;
-- Unity Console;
-- runtime behavior qua Unity MCP khi phù hợp.
-
-Nếu implementation làm phát sinh quyết định game design chưa được specification xác nhận:
-Manager phải dừng và hỏi user thay vì tự biến assumption thành canon.
+Manager tự review source/diff, Unity compilation, Console và runtime qua Unity MCP. Report của Implementer không phải acceptance proof.
 
 ---
 
@@ -28,6 +17,10 @@ STATUS: DONE
 ## Goal
 
 Có development environment đủ để Codex implement và trực tiếp validate prototype trong Unity.
+
+## Scope
+
+Development environment, Unity/URP, Git và CLI/Pipeline/MCP foundation đã được xác nhận. Kết quả bên dưới là checkpoint Phase 0, không phải tuyên bố vừa chạy lại validation trong documentation task.
 
 ## Acceptance Criteria
 
@@ -53,323 +46,252 @@ Không rebuild hoặc redesign technical foundation trừ khi một phase sau th
 
 ---
 
-# Phase 1 — Prototype Shell & Resource State
-
-STATUS: DONE
-
-## Goal
-
-Tạo prototype shell, resource state và initial Water problem representation nhỏ nhất để test fresh run. Phase 1 không chịu trách nhiệm Recycler behavior/repair hoặc Water Plant build requirements.
-
-## Required State
-
-Fresh prototype start phải có:
-
-- Food = 0
-- Water = 5
-- Recyclable Material = 10
-- Wood = provisional configurable value
-- Iron = provisional configurable value
-
-Context cho fresh start của V0 hoàn chỉnh, không phải implementation requirement của Phase 1:
-
-- Recycler có sẵn nhưng Broken: Phase 3 triển khai trạng thái, behavior Broken/Operational và Repair; Phase 4 triển khai processing/conversion.
-- Water Plant chưa được xây: Phase 2 triển khai build requirements và Wood bottleneck; Phase 5 triển khai successful construction và production.
-
-Phase 1 chỉ cần resource state và Water problem representation; không yêu cầu tạo Recycler hoặc Water Plant behavior để PASS phase này.
-
-## Acceptance Criteria
-
-- [x] Có một prototype scene/entry point rõ ràng để test V0.
-- [x] Resource state tồn tại độc lập với UI presentation.
-- [x] Có thể add/remove/query resource bằng gameplay code rõ ràng.
-- [x] Starting Food đúng 0.
-- [x] Starting Water đúng 5.
-- [x] Starting Recyclable Material đúng 10.
-- [x] Wood và Iron initial values dễ chỉnh.
-- [x] UI/developer UI đủ để nhìn thấy resource state trong Play Mode.
-- [x] Player có feedback đủ để nhận ra Water là initial problem.
-- [x] Không implement Recycler behavior/repair/processing hoặc Water Plant build requirements ở phase này.
-- [x] Không implement Collection ở phase này.
-- [x] Unity compile PASS.
-- [x] Console không có error phát sinh từ implementation.
-- [x] Fresh Play Mode state deterministic đủ để test phase.
-
-## Design Guardrail
-
-Không xây citizen simulation phức tạp chỉ để tạo Water need.
-
-Nếu cần một prototype representation đơn giản cho Water problem thì dùng giải pháp nhỏ nhất và configurable.
-
----
-
-# Phase 2 — Water Plant Requirement & Wood Bottleneck
+# Phase 1 — Playable World Shell
 
 STATUS: TODO
 
 ## Goal
 
-Player hiểu:
+Mở Play Mode và nhìn thấy một prototype có hình thái của Husk.
 
-Water problem
-→ cần Water Plant
-→ hiện chưa đủ Wood.
+## Scope
 
-Chưa cần giải quyết bottleneck trong phase này.
+Prototype scene/entry point; water/environment tối thiểu; Husk platform/module placeholder; gameplay camera và control tối thiểu nếu cần quan sát; basic HUD/resource state. Các resource test default 100, configurable; storage unlimited.
 
 ## Acceptance Criteria
 
-- [ ] Water Plant xuất hiện như giải pháp trực tiếp cho Water problem.
-- [ ] Player có thể xem requirement/cost trước khi build.
-- [ ] Water Plant cần Wood và Iron.
-- [ ] Starting Wood < Water Plant Wood cost.
-- [ ] Starting Iron > Water Plant Iron cost.
-- [ ] Sau hypothetical construction vẫn phải còn Iron dư.
-- [ ] Attempt build khi thiếu Wood bị chặn rõ ràng.
-- [ ] Feedback cho player chỉ ra Wood là bottleneck.
-- [ ] Exact Wood/Iron values vẫn configurable/provisional.
-- [ ] Không có multi-stage construction.
-- [ ] Không implement Recycler conversion ngoài interface tối thiểu nếu thực sự cần.
-- [ ] Không implement Collection.
-- [ ] Unity compile PASS.
-- [ ] Console không có error phát sinh.
-- [ ] Runtime validation qua MCP chứng minh Water Plant chưa thể build ở fresh state.
+- [ ] Prototype scene/entry point rõ ràng và mở Play Mode được.
+- [ ] Water/environment và Husk platform/module placeholder nhìn thấy được; visual placeholder được chấp nhận.
+- [ ] Gameplay camera quan sát usable; control tối thiểu nếu cần đủ để quan sát world.
+- [ ] HUD hiển thị resource state; gameplay state độc lập presentation.
+- [ ] Các resource test hiện có bắt đầu ở 100 theo default configuration, dễ chỉnh; fresh run tái lập đúng cấu hình.
+- [ ] Resource state hỗ trợ query/add/remove rõ ràng, không thêm storage capacity limit.
+- [ ] Không production gameplay hoặc Fishing Boat construction trong Phase 1.
+- [ ] Manager tự validate world/camera/HUD và fresh-start values qua Unity MCP Play Mode; kiểm trực quan readability.
+- [ ] Unity compilation PASS; Editor ready.
+- [ ] Console không có compile/runtime error từ implementation; mọi warning mới được review.
+- [ ] Sau validation đã Exit Play Mode; intended scene/assets đã save, không còn unrelated dirty state.
+
+## Guardrails
+
+Không tutorial/scarcity/balance; không thêm production của các phase sau. Fish là resource riêng khi được đưa vào state; Fish production thuộc Phase 4.
 
 ---
 
-# Phase 3 — Broken Recycler & Repair
+# Phase 2 — Fishing Harbor & Build Fishing Boat
 
 STATUS: TODO
 
 ## Goal
 
-Player phát hiện infrastructure có sẵn có thể giúp giải quyết Wood bottleneck nhưng Recycler đang Broken.
+Interaction đầu tiên: Fishing Harbor → Build Fishing Boat → khoảng 5s → boat completed.
+
+## Scope
+
+Harbor có sẵn từ fresh run; select/click Harbor; action Build Fishing Boat; build progress/time; visible Fishing Boat và completion feedback.
 
 ## Acceptance Criteria
 
-- [ ] Recycler tồn tại trong prototype từ fresh start.
-- [ ] Initial Recycler state = Broken.
-- [ ] Broken Recycler không thể process material.
-- [ ] Player có action Repair rõ ràng.
-- [ ] Repair có chi phí nhỏ và configurable.
-- [ ] Repair cost không tạo thêm resource chain phức tạp.
-- [ ] Repair thành công chuyển Recycler sang Operational.
-- [ ] State transition có feedback rõ.
-- [ ] Không yêu cầu Collection để Repair hoặc học Recycler.
-- [ ] Unity compile PASS.
-- [ ] Console không có error phát sinh.
-- [ ] MCP Play Mode validation chứng minh Broken → Repair → Operational hoạt động.
+- [ ] Fishing Harbor tồn tại từ fresh run; player không cần xây Harbor.
+- [ ] Select/click Harbor hoạt động và selection/action feedback rõ.
+- [ ] Action Build Fishing Boat bắt đầu construction với progress/time nhìn thấy được.
+- [ ] Default build time khoảng 5s, configurable; completion tạo Fishing Boat nhìn thấy được.
+- [ ] Nếu có build cost, cost configurable/provisional và starting resources đủ để dùng mechanic, không bottleneck.
+- [ ] Không fishing autonomous trip hoặc Fish production trong Phase 2.
+- [ ] Manager tự dùng Unity MCP kiểm fresh Harbor, interaction, timed construction và boat completion trong Play Mode.
+- [ ] Unity compilation PASS; Editor ready.
+- [ ] Console không có compile/runtime error từ implementation; mọi warning mới được review.
+- [ ] Sau validation đã Exit Play Mode; intended scene/assets đã save, không còn unrelated dirty state.
 
-## Design Guardrail
+## Guardrails
 
-Nếu resource dùng để Repair chưa được design xác nhận:
-- chọn prototype assumption nhỏ nhất;
-- giữ configurable;
-- document rõ assumption;
-- không ghi nó thành canon.
-
-Nếu lựa chọn resource làm thay đổi đáng kể trải nghiệm opening:
-Manager phải hỏi user.
+Chỉ Harbor + build boat. Không workers, fleet management framework, manual dispatch system hoặc balancing.
 
 ---
 
-# Phase 4 — Recycle Starter Material Into Wood
+# Phase 3 — Fishing Boat Autonomous Cycle
 
 STATUS: TODO
 
 ## Goal
 
-Player dùng material có sẵn để hiểu Recycler và vượt Wood bottleneck.
+Boat nhìn thấy được rời Husk, làm việc và quay lại tự động.
+
+## Scope
+
+At Harbor → Depart → Fishing / Out at sea → Return → Harbor → repeat. Complete trip/cycle khoảng 30s, configurable. Waypoint/simple destination/minimal state machine được chấp nhận.
 
 ## Acceptance Criteria
 
-- [ ] Operational Recycler nhận Recyclable Material.
-- [ ] Recyclable Material được tiêu hao đúng.
-- [ ] Recycling tạo Wood.
-- [ ] Conversion ratio configurable.
-- [ ] Starter Recyclable Material = 10 vẫn đủ để người chơi học mechanic.
-- [ ] Intended use của starter material tạo đủ Wood để vượt Water Plant Wood bottleneck.
-- [ ] Resource UI/state cập nhật đúng sau recycle.
-- [ ] Player nhận feedback rõ input → process → output.
-- [ ] Không yêu cầu Collection trước lần recycle đầu.
-- [ ] Không tự thêm production-chain framework tổng quát nếu không cần.
-- [ ] Unity compile PASS.
-- [ ] Console không có error phát sinh.
-- [ ] MCP runtime validation chứng minh:
-      Broken/Operational rules đúng,
-      material giảm,
-      Wood tăng.
+- [ ] Boat hoàn thành construction tự bắt đầu cycle; không cần player dispatch.
+- [ ] Depart, hoạt động ngoài biển và Return về Harbor nhìn thấy được, dễ phân biệt.
+- [ ] Complete trip khoảng 30s ở default configuration; timing dễ chỉnh.
+- [ ] Boat tự bắt đầu cycle tiếp theo và chạy nhiều consecutive cycles không player redispatch.
+- [ ] Không Fish production trước Phase 4, trừ interface tối thiểu thực sự cần; không credit resource trong phase này.
+- [ ] Manager tự quan sát nhiều cycles qua Unity MCP Play Mode, kiểm state/timing và movement readability.
+- [ ] Unity compilation PASS; Editor ready.
+- [ ] Console không có compile/runtime error từ implementation; mọi warning mới được review.
+- [ ] Sau validation đã Exit Play Mode; intended scene/assets đã save, không còn unrelated dirty state.
+
+## Guardrails
+
+Không world navigation framework, fleet manager lớn, pathfinding architecture không cần thiết, route logistics, fuel, maintenance hoặc fishing-area simulation phức tạp.
 
 ---
 
-# Phase 5 — Build Water Plant & Begin Water Production
+# Phase 4 — Fish Production & Unload Feedback
 
 STATUS: TODO
 
 ## Goal
 
-Hoàn tất causal chain đầu tiên:
+Hoàn tất autonomous production loop đầu tiên: boat về → unload → Fish tăng → tự rời đi tiếp.
 
-Water problem
-→ Water Plant
-→ Wood shortage
-→ Recycler
-→ đủ Wood
-→ Water Plant được xây
-→ Water production bắt đầu.
+## Scope
+
+Fish resource riêng; cargo default 5 Fish/trip configurable; unload tại Harbor; storage unlimited; resource/HUD và delivery feedback.
 
 ## Acceptance Criteria
 
-- [ ] Sau recycling, player có thể đạt đủ Water Plant requirement.
-- [ ] Build action kiểm tra cost.
-- [ ] Build action trừ Wood đúng.
-- [ ] Build action trừ Iron đúng.
-- [ ] Sau build vẫn còn Iron > 0.
-- [ ] Water Plant chuyển từ Not Built sang Built/Operational.
-- [ ] Construction là một action đơn giản.
-- [ ] Water Plant bắt đầu cung cấp/tạo Water theo prototype mechanism dễ hiểu.
-- [ ] Player nhận feedback rằng initial Water problem đang được giải quyết.
-- [ ] Production/consumption values configurable.
-- [ ] Không thêm worker logistics/electricity/construction chain.
-- [ ] Unity compile PASS.
-- [ ] Console không có error phát sinh.
-- [ ] MCP runtime validation chứng minh full chain tới Water production hoạt động.
+- [ ] Fish là resource riêng với Food; starting Fish default 100 và configurable như các resource test khác.
+- [ ] Boat returns rồi unload 5 Fish/trip theo default cargo configurable.
+- [ ] Mỗi lần unload credit đúng một lần; Fish state và HUD tăng đúng cargo, delivery feedback rõ.
+- [ ] Không storage capacity limit chặn unload/production.
+- [ ] Boat tự rời Harbor cho cycle kế tiếp; nhiều consecutive cycles tiếp tục tăng Fish đúng.
+- [ ] Manager tự dùng Unity MCP kiểm Fish trước/sau unload và qua nhiều cycles, đối chiếu cargo, HUD và feedback.
+- [ ] Unity compilation PASS; Editor ready.
+- [ ] Console không có compile/runtime error từ implementation; mọi warning mới được review.
+- [ ] Sau validation đã Exit Play Mode; intended scene/assets đã save, không còn unrelated dirty state.
+
+## Guardrails
+
+Không tự bắt đầu Water loop; không workers, fuel, maintenance, storage capacity hoặc fleet management framework.
 
 ---
 
-# Phase 6 — Starter Material Exhaustion & Collection Introduction
+# Phase 5 — Water Production Loop
 
 STATUS: TODO
 
 ## Goal
 
-Chỉ sau khi player đã hiểu Recycler mới giới thiệu cách acquisition thêm Recyclable Material.
+Test building-based production loop độc lập, có Water tăng theo thời gian.
+
+## Scope
+
+Build/select Water Plant → construction/activation đơn giản → Operational → Water tăng. Placement/build interaction tối thiểu nếu cần; operational/production feedback và HUD.
 
 ## Acceptance Criteria
 
-- [ ] Starter Recyclable Material có thể bị tiêu thụ/cạn.
-- [ ] Collection không phải prerequisite của Recycler tutorial đầu tiên.
-- [ ] Khi cần thêm Recyclable Material, game giới thiệu collection.
-- [ ] Prototype có một collection action/mechanic đơn giản.
-- [ ] Collection làm tăng Recyclable Material.
-- [ ] Material mới có thể tiếp tục được Recycler xử lý.
-- [ ] Không tạo fleet system.
-- [ ] Không tạo world exploration framework.
-- [ ] Không tạo procedural scavenging.
-- [ ] Collection mechanic đủ nhỏ để chỉ test learning order.
-- [ ] Unity compile PASS.
-- [ ] Console không có error phát sinh.
-- [ ] MCP runtime validation chứng minh:
-      starter processing trước,
-      acquisition sau.
+- [ ] Player đủ resource để sử dụng Water Plant mechanic; không starting shortage hoặc Recycler prerequisite.
+- [ ] Build/select và construction/activation đơn giản hoạt động; placement tối thiểu nếu cần.
+- [ ] Operational state nhìn thấy được; Water tăng theo production values đã cấu hình.
+- [ ] Water HUD và production feedback cập nhật đúng.
+- [ ] Costs/construction/production values provisional, configurable.
+- [ ] Manager tự dùng Unity MCP kiểm interaction, operational state và Water tăng qua thời gian trong Play Mode.
+- [ ] Unity compilation PASS; Editor ready.
+- [ ] Console không có compile/runtime error từ implementation; mọi warning mới được review.
+- [ ] Sau validation đã Exit Play Mode; intended scene/assets đã save, không còn unrelated dirty state.
+
+## Guardrails
+
+Không electricity, workers, logistics, construction chain phức tạp, economy bottleneck hoặc tự implement Recycler.
 
 ---
 
-# Phase 7 — Full Fresh-Run Validation
+# Phase 6 — Recycler Production Loop
 
 STATUS: TODO
 
 ## Goal
 
-Một fresh run hoàn thành toàn bộ Prototype V0 mà không cần developer intervention.
+Test transformation Recyclable Material → Recycler → Wood.
 
-## Required Flow
+## Scope
 
-Start
-→ understand Water problem
-→ inspect Water Plant
-→ discover Wood shortage
-→ discover Broken Recycler
-→ Repair Recycler
-→ recycle starter material
-→ gain Wood
-→ build Water Plant
-→ Water production begins
-→ later require more recyclable material
-→ discover Collection
+Recycler accessible/buildable theo implementation nhỏ nhất; processing input/output và feedback; configurable conversion/processing values.
 
 ## Acceptance Criteria
 
-- [ ] Fresh run bắt đầu đúng starting state.
-- [ ] Intended sequence hoàn thành được từ đầu tới cuối.
-- [ ] Không cần sửa Inspector giữa run.
-- [ ] Không cần Console command.
-- [ ] Không cần developer manually change state.
-- [ ] Không soft-lock.
-- [ ] Không có required tutorial step ngoài core loop mà specification không yêu cầu.
-- [ ] Player-facing/developer feedback đủ rõ để hiểu cause/effect.
-- [ ] Restart/fresh-run workflow đủ đơn giản để playtest lặp lại.
-- [ ] Unity Console không có compile/runtime error.
-- [ ] Không có unrelated feature creep.
-- [ ] Manager review toàn bộ diff từ prototype implementation.
-- [ ] Manager xác nhận implementation vẫn phù hợp `AGENTS.md`.
-- [ ] Manager xác nhận implementation vẫn phù hợp `docs/prototype-v0.md`.
+- [ ] Recycler accessible/buildable để player test bằng resources có sẵn.
+- [ ] Processing tiêu hao Recyclable Material và tạo Wood đúng configured conversion; không resource credit/debit sai.
+- [ ] Processing state/feedback và resource HUD cập nhật rõ input/output.
+- [ ] Conversion/processing và costs nếu có là provisional/configurable; storage unlimited.
+- [ ] Recycler hoạt động độc lập, không prerequisite để dùng Water Plant; không Broken/Repair mechanic, Collection hoặc balance/dependency systems.
+- [ ] Manager tự dùng Unity MCP kiểm input giảm, Wood tăng và processing feedback trong Play Mode.
+- [ ] Unity compilation PASS; Editor ready.
+- [ ] Console không có compile/runtime error từ implementation; mọi warning mới được review.
+- [ ] Sau validation đã Exit Play Mode; intended scene/assets đã save, không còn unrelated dirty state.
+
+## Guardrails
+
+Không generic production-chain framework nếu không cần; không economy balancing hoặc mở rộng phase khác.
+
+---
+
+# Phase 7 — Prototype Integration & Feel Pass
+
+STATUS: TODO
+
+## Goal
+
+Ghép các system V0 để user đánh giá liệu game đã bắt đầu trông và cảm thấy như một game thú vị.
+
+## Scope
+
+Fresh run: world visible → resources available → Harbor exists → build boat → autonomous fishing → Fish returns → Water production available → Recycler production available. Integration fixes nhỏ và feel review.
+
+## Acceptance Criteria
+
+- [ ] Fresh run có world/Husk visible, resources default 100/configurable, storage unlimited và Harbor có sẵn.
+- [ ] Player build boat; boat tự fishing/return/unload/repeat qua nhiều cycles mà không manual redispatch.
+- [ ] Water production và Recycler transformation sử dụng được độc lập, resource state/HUD cập nhật đúng.
+- [ ] Manager review camera readability và scale của Husk/buildings/boats.
+- [ ] Manager review movement, select/click, construction và production feedback cùng HUD readability.
+- [ ] Manager ghi nhận feel của khoảng 5s build, khoảng 30s fishing, world có cảm giác sống và loops có hiểu được qua observation không.
+- [ ] Fresh run/restart tái lập và integrated loops chạy ổn, không cần developer sửa state giữa run.
+- [ ] Manager tự validate integrated run qua Unity MCP và ghi evidence đủ cho user playtest/feel review.
+- [ ] Manager review toàn bộ implementation diff; phù hợp AGENTS/spec và không feature expansion hoặc economy balance pass.
+- [ ] Unity compilation PASS; Editor ready.
+- [ ] Console không có compile/runtime error từ implementation; mọi warning mới được review.
+- [ ] Sau validation đã Exit Play Mode; intended scene/assets đã save, không còn unrelated dirty state.
+
+## Guardrails
+
+Không thêm gameplay system mới ngoài fix nhỏ cần cho integration. Feel review ghi kết quả, không tự biến sở thích/tuning thành final balance hoặc mở rộng scope.
 
 ---
 
 # Phase Execution Rules
 
-Manager phải xử lý phase theo thứ tự:
-
-Phase 1
-→ Phase 2
-→ Phase 3
-→ Phase 4
-→ Phase 5
-→ Phase 6
-→ Phase 7
-
-Với mỗi phase:
-
-1. Đọc acceptance criteria.
-2. Giao CHỈ phase hiện tại cho Implementer.
-3. Chờ Implementer report.
-4. Manager inspect code/diff.
-5. Manager dùng Unity MCP để kiểm compilation/Console/runtime nếu phù hợp.
-6. Đánh dấu từng acceptance criterion dựa trên evidence.
-7. Nếu FAIL:
-   - gửi feedback cụ thể cho Implementer;
-   - rework cùng phase.
-8. Nếu PASS:
-   - update checklist;
-   - update manager-status;
-   - commit checkpoint phù hợp;
-   - chuyển phase tiếp theo.
-
-Manager không được đánh dấu phase PASS chỉ vì Implementer nói "done".
-
----
+1. Đọc AGENTS/spec/checklist/status và exact task user giao; kiểm repository trước khi làm.
+2. Xử lý Phase 1 → 2 → 3 → 4 → 5 → 6 → 7. Không bắt đầu phase sau khi phase hiện tại chưa PASS toàn bộ criteria.
+3. Cho implementation, spawn đúng một custom agent `husk_implementer`, giao chỉ phase hiện tại. Không dùng agent khác làm workaround nếu custom agent chưa load; không hơn một spawned Implementer đồng thời.
+4. Manager sở hữu checklist/status/acceptance và Git checkpoint; Implementer không tự commit/push hoặc đổi phase.
+5. Manager tự inspect toàn bộ source/diff, scope và .meta; trực tiếp kiểm compilation/Console/runtime qua Unity MCP. Không chỉ dùng CLI hoặc Implementer report làm bằng chứng.
+6. Đánh giá từng criterion PASS/FAIL theo evidence; không clear Console để che lỗi.
+7. Nếu FAIL, giữ cùng phase, cập nhật REWORK khi phù hợp, gửi feedback cụ thể và tiếp tục cùng Implementer thread nếu còn khả dụng. Nếu phải spawn lại, chỉ dùng `husk_implementer` và giữ concurrency một Implementer.
+8. Sau rework, Manager review lại diff và validate compile/Console/runtime liên quan. Không mark DONE khi còn criterion FAIL.
+9. Nếu tất cả PASS, mark phase DONE, cập nhật Last Completed Phase và Current Phase sang phase kế tiếp nhưng giữ phase đó TODO. Checkpoint/commit/push theo user authorization.
+10. Nếu user yêu cầu checkpoint hoặc dừng để playtest, DỪNG sau checkpoint; đổi Current Phase không phải quyền tự bắt đầu phase mới.
 
 # Stop Conditions
 
-Manager phải dừng và hỏi user nếu gặp:
+Dừng và hỏi user khi cần:
 
-- quyết định game design mới có ảnh hưởng đáng kể đến player experience;
-- requirement mâu thuẫn với prototype-v0.md;
-- cần thêm third-party package;
-- cần thay đổi Unity version/render pipeline;
-- cần mở rộng scope ngoài Prototype V0;
-- technical blocker không thể giải quyết bằng implementation nhỏ.
+- Quyết định gameplay mới ảnh hưởng đáng kể player experience hoặc thay đổi confirmed direction.
+- Giải quyết requirement mâu thuẫn giữa documents.
+- Thêm third-party package hoặc đổi Unity version/render pipeline.
+- Architecture/scope vượt Prototype V0.
+- Technical blocker không giải quyết được bằng implementation nhỏ.
+- Quyết định mà AGENTS/spec không cho Manager tự chọn.
 
-Manager KHÔNG cần hỏi user cho implementation detail nhỏ nếu có thể chọn phương án:
-- đơn giản;
-- reversible;
-- configurable;
-- không thay đổi design intent.
+Khi bị chặn: Overall Status = BLOCKED, Current Phase giữ nguyên, phase giữ IN_PROGRESS/REWORK, ghi exact blocker. Không tự discard partial work hoặc chuyển phase khác.
 
----
+Implementation detail nhỏ, reversible, configurable và không đổi design intent có thể tự chọn. Không biến test values thành final balance.
 
 # Definition of Prototype V0 Complete
 
-Prototype V0 chỉ được coi là COMPLETE khi:
+Phase 0–7 đều DONE theo checklist mới; Manager có source/compile/Console và fresh-run runtime MCP evidence. Core loops nhìn thấy được, tương tác được, chạy ổn, readable và đủ để user đánh giá feel. Không còn unresolved blocker.
 
-Phase 0 = DONE
-Phase 1 = DONE
-Phase 2 = DONE
-Phase 3 = DONE
-Phase 4 = DONE
-Phase 5 = DONE
-Phase 6 = DONE
-Phase 7 = DONE
-
-và fresh-run runtime validation qua Unity Editor đã PASS.
+Không yêu cầu economy balance, tutorial hoặc progression puzzle. Collection không thuộc V0.

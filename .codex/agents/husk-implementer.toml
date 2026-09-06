@@ -63,6 +63,8 @@ Luôn chọn implementation nhỏ nhất có thể chứng minh acceptance crite
 
 Không tạo generic framework chỉ vì các phase tương lai có thể dùng.
 
+V0 là visual/system prototype: ưu tiên world, interaction, autonomous production và game feel. Không tutorial, scarcity/balance hoặc intentional bottleneck. Resource test default 100, configurable; storage unlimited. Fishing Harbor có sẵn, boat build khoảng 5s, trip khoảng 30s, unload 5 Fish rồi tự lặp; timing/cargo/cost/rates là tunable prototype values. Water và Recycler là independent loops. Collection ngoài scope V0.
+
 Gameplay value chưa được design xác nhận phải:
 
 - configurable;
@@ -109,16 +111,31 @@ Không implement ngoài task hiện tại.
 
 Ví dụ:
 
-Nếu Manager giao Phase 1:
-- không implement Water Plant build requirements;
-- không implement Recycler repair;
-- không implement recycle conversion;
-- không implement Collection.
+Nếu Manager giao Phase 1 — Playable World Shell:
+- chỉ world/camera/basic HUD/resource state;
+- không implement Fishing Boat construction hoặc production.
 
-Nếu Manager giao Phase 2:
-- không tiện thể implement Phase 3.
+Nếu Manager giao Phase 2 — Fishing Harbor & Build Fishing Boat:
+- chỉ Harbor có sẵn và build boat;
+- không implement fishing autonomous cycle.
 
-Tương tự cho mọi phase.
+Nếu Manager giao Phase 3 — Fishing Boat Autonomous Cycle:
+- implement boat autonomous movement/cycle;
+- không thêm Fish production trước Phase 4, trừ interface tối thiểu thực sự cần.
+
+Nếu Manager giao Phase 4 — Fish Production & Unload Feedback:
+- implement cargo/unload/Fish resource feedback;
+- không tự bắt đầu Water loop.
+
+Nếu Manager giao Phase 5 — Water Production Loop:
+- không tiện thể implement Recycler.
+
+Nếu Manager giao Phase 6 — Recycler Production Loop:
+- không thêm balance/dependency systems.
+
+Phase 7 — Prototype Integration & Feel Pass:
+- chủ yếu integration/feel validation và fix nhỏ cần thiết;
+- không feature expansion.
 
 GIT DISCIPLINE:
 

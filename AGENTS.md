@@ -6,7 +6,7 @@ Husk là game city-builder / survival management lấy bối cảnh Trái Đất
 
 Mục tiêu hiện tại không phải xây full game hoặc vertical slice lớn.
 
-Mục tiêu hiện tại là xây playable prototype nhỏ nhất để kiểm chứng early-game management loop.
+Mục tiêu hiện tại là xây visual/system prototype nhỏ nhất để nhìn thấy các core production loops hoạt động và đánh giá game feel.
 
 Repository root:
 `D:\TheHusk`
@@ -81,70 +81,65 @@ Tránh:
 
 ## Prototype Design Principle
 
-Gameplay opening phải đi từ nhu cầu của cư dân đến lý do khai thác/sản xuất tài nguyên.
+V0 trả lời câu hỏi: nếu các system cơ bản của Husk chạy trực tiếp trước mắt, game có bắt đầu trông và cảm thấy giống một game thú vị hay không?
 
-Không thiết kế tutorial theo kiểu:
-"thu thập resource vì tutorial bảo phải thu thập".
+Ưu tiên V0:
 
-Chuỗi ý tưởng cốt lõi hiện tại:
+1. Nhìn thấy game world.
+2. Camera và interaction cơ bản.
+3. Nhìn thấy building, boat và resource production hoạt động.
+4. Autonomous production loop.
+5. Visual/readability/feel.
+6. Iteration nhanh.
 
-Need
-→ thiếu resource
-→ cần production building
-→ thiếu building material
-→ dùng hệ thống hiện có để giải quyết bottleneck
-→ xây production building
-→ giải quyết need
+V0 không test tutorial flow, scarcity, economy balance, resource bottleneck hoặc production dependency puzzle. Balance làm sau V0. Không tạo shortage để ép progression; không cần tutorial system cho developer/user tự test.
 
-## Confirmed Prototype Starting State
+Thứ tự triển khai:
 
-Khi bắt đầu prototype:
+World shell
+→ build Fishing Boat
+→ autonomous fishing cycle
+→ Fish production
+→ Water production
+→ Recycler production
+→ integration/feel pass.
 
-- Food = 0
-- Water = 5
-- Recyclable Material = 10
+Đây là thứ tự phase triển khai, không phải tutorial ordering hoặc dependency bắt player unlock từng loop.
 
-Building Material ban đầu gồm:
-- Wood
-- Iron
+## Starting Test State and Storage
 
-Confirmed design intent:
-- Starting Iron phải đủ để xây Water Plant và vẫn còn dư một ít.
-- Starting Wood không đủ để xây Water Plant.
-- Player phải tạo thêm Wood thông qua Recycler.
+- Các resource test mặc định bắt đầu ở 100, configurable.
+- Food, Water, Recyclable Material, Wood, Iron và Fish khi có trong resource state đều theo cùng default 100; Fish là resource riêng.
+- Storage unlimited trong V0: không capacity limit hoặc nâng cấp storage.
+- Costs/rates/timing là test/provisional values, dễ chỉnh, không phải final balance.
+- Starting resources phải cho phép test mechanic; không tạo intentional bottleneck.
 
-Exact numerical values cho Wood, Iron và building costs chưa được coi là canon nếu chưa được ghi rõ trong prototype specification.
+## Fishing — Confirmed V0 Direction
 
-## Recycler — Confirmed Intent
+- Fishing Harbor có sẵn từ fresh run khi triển khai Phase 2; player không cần xây Harbor.
+- Interaction đầu tiên: chọn Harbor → Build Fishing Boat → construction khoảng 5 giây → boat hoàn thành.
+- Boat tự rời Harbor, thực hiện trip khoảng 30 giây rồi quay về.
+- Khi Fish production được triển khai ở Phase 4, mỗi lần về unload 5 Fish, resource/HUD cập nhật.
+- Boat tự bắt đầu cycle tiếp theo, không manual redispatch.
+- Build time ≈ 5s, complete trip/cycle ≈ 30s và cargo 5 Fish là tunable prototype values.
+- Không worker assignment, fuel, maintenance, route logistics, fleet management framework hoặc fishing-area simulation phức tạp.
 
-- Recycler đã tồn tại từ đầu game.
-- Recycler bắt đầu trong trạng thái hỏng.
-- Player phải Repair Recycler.
-- Repair chỉ nên tốn một lượng resource nhỏ.
-- Starter Recyclable Material đã có sẵn ngay từ đầu.
-- Player dùng starter material này để học Recycler trước.
-- Recycler tạo ra Wood.
-- Player không cần đi collection trước khi hiểu Recycler.
+## Water and Recycler — Independent Production Loops
 
-Chỉ sau khi starter Recyclable Material cạn mới giới thiệu collection.
-
-Exact repair cost và recycle conversion ratio chưa phải canon nếu chưa được specification xác nhận.
-
-## Water Plant — Confirmed Intent
-
-- Player cần Water Plant để giải quyết Water problem.
-- Water Plant cần Wood và Iron.
-- Starting Wood không đủ.
-- Recycler giải quyết Wood bottleneck.
-- Việc xây Water Plant trong prototype phải là một construction action đơn giản.
-- Không thêm chuỗi crafting/construction nhiều bước chỉ để xây Water Plant.
-
-Exact building cost và production rate chưa phải canon nếu chưa được specification xác nhận.
+- Water Plant dùng build/select và construction/activation đơn giản; khi Operational, Water tăng theo thời gian với feedback rõ.
+- Recycler chuyển Recyclable Material thành Wood với processing feedback và configurable conversion values.
+- Water và Recycler là independent production loops trong V0; Recycler không là prerequisite để dùng Water Plant.
+- Không cần Recycler Broken/Repair mechanic.
+- Player có resources để test; không Water shortage, construction chain phức tạp hoặc economy balancing.
 
 ## Current Prototype Scope
 
-Không tự implement các system sau nếu task hiện tại không yêu cầu:
+Các mục sau không thuộc Prototype V0; chỉ thay scope khi user yêu cầu rõ ràng:
 
+- tutorial system
+- scarcity/economy balance hoặc production dependency puzzle
+- Collection
+- storage capacity system
 - tech tree
 - complex citizen simulation
 - combat
@@ -152,7 +147,7 @@ Không tự implement các system sau nếu task hiện tại không yêu cầu:
 - morality system
 - electricity network
 - logistics network
-- fleet system
+- fleet management framework
 - world exploration
 - procedural generation
 - multiplayer

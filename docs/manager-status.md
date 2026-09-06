@@ -6,65 +6,54 @@ ACTIVE
 
 ## Current Phase
 
-Phase 2 — Water Plant Requirement & Wood Bottleneck
+Phase 1 — Playable World Shell
 
 ## Phase Status
 
 | Phase | Name | Status |
 |---|---|---|
 | Phase 0 | Technical Foundation | DONE |
-| Phase 1 | Prototype Shell & Resource State | DONE |
-| Phase 2 | Water Plant Requirement & Wood Bottleneck | TODO |
-| Phase 3 | Broken Recycler & Repair | TODO |
-| Phase 4 | Recycle Starter Material Into Wood | TODO |
-| Phase 5 | Build Water Plant & Begin Water Production | TODO |
-| Phase 6 | Starter Material Exhaustion & Collection Introduction | TODO |
-| Phase 7 | Full Fresh-Run Validation | TODO |
+| Phase 1 | Playable World Shell | TODO |
+| Phase 2 | Fishing Harbor & Build Fishing Boat | TODO |
+| Phase 3 | Fishing Boat Autonomous Cycle | TODO |
+| Phase 4 | Fish Production & Unload Feedback | TODO |
+| Phase 5 | Water Production Loop | TODO |
+| Phase 6 | Recycler Production Loop | TODO |
+| Phase 7 | Prototype Integration & Feel Pass | TODO |
+
+## Design Reset and Existing Implementation
+
+User đã xác nhận V0 chuyển sang visual/system prototype: world, interaction, autonomous production và game feel. Không tutorial/scarcity/balance hoặc intentional bottleneck.
+
+Phase 1–7 được đặt lại TODO theo specification/checklist mới. Checkpoint gameplay trước reset (`bb46f956e56209e226a0a72c038a45beafcc14f3`) vẫn được giữ trong repository; không được coi là PASS cho Phase 1 mới.
+
+Đợt cập nhật này chỉ sửa documentation/agent instructions. Unity project và gameplay hiện có chưa được migrate sang direction mới. Manager phải audit implementation đó khi user giao Phase 1 mới; không coi test defaults dưới đây là runtime values đã được triển khai.
 
 ## Last Completed Phase
 
-Phase 1 — Prototype Shell & Resource State
+Phase 0 — Technical Foundation
 
-Manager validation on 2026-09-06:
+Foundation đã được xác nhận ở checkpoint trước:
 
-- All 14 Phase 1 acceptance criteria reviewed and passed.
-- Entry point: `Game/Husk/Assets/Scenes/SampleScene.unity`, root `Husk Prototype`.
-- `ResourceState` is independent of UI; `Get`, `Add`, and `TryRemove` validate resource operations.
-- Unity MCP compilation result: completed, failed=false, errors=[].
-- Unity EditMode Test Runner: 6/6 resource API tests passed; Manager inspected the actual MCP test result.
-- Manager independently entered Play Mode twice: Food=0, Water=5, Recyclable Material=10, Wood=0, Iron=5 on both fresh starts.
-- Manager added Wood=7 and removed Water=5; HUD updated to Wood=7/Water=0 and rejected a further Water debit. Re-entering Play Mode restored the fresh state.
-- Composited Game view screenshot confirmed all five resources and the Water need feedback were visible.
-- Wood=0 and Iron=5 are provisional Inspector configuration, not design canon. Water need uses a configurable message; no consumption timer or citizen simulation.
-- No Water Plant requirements/construction, Recycler behavior, or Collection implemented.
-- Console retained two Unity Pipeline main-thread timeout errors from Editor handoff; no implementation-caused errors or warnings. Communication recovered after restoring the Unity window; no Console clearing.
-- Final Editor ready, Play Mode stopped, SampleScene saved and not dirty.
-- Unity scene save migrated template Camera/Light/Lightmap serialization; no intentional lighting or camera tuning.
+- Repository: `D:\TheHusk`; Unity project: `Game/Husk`.
+- Unity 6000.5.7f1; URP 17.5.0.
+- Git/GitHub origin/main và Official Unity CLI operational.
+- Official Unity Pipeline 0.6.0-exp.1; Unity MCP/live Editor communication.
+- Scene/Console read và Enter/Exit Play Mode đã được validate.
+- Custom `husk_implementer` đã smoke-test với project context và MCP kế thừa.
 
-Phase 0 foundation retained:
-
-Validated foundation:
-
-- Unity 6000.5.7f1
-- URP 17.5.0
-- Git/GitHub origin/main operational
-- AGENTS.md present
-- Prototype V0 specification present
-- Official Unity CLI operational
-- Official Unity Pipeline operational
-- Codex Unity MCP operational
-- Live Editor communication PASS
-- Scene read PASS
-- Console read PASS
-- Enter Play Mode PASS
-- Exit Play Mode PASS
-- Clean Git checkpoint established before gameplay implementation
+Đây là foundation history, không phải Unity validation mới trong documentation task.
 
 ## Current Phase Goal
 
-Phase 2 is the next phase: communicate Water Plant requirements and the fresh-start Wood bottleneck, according to `docs/manager-checklist.md`.
+Phase 1 — Playable World Shell phải cho người dùng nhìn thấy hình thái Husk khi mở Play Mode:
 
-Phase 2 remains TODO and has not begun. This session stops after the Phase 1 checkpoint for user playtesting.
+- Scene/entry point rõ ràng.
+- Water/environment tối thiểu và Husk platform/module placeholder.
+- Gameplay camera usable; control tối thiểu nếu cần quan sát.
+- Basic HUD/resource display; state độc lập presentation.
+- Resource test default 100, configurable; storage unlimited.
+- Visual placeholders được chấp nhận; chưa production gameplay.
 
 ## Current Blockers
 
@@ -72,99 +61,55 @@ None.
 
 ## Pending User Decisions
 
-None currently blocking the next phase. Await user playtest feedback and an explicit command before starting Phase 2.
+None blocking Phase 1.
 
-## Provisional Gameplay Values
+## Provisional / Test Values
 
-The following values are intentionally NOT canon yet:
+| Setting | Current V0 direction |
+|---|---|
+| Test resource starting value | 100 mỗi resource, configurable |
+| Storage | Unlimited for V0; không capacity limit |
+| Fishing Boat build time | ≈ 5s, configurable |
+| Fishing trip/cycle | ≈ 30s cho complete trip, configurable |
+| Fish cargo | 5 Fish/trip, configurable |
+| Water production values | Provisional/configurable; chưa chốt exact rate |
+| Recycler conversion/processing values | Provisional/configurable; chưa chốt exact ratio/rate |
+| Costs/construction values | Provisional/configurable; resources đủ để test, không bottleneck |
 
-- Starting Wood
-- Starting Iron
-- Recycler repair resource
-- Recycler repair cost
-- Recycler conversion ratio
-- Water Plant Wood cost
-- Water Plant Iron cost
-- Water production rate
-- Water consumption rate
-- Collection yield
-- Collection timing
-- Construction timing
+Các số là tunable prototype values, không final balance. Unlimited storage là scope rule V0. Các resource test gồm Food, Water, Recyclable Material, Wood, Iron và Fish khi được đưa vào resource state; Fish là resource riêng.
 
-Implementer may use temporary values only when required by the active phase.
-
-Any temporary value must be:
-
-- configurable;
-- documented as provisional;
-- easy to change;
-- consistent with prototype constraints.
+Fishing Harbor có sẵn từ Phase 2; boat tự lặp trip, Phase 4 thêm unload/Fish credit. Water và Recycler là independent production loops.
 
 ## Manager Operating State
 
-Next action:
+Documentation reset complete; chưa bắt đầu Phase 1 mới.
 
-1. User playtests Phase 1 in `Assets/Scenes/SampleScene.unity`.
-2. Await user feedback and an explicit next command.
-3. Do not start Phase 2 automatically.
+Next action: chờ explicit user command trước implementation. Khi được giao Phase 1, Manager audit project hiện tại, giao đúng một `husk_implementer` chỉ Phase 1, rồi tự review evidence theo checklist mới.
+
+Không tự spawn để code hoặc bắt đầu gameplay trong documentation task. Tôn trọng checkpoint/stop để user playtest.
 
 ## Status Update Rules
 
-Manager updates this file only when operational state changes.
-
-Examples:
-
-- phase begins;
-- phase passes;
-- phase enters rework;
-- blocker appears;
-- blocker is resolved;
-- user makes a design decision relevant to the current phase.
-
-When a phase begins:
-
-- Current Phase remains that phase.
-- Phase Status may become `IN_PROGRESS`.
-
-When a phase fails review but remains workable:
-
-- mark it `REWORK`.
-
-When all acceptance criteria PASS:
-
-- mark phase `DONE`;
-- update Last Completed Phase;
-- set Current Phase to the next phase;
-- keep the next phase `TODO` until implementation begins.
-
-If progress is blocked by a user decision:
-
-- set Overall Status to `BLOCKED`;
-- record the exact blocker under Current Blockers;
-- do not continue implementation.
-
-When the blocker is resolved:
-
-- restore Overall Status to `ACTIVE`;
-- record the resolved decision if it affects prototype implementation.
+- Khi phase bắt đầu: giữ Current Phase, đổi phase sang IN_PROGRESS.
+- Khi phase cần rework: đổi phase sang REWORK và giữ cùng phase.
+- Chỉ khi mọi criterion PASS theo evidence Manager: mark DONE, cập nhật Last Completed Phase, Current Phase sang phase kế tiếp; phase kế tiếp vẫn TODO.
+- Nếu user yêu cầu checkpoint/dừng, không bắt đầu phase kế tiếp dù Current Phase đã đổi.
+- Khi bị chặn: Overall Status = BLOCKED; giữ Current Phase, phase IN_PROGRESS/REWORK; ghi exact blocker và hỏi user.
+- Khi blocker được giải quyết: khôi phục ACTIVE và ghi quyết định nếu ảnh hưởng implementation.
+- Chỉ Manager cập nhật operational status; Implementer không tự quyết định acceptance/progression.
 
 ## Source of Truth Priority
 
-If documents appear inconsistent, use this priority:
-
 1. User's explicit latest decision.
 2. `AGENTS.md` for project/engineering rules.
-3. `docs/prototype-v0.md` for design intent and prototype scope.
+3. `docs/prototype-v0.md` for design intent and scope.
 4. `docs/manager-checklist.md` for phase acceptance criteria.
 5. `docs/manager-status.md` for current operational progress.
 
-`manager-status.md` must never silently override design intent or acceptance criteria.
+Status không được âm thầm override design intent hoặc acceptance criteria.
 
 ## Completion State
 
-Overall Status may become `COMPLETE` only when:
+Overall Status chỉ COMPLETE khi Phase 0–7 của direction mới đều DONE, Manager đã validate fresh-run integration qua Unity MCP, không có implementation-caused errors hoặc unresolved blockers, và core loops visible/interactive/stable/readable đủ cho user đánh giá feel.
 
-- Phase 0 through Phase 7 are all DONE;
-- final fresh-run validation has PASS evidence;
-- Unity Console has no implementation-caused errors;
-- Manager confirms no unresolved blocker remains.
+Không yêu cầu economy balance.
