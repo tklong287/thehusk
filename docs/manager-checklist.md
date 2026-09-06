@@ -55,7 +55,7 @@ Không rebuild hoặc redesign technical foundation trừ khi một phase sau th
 
 # Phase 1 — Prototype Shell & Resource State
 
-STATUS: TODO
+STATUS: DONE
 
 ## Goal
 
@@ -80,20 +80,20 @@ Phase 1 chỉ cần resource state và Water problem representation; không yêu
 
 ## Acceptance Criteria
 
-- [ ] Có một prototype scene/entry point rõ ràng để test V0.
-- [ ] Resource state tồn tại độc lập với UI presentation.
-- [ ] Có thể add/remove/query resource bằng gameplay code rõ ràng.
-- [ ] Starting Food đúng 0.
-- [ ] Starting Water đúng 5.
-- [ ] Starting Recyclable Material đúng 10.
-- [ ] Wood và Iron initial values dễ chỉnh.
-- [ ] UI/developer UI đủ để nhìn thấy resource state trong Play Mode.
-- [ ] Player có feedback đủ để nhận ra Water là initial problem.
-- [ ] Không implement Recycler behavior/repair/processing hoặc Water Plant build requirements ở phase này.
-- [ ] Không implement Collection ở phase này.
-- [ ] Unity compile PASS.
-- [ ] Console không có error phát sinh từ implementation.
-- [ ] Fresh Play Mode state deterministic đủ để test phase.
+- [x] Có một prototype scene/entry point rõ ràng để test V0.
+- [x] Resource state tồn tại độc lập với UI presentation.
+- [x] Có thể add/remove/query resource bằng gameplay code rõ ràng.
+- [x] Starting Food đúng 0.
+- [x] Starting Water đúng 5.
+- [x] Starting Recyclable Material đúng 10.
+- [x] Wood và Iron initial values dễ chỉnh.
+- [x] UI/developer UI đủ để nhìn thấy resource state trong Play Mode.
+- [x] Player có feedback đủ để nhận ra Water là initial problem.
+- [x] Không implement Recycler behavior/repair/processing hoặc Water Plant build requirements ở phase này.
+- [x] Không implement Collection ở phase này.
+- [x] Unity compile PASS.
+- [x] Console không có error phát sinh từ implementation.
+- [x] Fresh Play Mode state deterministic đủ để test phase.
 
 ## Design Guardrail
 

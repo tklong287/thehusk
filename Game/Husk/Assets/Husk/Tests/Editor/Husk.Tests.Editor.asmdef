@@ -1,0 +1,6 @@
+{
+  "name": "Husk.Tests.Editor",
+  "references": ["Husk.Runtime"],
+  "includePlatforms": ["Editor"],
+  "optionalUnityReferences": ["TestAssemblies"]
+}

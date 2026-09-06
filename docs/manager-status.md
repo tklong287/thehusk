@@ -6,14 +6,14 @@ ACTIVE
 
 ## Current Phase
 
-Phase 1 — Prototype Shell & Resource State
+Phase 2 — Water Plant Requirement & Wood Bottleneck
 
 ## Phase Status
 
 | Phase | Name | Status |
 |---|---|---|
 | Phase 0 | Technical Foundation | DONE |
-| Phase 1 | Prototype Shell & Resource State | TODO |
+| Phase 1 | Prototype Shell & Resource State | DONE |
 | Phase 2 | Water Plant Requirement & Wood Bottleneck | TODO |
 | Phase 3 | Broken Recycler & Repair | TODO |
 | Phase 4 | Recycle Starter Material Into Wood | TODO |
@@ -23,7 +23,25 @@ Phase 1 — Prototype Shell & Resource State
 
 ## Last Completed Phase
 
-Phase 0 — Technical Foundation
+Phase 1 — Prototype Shell & Resource State
+
+Manager validation on 2026-09-06:
+
+- All 14 Phase 1 acceptance criteria reviewed and passed.
+- Entry point: `Game/Husk/Assets/Scenes/SampleScene.unity`, root `Husk Prototype`.
+- `ResourceState` is independent of UI; `Get`, `Add`, and `TryRemove` validate resource operations.
+- Unity MCP compilation result: completed, failed=false, errors=[].
+- Unity EditMode Test Runner: 6/6 resource API tests passed; Manager inspected the actual MCP test result.
+- Manager independently entered Play Mode twice: Food=0, Water=5, Recyclable Material=10, Wood=0, Iron=5 on both fresh starts.
+- Manager added Wood=7 and removed Water=5; HUD updated to Wood=7/Water=0 and rejected a further Water debit. Re-entering Play Mode restored the fresh state.
+- Composited Game view screenshot confirmed all five resources and the Water need feedback were visible.
+- Wood=0 and Iron=5 are provisional Inspector configuration, not design canon. Water need uses a configurable message; no consumption timer or citizen simulation.
+- No Water Plant requirements/construction, Recycler behavior, or Collection implemented.
+- Console retained two Unity Pipeline main-thread timeout errors from Editor handoff; no implementation-caused errors or warnings. Communication recovered after restoring the Unity window; no Console clearing.
+- Final Editor ready, Play Mode stopped, SampleScene saved and not dirty.
+- Unity scene save migrated template Camera/Light/Lightmap serialization; no intentional lighting or camera tuning.
+
+Phase 0 foundation retained:
 
 Validated foundation:
 
@@ -44,21 +62,9 @@ Validated foundation:
 
 ## Current Phase Goal
 
-Phase 1 must create the smallest playable shell needed to represent:
+Phase 2 is the next phase: communicate Water Plant requirements and the fresh-start Wood bottleneck, according to `docs/manager-checklist.md`.
 
-- resource state;
-- correct fresh-start resources;
-- initial Water problem;
-- enough developer/player feedback to inspect that state in Play Mode.
-
-Phase 1 does NOT own:
-
-- Water Plant requirement/build behavior;
-- Recycler repair behavior;
-- Recycler conversion;
-- Collection.
-
-Those belong to later phases according to `docs/manager-checklist.md`.
+Phase 2 remains TODO and has not begun. This session stops after the Phase 1 checkpoint for user playtesting.
 
 ## Current Blockers
 
@@ -66,7 +72,7 @@ None.
 
 ## Pending User Decisions
 
-None currently blocking Phase 1.
+None currently blocking the next phase. Await user playtest feedback and an explicit command before starting Phase 2.
 
 ## Provisional Gameplay Values
 
@@ -98,11 +104,9 @@ Any temporary value must be:
 
 Next action:
 
-1. Inspect current repository and Unity project.
-2. Read Phase 1 acceptance criteria from `docs/manager-checklist.md`.
-3. Spawn the Husk Implementer once the Manager Loop agent configuration exists.
-4. Assign ONLY Phase 1.
-5. Review evidence before marking Phase 1 PASS.
+1. User playtests Phase 1 in `Assets/Scenes/SampleScene.unity`.
+2. Await user feedback and an explicit next command.
+3. Do not start Phase 2 automatically.
 
 ## Status Update Rules
 
