@@ -2,7 +2,7 @@
 
 ## 1. Active specification và mục tiêu
 
-**ACTIVE specification — 2026-09-06. V1 implementation chưa bắt đầu.** Tài liệu này thay thế draft lịch sử bằng các quyết định V1 mới nhất của user. V0 là completed history (Phase 0–7 DONE); giữ nguyên spec/checklist/status V0.
+**ACTIVE specification — cập nhật building/pipeline contract 2026-09-07.** Operational state và validation evidence nằm trong manager-status-v1.md. V0 là completed history (Phase 0–7 DONE); giữ nguyên spec/checklist/status V0.
 
 V1 kiểm chứng liệu Module + Pipeline Network có khiến placement và expansion thành bài toán quy hoạch thú vị, thay vì các building độc lập trên isometric land grid. Husk phải có cảm giác một megastructure thống nhất: gắn thêm Module, infrastructure chạy xuyên cấu trúc, vị trí ảnh hưởng connectivity, network state nhìn thấy trực tiếp và player suy nghĩ topology/routing. V1 không phải economy balance pass.
 
@@ -81,6 +81,14 @@ Resource chỉ truyền trên continuous path mà mọi Module đều support c�
 
 Module chứa building bắt buộc support toàn bộ INPUT + OUTPUT của building. Phân biệt required input, produced output và optional pass-through; output không phải nhu cầu tiêu thụ. Town Hall storage role không thay thế quyết định I/O còn mở.
 
+Ba khái niệm riêng biệt:
+
+- **RequiredModulePipelines = Inputs ∪ Outputs**: compatibility của Module.
+- **OperationalRequirements = Inputs only**: chỉ kiểm supply cho input, cộng Damaged/Repair và concrete production conditions hiện có.
+- **LockedPipelines = Inputs ∪ Outputs**: không được tắt/remove các pipeline này trong UI hoặc domain khi building còn trên Module. Optional/pass-through vẫn editable theo rule 3/4.
+
+Khi place building lên Module trống, tự thêm required pipelines và giữ tối đa cấu hình cũ. Nếu vượt ba slots, tự bỏ optional pipeline theo priority nội bộ ổn định; cùng config + building luôn ra cùng kết quả, vẫn đúng 3/4. Không popup, không hỏi chọn pipeline bỏ và không bắt configure thủ công trước placement. Exact drop priority là implementation detail, không phải design canon. Required pipelines được lock ngay sau placement, dựa trên occupancy hiện tại; không thêm demolition/refund hoặc lock framework.
+
 ## 7. Connectivity, actual supply và Operational
 
 Connectivity đóng vai trò infrastructure connection tương tự road/port connection trong Anno. Building tồn tại trên map chưa đủ để hoạt động.
@@ -90,7 +98,10 @@ Connectivity đóng vai trò infrastructure connection tương tự road/port co
 - House: F supplied + W supplied → Operational; thiếu một loại → Disabled.
 - Recycler: thiếu E → Disabled; đủ E mới có thể Operational và processing theo concrete input hiện có.
 - Water Plant: E + M supplied mới có thể Operational; thiếu một loại → Disabled.
-- Fishing Harbor cần M; output Fish đi vào F. Solar không input, cấp E.
+- Fishing Harbor chỉ cần M supply để Operational và trở thành F source, không cần F từ nguồn khác hoặc completed boat. Fish quantity vẫn chỉ tăng khi boat unload; binary network availability không tự tạo Fish.
+- Solar không input, tự cấp E; không cần E supply ngoài. Recycler không cần M supply ngoài và Water Plant không cần W supply ngoài để tạo output của chính mình.
+
+Operational producer cấp đúng output; Disabled/Damaged producer không cấp output. Output pipeline vẫn phải tồn tại và bị lock trên Module, dù không phải operational prerequisite.
 
 Output phải feed đúng category trong bảng I/O. Không dùng global stock tồn tại ở nơi khác để giả báo endpoint được supply khi không có đường hợp lệ.
 
@@ -115,7 +126,7 @@ Khi path/source mất supply, cập nhật downstream thực sự bị ảnh hư
 
 Water Plant/Recycler: **Damaged → Repair → kiểm network inputs → có thể Operational**. Exact repair cost/time từng building **TBD**; reuse provisional construction/activation mechanics nếu phù hợp nhưng không gọi đó là final repair balance.
 
-Starting Population target là **100/100**. Trong integration phải chứng minh starting supply thật phù hợp House F/W và hai producer Damaged; không hardcode Operational hoặc invent Town Hall I/O để làm đẹp HUD. Nếu setup nguồn/stock cần quyết định gameplay chưa chốt, Manager hỏi trước acceptance phần liên quan ở Phase 2–3. Điều này không chặn foundation Phase 1.
+Starting Population target là **100/100**. Trong integration phải chứng minh starting supply thật phù hợp House F/W và hai producer Damaged; không hardcode Operational hoặc invent Town Hall I/O để làm đẹp HUD. Phase 2 kiểm tra và báo rõ fresh House Disabled vì chưa có F/W khi hai producer Damaged; chưa có population HUD/simulation nên chưa chứng minh target 100/100. Startup source/stock policy cần quyết định trước implementation/acceptance phần population Phase 3, không tự đổi target hoặc thêm nguồn trong corrective task Phase 2.
 
 Starting city được tích hợp ở Phase 2; population/consumption đầy đủ ở Phase 3. Đây là thứ tự implementation, không tutorial/unlock progression.
 
@@ -214,4 +225,4 @@ Không implement Hub, Gas, Network/Data hoặc 2/4 trong V1. Không throughput/n
 
 ## 16. Validation và handoff
 
-Task hiện tại chỉ chuẩn hóa specification/Manager state/Implementer instructions. Không Unity/gameplay/scene/asset/package changes, không spawn Implementer, không V1 implementation. Khi có task phase riêng, Manager tự review source/diff/metas, Unity compile/Console/runtime/tests và từng criterion; không dùng report Implementer làm acceptance duy nhất. Giữ scope đúng phase và dừng cho user playtest.
+Manager tự review toàn bộ source/diff/metas, Unity compile/Console/runtime/tests và từng criterion trước checkpoint; không dùng report Implementer làm acceptance duy nhất. Corrective task Phase 2 bao gồm lock và auto-reconfiguration theo contract trên, không bắt đầu Build House/population/consumption Phase 3. Giữ scope đúng phase và dừng cho user playtest.

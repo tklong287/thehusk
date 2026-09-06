@@ -27,6 +27,15 @@ namespace Husk
             ModuleBuilding.Solar => Pipeline.E,
             _ => Pipeline.None
         };
+        public static Pipeline RequiredModule(ModuleBuilding building) => Inputs(building) | Outputs(building);
+        public static Pipeline ForPlacement(ModuleBuilding building, Pipeline existing)
+        {
+            var result = existing | RequiredModule(building);
+            // Stable internal preference: retain earlier F/W/M/E optional lanes. Not gameplay balance.
+            for (int bit = (int)Pipeline.E; !IsStandard(result) && bit > 0; bit >>= 1)
+                if ((RequiredModule(building) & (Pipeline)bit) == 0) result &= ~(Pipeline)bit;
+            return result;
+        }
         public static bool IsStandard(Pipeline pipelines)
         {
             int bits = (int)pipelines;
@@ -37,7 +46,7 @@ namespace Husk
         }
         public static bool Allows(ModuleBuilding building, Pipeline pipelines) =>
             IsStandard(pipelines) && Enum.IsDefined(typeof(ModuleBuilding), building)
-            && (pipelines & (Inputs(building) | Outputs(building))) == (Inputs(building) | Outputs(building));
+            && (pipelines & RequiredModule(building)) == RequiredModule(building);
     }
 
     public sealed class ModuleCell
@@ -45,6 +54,7 @@ namespace Husk
         public Vector2Int Position { get; }
         public Pipeline Pipelines { get; internal set; }
         public ModuleBuilding Building { get; internal set; }
+        public Pipeline LockedPipelines => BuildingPipelines.RequiredModule(Building);
         // Explicit development supply fixture, independent of concrete storage and building output.
         public Pipeline TestSupply { get; internal set; }
         public bool Supports(Pipeline type) => (Pipelines & type) == type && type != Pipeline.None;
@@ -124,8 +134,12 @@ namespace Husk
         {
             if (!cells.TryGetValue(position, out var cell) || cell.Building != ModuleBuilding.None)
             { reason = "Missing or occupied Module."; return false; }
-            if (building == ModuleBuilding.None || !BuildingPipelines.Allows(building, cell.Pipelines))
-            { reason = "Module must support building INPUT + OUTPUT."; return false; }
+            if (building == ModuleBuilding.None || !Enum.IsDefined(typeof(ModuleBuilding), building))
+            { reason = "Choose a valid building."; return false; }
+            var pipelines = BuildingPipelines.ForPlacement(building, cell.Pipelines);
+            if (!BuildingPipelines.Allows(building, pipelines))
+            { reason = "Building requirements exceed standard Module pipelines."; return false; }
+            cell.Pipelines = pipelines;
             cell.Building = building; Publish(); reason = ""; return true;
         }
         public void SetTestSupply(Vector2Int position, Pipeline supply)

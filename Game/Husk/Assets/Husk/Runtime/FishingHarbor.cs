@@ -38,6 +38,17 @@ namespace Husk
         private WaterPlant waterPlant;
         private Recycler recycler;
         private BoatConstruction construction;
+        private ResourceState externalStorage;
+        public bool IsExternallyManaged { get; private set; }
+        public bool NetworkAvailable { get; private set; } = true;
+        public void BindNetwork(ResourceState storage, GameObject template, GameObject marker, GameObject buildingVisual)
+        {
+            externalStorage = storage ?? throw new ArgumentNullException(nameof(storage));
+            IsExternallyManaged = true;
+            fishingBoat = template; selectionMarker = marker; constructionVisual = buildingVisual;
+            NetworkAvailable = false;
+        }
+        public void SetNetworkAvailable(bool available) => NetworkAvailable = available;
         public sealed class BoatInstance
         {
             public GameObject Visual { get; }
@@ -86,7 +97,7 @@ namespace Husk
         public bool IsScreenPointOverPanel(Vector2 screenPoint)
         {
             Vector2 guiPoint = new Vector2(screenPoint.x, Screen.height - screenPoint.y) / UiScale;
-            return isActiveAndEnabled && Panel.Contains(guiPoint);
+            return !IsExternallyManaged && isActiveAndEnabled && Panel.Contains(guiPoint);
         }
         private void Awake()
         {
@@ -102,6 +113,7 @@ namespace Husk
 
         private void Update()
         {
+            if (IsExternallyManaged) return;
             AdvanceSimulation(Time.deltaTime);
             var mouse = Mouse.current;
             if (mouse == null || !mouse.leftButton.wasPressedThisFrame) return;
@@ -121,6 +133,8 @@ namespace Husk
         {
             if (float.IsNaN(deltaTime) || float.IsInfinity(deltaTime) || deltaTime < 0f)
                 throw new ArgumentOutOfRangeException(nameof(deltaTime));
+            // Provisional V1 rule: preserve every clock/cargo on M loss; no catch-up.
+            if (!NetworkAvailable) return;
             unloadFeedbackRemaining = Mathf.Max(0f, unloadFeedbackRemaining - deltaTime);
             foreach (BoatInstance boat in boats)
             {
@@ -157,7 +171,7 @@ namespace Husk
             long arrivals = boat.Trip.Arrivals - boat.UnloadedTrips;
             if (arrivals == 0) return;
             int amount = checked((int)(arrivals * boat.CargoPerTrip));
-            session.Resources.Add(ResourceKind.Fish, amount);
+            (externalStorage ?? session.Resources).Add(ResourceKind.Fish, amount);
             boat.UnloadedTrips = boat.Trip.Arrivals;
             boat.LastDeliveredFish = amount;
             boat.UnloadFeedbackRemaining = unloadFeedbackSeconds;
@@ -207,13 +221,14 @@ namespace Husk
 
         public bool TryBuildBoat()
         {
-            if (!IsSelected || construction.IsBuilding) return false;
+            if (!NetworkAvailable || !IsSelected || construction.IsBuilding) return false;
             if (construction.IsComplete) construction = new BoatConstruction(boatBuildSeconds);
             return construction.TryStart();
         }
 
         private void OnGUI()
         {
+            if (IsExternallyManaged) return;
             if (titleStyle == null)
             {
                 titleStyle = new GUIStyle(GUI.skin.label) { fontSize = 19, fontStyle = FontStyle.Bold };

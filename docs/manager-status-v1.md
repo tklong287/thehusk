@@ -6,30 +6,30 @@ ACTIVE
 
 ## Current Phase
 
-V1 Phase 2 — Networked Production + Starting City (TODO; chưa bắt đầu)
+V1 Phase 3 — House + Population + Consumption (TODO, chưa bắt đầu)
 
 ## Phase Status
 
 | Phase | Name | Status |
 |---|---|---|
 | V1 Phase 1 | Module Construction + Pipeline Network | DONE |
-| V1 Phase 2 | Networked Production + Starting City | TODO |
+| V1 Phase 2 | Networked Production + Starting City | DONE |
 | V1 Phase 3 | House + Population + Consumption | TODO |
 | V1 Phase 4 | Integrated Network Planning Playtest | TODO |
 
 ## Last Completed Task
 
-V1 Phase 1 — Module Construction + Pipeline Network: PASS ngày 2026-09-07 (Asia/Saigon), sau independent Manager review, 55/55 EditMode tests và runtime acceptance.
+V1 Phase 2 — Networked Production + Starting City, gồm corrective building/pipeline contract: PASS ngày 2026-09-07 (Asia/Saigon), sau independent Manager review, 84/84 EditMode tests và runtime acceptance.
 
 V0 giữ Overall Status COMPLETE và Phase 0–7 DONE trong docs/manager-status.md; spec/checklist/status V0 là lịch sử giữ nguyên. Không chuyển evidence 36 tests V0 thành acceptance V1.
 
 ## Current Phase Goal
 
-Dừng tại checkpoint Phase 1 cho user playtest. Phase 2 chỉ bắt đầu khi user giao task rõ ràng; goal tiếp theo là networked production và starting city theo checklist.
+Phase 2 hoàn tất theo latest corrective task, dừng cho user playtest. Current Phase 3 vẫn TODO; chưa triển khai Build House, population hoặc consumption.
 
 ## Current Blockers
 
-None cho Phase 1 đã nghiệm thu. Phase 2 chưa audit/triển khai; startup supply policy vẫn cần làm rõ khi tới integration.
+Không còn blocker cho corrective contract/Phase 2 checkpoint. Startup audit đã xác nhận House Disabled khi Water/Recycler Damaged; criterion Phase 2 về kiểm tra và báo rủi ro startup đã thực hiện. Chưa chứng minh target population 100/100 và không suy diễn user đã chốt cách cấp F/W ban đầu. Source/stock policy để đạt target đó vẫn là quyết định cần giải quyết trước phần population Phase 3.
 
 Open questions bên dưới phải được giữ mở; nếu exact workflow/acceptance sau này phụ thuộc câu trả lời, báo Manager/user trước phần việc phụ thuộc. Không đánh dấu phase DONE dựa trên assumption chưa được phép.
 
@@ -55,7 +55,7 @@ Open questions bên dưới phải được giữ mở; nếu exact workflow/acc
 | Food demand | 0.05 Food/s/resident, Fish trực tiếp đáp ứng qua F |
 | Water demand | 0.05 Water/s/resident |
 
-Module building phải support union required INPUT+OUTPUT, optional slots player chọn và pass-through. Category khác concrete item: Fish thuộc F; Wood/Iron/Recyclable Material thuộc M và giữ identity.
+Module building phải support và lock union INPUT+OUTPUT; Operational chỉ kiểm Inputs. Placement tự thêm required và bỏ optional deterministically để giữ 3/4, không popup. Optional slots vẫn editable/pass-through. Category khác concrete item: Fish thuộc F; Wood/Iron/Recyclable Material thuộc M và giữ identity.
 
 Required input phải có continuous compatible path + actual supply; thiếu bất kỳ input nào → Disabled/Unsupplied. Repair không bypass network. House Disabled giữ residents, coi là reallocated sang Operational Houses; effective capacity giảm nhưng population và compound growth tiếp tục kể cả overcrowded/capacity = 0. Không detailed assignment hoặc penalty.
 
@@ -79,7 +79,7 @@ Boat build khoảng 5s, trip khoảng 30s, unload 5 Fish, nhiều boat độc l�
 - Future food preferences.
 - Future 2/4 vs 3/4 sau playtest.
 
-Integration cần chứng minh target starting 100/100 với F/W actual supply trong khi Water Plant/Recycler Damaged. Không invent Town Hall I/O hoặc fake supplied; nếu startup source/stock policy cần design decision, hỏi trước acceptance Phase 2–3. Không blocker cho foundation Phase 1.
+Phase 3 integration cần chứng minh target starting 100/100 với F/W actual supply trong khi Water Plant/Recycler Damaged. Không invent Town Hall I/O hoặc fake supplied; startup source/stock policy vẫn mở, cần quyết định trước phần implementation phụ thuộc. Phase 2 chỉ nghiệm thu House supply state thực tế và báo giới hạn này.
 
 ## Manager Operating Rules
 
@@ -107,7 +107,7 @@ Audit này không phải acceptance; implementation/validation evidence được
 
 ## Last Completed Phase
 
-V1 Phase 1 — Module Construction + Pipeline Network — DONE / PASS.
+V1 Phase 2 — Networked Production + Starting City — DONE / PASS, gồm corrective contract.
 
 ## Phase 1 Acceptance — 2026-09-07
 
@@ -156,3 +156,98 @@ Console từ baseline 4930: 0 implementation errors. Một warning 4939 “Files
 6. WASD di chuyển, giữ chuột phải orbit, wheel zoom, R reset camera. Stop/Play để reset layout/resources.
 
 Overall ACTIVE; Phase 1 DONE; Current Phase 2 TODO. Dừng cho user playtest, chưa cấp quyền triển khai Phase 2.
+
+## Phase 2 Initial Audit — 2026-09-07
+
+User đã playtest/chấp nhận Phase 1 và explicit giao riêng Phase 2. Precheck: working tree clean, main = origin/main tại 3c04e36c481d1ddfc953550d9d238365f20a51b6; docs ACTIVE / Phase 1 DONE / Phase 2 TODO trước khi chuyển IN_PROGRESS. Unity 6000.5.7f1, URP 17.5.0, V1Phase1 scene saved/clean, Editor ready/stopped, scriptCompilationFailed=false. Console baseline 4944; warning 4939 thuộc task trước, không clear.
+
+| Existing system | Audit / direction |
+|---|---|
+| ModuleLayout / BuildingPipelines | REUSE explicit identity, occupancy, 3/4, required INPUT+OUTPUT, coast/port, atomic payment |
+| ModuleNetwork | MODIFY nguồn fixture thành operational-source input cho Phase 2, giữ independent same-category components và Phase 1 fixture behavior |
+| ModuleNetworkPrototype | REUSE floor lanes/selection/configuration/inspection, MODIFY để hiển thị real source/building state trong Phase 2 |
+| ResourceState / Town Hall | REUSE concrete seven-item storage, Core 100, global construction payment; không thêm Town Hall source |
+| FishingHarbor / BoatConstruction / FishingTrip | REUSE independent boats, clocks, arrival credit; MODIFY binding/gating để mất M không reset/duplicate unload |
+| WaterProduction / RecyclerProcessing | REUSE timing và atomic Recyclable Material → Wood; thêm network gating và Damaged/Repair adapter. V0 không có Repair mechanic |
+| V0 WaterPlant / Recycler panels / fixed sites | Presentation reference; không kéo fixed-site placement thành contract V1 hoặc duplicate production arithmetic |
+| PrototypeSession / Camera / tests | REUSE storage baseline, camera and regression; thêm integration tests cho actual sources/failures/recovery |
+| Art / Blender / engine / packages / V0 scene / V1Phase1 scene | Preserve, không nằm trong requested mutation |
+
+Đúng một husk_implementer được giao Phase 2. Manager sở hữu docs, review/acceptance/Git. Chưa có Phase 2 acceptance PASS.
+
+Startup question đã gửi user: House honest Disabled lúc fresh do Water/Recycler Damaged; 100/100 population target thuộc Phase 3 cần chốt lại khi tích hợp. Chưa thêm nguồn giả, Town Hall I/O, population hoặc consumption để né câu hỏi.
+
+## Phase 2 Manager Review trước corrective — 2026-09-07 (historical)
+
+Evidence trước latest corrective task: 10/11 criteria có evidence PASS, criterion startup được giữ pending lúc đó; chưa checkpoint. Bảng lịch sử dưới đây giữ nguyên hành vi trước fix, được thay bằng final corrective acceptance bên dưới. Manager đã chạy Unity EditMode: **77 total / 77 passed / 0 failed / 0 skipped**, 0.78s (55 regression + 22 Phase 2). Test Runner post-build cleanup hoàn tất tại Console cursor 4968. Console warn/error từ baseline 4944 đến 4968 rỗng.
+
+| Phase 2 criterion | Manager evidence / assessment |
+|---|---|
+| Six starting buildings / storage | Runtime fresh 9 cells, đúng 1 TownHall/Harbor/Solar/House/Water/Recycler. Core100, Wood100; Water/Recycler Damaged; TownHall Storage/no output. PASS |
+| Damaged / Repair | Native Repair Water trước: Wood100→95, timer5s, sau đó Disabled missing M, Water100. Native Repair Recycler: Wood95→90 rồi production. PASS |
+| I/O / Module constraints | Source review + tests đủ MF, EMW, EM, E, FW; all9 configs hợp lệ3/4. PASS |
+| Compatible path + real supply | Manager ngắt E bridge: Recycler/Water/Harbor Disabled, output M/W/F None, E downstream Unsupplied nhưng Solar E vẫn Supplied. Restore phục hồi. PASS |
+| Concrete identity | Fish riêng/F binary availability; Wood/Iron/Recyclable không gộp. Runtime 2 boats unload → Fish110, Food100. PASS |
+| Independent fishing | Native Build boat5s → House Operational, Fish chưa tăng trước arrival. MCP tạo boat thứ2, chạy2s rồi mấtM20s: boat1 giữ elapsed10.780238, construction giữ2s, Fish100. Restore3s → 2boats clocks13.780238/0; thêm30s → mỗi boat1 unload, Fish110; Tick0 không duplicate. PASS |
+| Production / inputs | Native Recycler repaired+E → M/W supplied; snapshot Recyclable94/Wood93/Water107. Tests conversion/exhaustion/replenishment, no global-stock/fixture bypass, long delta vs partition PASS. |
+| Downstream loss/recovery / alternatives | Native W bridge FWM→FME: House Disabled Missing W; F vẫn Supplied, W Unsupplied và lane dim. Restore → Operational. MCP M bridge WME→FWE: Water missing M/E Supplied, Recycler Operational, Harbor Disabled. Tests real alternate Solar/path giữ nhánh được cấp PASS. |
+| House compatibility only | House states F+W → Operational, missingF/missingW → Disabled; no population/consumption/BuildHouse code. PASS |
+| Startup100/100 vs damaged producers | **PENDING USER DECISION**. Fresh House Disabled trung thực, chưa có nguồn F/W. Không tuyên bố target100/100 đã đạt, không tự thêm source TownHall/storage bypass. |
+| Manager runtime/compile/scene review | Manager independently77tests + native Repair/Build/configure + MCP assertions A–F, Console clean. Framing rework đã kiểm lại native tại994×708: đủ6buildings/port, Solar ngoài panel. Camera focus(0,0.5,0), size23. Final Editor ready/stopped, scene saved/dirty=false, scriptCompilationFailed=false, missing scripts0; Console4944→4968 không warning/error mới. PASS |
+
+## Phase 2 Implementation / Provisional Values
+
+- New NetworkedCity adapter reuse WaterProduction, RecyclerProcessing và BoatConstruction repair timer; dependency order E→M→W/F→House, không giữ output cũ để tự cấp nguồn. Supply binary chỉ trong compatible components; concrete quantity arithmetic vẫn ở existing production systems.
+- FishingHarbor thêm external storage/network gating, giữ V0 independent boats/arrival logic; M loss pause clocks/construction rồi resume không catch-up. Sau corrective, M supplied kích hoạt F ngay cả khi chưa có boat; Fish quantity chỉ credit tại arrival, không chuyển Food stock.
+- ModuleNetwork thêm operational endpoints riêng, Phase 2 ignore TestSupply. ModuleNetworkPrototype opt-in Phase 2, reuse build/configure/inspect/floor palette, bổ sung building feedback/repair/fishing actions. Editor setup tạo V1Phase2 scene; V0 và V1Phase1 scene giữ nguyên.
+- Repair Water/Recycler riêng: 5 Wood/5s configurable; Water +1/2s; Recycler 2 Recyclable Material→1 Wood/4s. Boat build5s/trip30s/cargo5, Wood100/Recyclable100, instant Module build/free reconfigure, palette Phase1 đều provisional. Không balance hoặc production quantity allocation.
+- Settings chưa final: repair cost/time, palette, lâu dài reconfigure, Module construction time, starting Wood, TownHall I/O và Phase3 population display/startup policy.
+- Scene placeholder, chưa standalone player build. Stocks có thể cạn trong playtest; hết Recyclable thì WaitingForMaterial và nguồnM dừng đúng, Stop/Play reset.
+
+## Phase 2 Layout / Playtest Draft
+
+| Cell | Content | Pipelines |
+|---|---|---|
+| (-2,1) | Solar | FME |
+| (-1,1) | E routing Module | FME |
+| (0,1) | Recycler Damaged | WME |
+| (0,0) | M routing Module | WME |
+| (1,0) | Water Plant Damaged | WME |
+| (0,-1) | Fishing Harbor | FWM |
+| (1,-1) | W routing Module | FWM |
+| (2,-1) | House | FWM |
+| (-1,0) | Town Hall | FWM |
+
+Port reserved (0,-2). Mở D:/TheHusk/Game/Husk bằng Unity6000.5.7f1, mở Assets/Scenes/V1Phase2.unity và Play. Click sàn Module để inspect. Repair Water trước để thấy thiếu M; Repair Recycler để cấp M/W/F và House Operational ngay cả khi chưa có boat. Chọn Harbor Build Fishing Boat để tạo concrete Fish tại arrival. Ngắt E ở(-1,1) FME→FWM, M ở(0,0) WME→FWE, W tới House ở(1,-1) FWM→FME; restore config để khôi phục. Để thử placement, chọn Module trống FWM rồi Place Solar (test): tự FWE, E locked; không popup. WASD/orbit/wheel/R; Stop/Play reset.
+
+## Concurrent Working Tree Changes
+
+Art là concurrent work ngoài Phase 2. Task này không ghi/stage/commit/discard Art. Trong corrective run, hash của một số untracked Art thay đổi bên ngoài task và có file mới xuất hiện; không tuyên bố toàn bộ Art byte-identical. 81 protected tracked files vẫn giữ nguyên hash, bao gồm tracked Art, V0/V1Phase1 scenes, V0 docs, engine/packages/settings và agent configuration.
+
+Untracked Art tại final review: Art/Blender/HarborModule.blend, HarborModule.md, blockout_harbor_module.py, revise_harbor_flow.py; Art/Previews/HarborModule/{01_isometric.png,02_top.png,03_dock_front.png,04_side.png,05_rear.png,06_low_angle.png,07_adjacent.png,08_cargo_flow.png,09_waterside_hook.png,blockout-report.json,functional-flow-report.json}. Các file này được loại hoàn toàn khỏi checkpoint.
+
+## Phase 2 Final Corrective Acceptance — 2026-09-07
+
+**PASS / DONE.** Latest user task yêu cầu hoàn thiện current Phase 2 và checkpoint toàn bộ baseline + corrective, không triển khai Phase 3. Đúng một husk_implementer thực hiện corrective; Manager tự review toàn bộ runtime/editor/test/scene/meta diff và tự kiểm Editor. Root cause thực tế: resolver vốn đã dùng Inputs; gate completed boat chặn F, UI cho untick pending required và TryOccupy từ chối config thiếu required. Không tìm thấy union bị dùng làm operational supply check trong baseline đã audit.
+
+| Phase 2 criterion | Final Manager evidence / result |
+|---|---|
+| 1. Fresh city / Town Hall | Fresh Play: 9 Modules, đúng sáu buildings; Core100/Wood100, TownHall Storage/no source/no lock requirement invented. TownHall inspection đã native-test trong baseline; ResourceState seven-item tests PASS. |
+| 2. Damaged / Repair | Water/Recycler fresh Damaged/output None. Native Repair Water: Wood100→95, MCP advance5s → repaired nhưng Disabled missing M. Repair Recycler thêm5s: Wood90, cả hai hoạt động với actual inputs. PASS. |
+| 3. I/O / union / lock / placement | Required/Locked MF, EMW, EM, E, FW đúng bảng. Tests năm buildings × bốn starting configs, legal/illegal optional edits, deterministic result và atomic notification PASS. Native F trên Harbor bị khóa không đổi pending/current FWM. Native Place Solar trên(1,-1) FWM→FWE, drop M, E locked, visual xuất hiện, không popup. PASS. |
+| 4. Input-only operational | Sau Repair: Solar E, Recycler M, Water W, Harbor F đều active; House Operational, Harbor0boats/Fish100. Không producer nào cần pre-existing output supply. Ngắt E bridge làm Recycler/Water/Harbor Disabled và M/W/F output None; Solar vẫn E supplied. PASS. |
+| 5. Concrete identity | Hai boat mỗi chiếc unload1: Fish100→110, Tick0 vẫn110, Food100. Wood/Recyclable/Water giữ riêng; runtime sau các bước có Water121/Recyclable70/Wood105. PASS. |
+| 6. Independent fishing | Native Build boat rồi MCP advance5s; stagger boat thứ2. M loss20s giữ boat1 elapsed4s và construction2s/Fish100. Restore3s+30s: hai boats elapsed7/0, mỗi chiếc1 unload; không reset/catch-up/duplicate. PASS. |
+| 7. Water / Recycler / Solar | Water repaired chưa M không tạo Water; E+M mới W active. Recycler repaired+E mới M active, vẫn cần concrete Recyclable. Tests conversion, exhaustion/recovery, atomic debit/credit, long240s vs960×0.25s, stock/fixture không bypass path PASS. |
+| 8. Downstream / recovery | M bridge FWE: Harbor outputNone, Water missingM/outputNone, Recycler vẫnOperational. M bridge FWM: Water missingE/Msupplied, Recycler vẫnOperational. House branch FME chỉ mấtW; WME chỉ mấtF. Restore phục hồi. Native optional Solar FWE→WME: F lane House dim, W vẫn sáng, HouseDisabled. Tests alternate actual Solar/path PASS. |
+| 9. House compatibility | Fresh missingF/W; đủ F/W Operational; mất riêng F hoặc W Disabled đúng nguyên nhân; outputNone. Không population/consumption/BuildHouse implementation. PASS. |
+| 10. Startup audit / handoff | Đã kiểm và báo mâu thuẫn target100/100 với fresh Damaged producers. Không fake source hoặc invent TownHall I/O. PASS cho criterion kiểm tra/báo rủi ro Phase 2; **không phải PASS cho target100/100 Phase 3**, startup policy vẫn mở trước phần population phụ thuộc. |
+| 11. Independent validation | Manager EditMode **84/84 passed, 0 failed/skipped/inconclusive**, duration0.16s (55 regression +29 Phase2 cases); post-build cleanup4981. Play/native UI + MCP assertions như trên; final stopped/ready, compileFailed=false, scene saved/dirty=false, missing scripts0. Full source/diff/metas review và whitespace check PASS. |
+
+Console: MCP captured warn/error từ4968→4981 rỗng, không clear Console. Unity UI có **một tooling error** `Failed to handle /api/exec request: Thread was being aborted` khi eval gửi sát Play/domain transition; request trả network error, retry sau khi Editor sẵn sàng thành công và toàn bộ runtime tiếp tục. Lỗi này không xuất hiện trong captured cursor buffer nên không gọi Console hoàn toàn rỗng. Implementation-caused errors **0**, warnings mới **0**; warning4939 là history Phase1.
+
+Final contract: RequiredModule=Inputs∪Outputs, Locked=RequiredModule từ current occupancy, Operational=Inputs-only cộng damage/explicit concrete conditions. Auto-config giữ config hợp lệ cũ; khi cần slot, giữ optional theo F/W/M/E, bỏ optional ưu tiên thấp từ E/M/W/F, không bỏ required. Exact priority là implementation detail. Optional edits vẫn phải đúng3/4; pending UI/API không bỏ required, domain reject vi phạm.
+
+Checkpoint scope: ModuleNetworkSceneSetup.cs, FishingHarbor.cs, ModuleLayout.cs, ModuleNetwork.cs, ModuleNetworkPrototype.cs, NetworkedCity.cs+.meta, ModuleNetworkTests.cs, NetworkedCityTests.cs+.meta, V1Phase2.unity+.meta, prototype-v1-module-network.md, manager-checklist-v1.md, manager-status-v1.md. Đây là toàn bộ Phase2 + corrective chưa commit trước đó; không generated junk, Art hoặc Phase3. Commit message: `Complete V1 Phase 2 networked production`; destination origin/main, no force. Hash/push verification được report sau Git transaction.
+
+Limits: scene vẫn placeholder; Solar placement là test surface free/instant, không building construction economy. Chưa standalone player build; chưa population quantity allocation. Phase2 DONE; Current Phase3 TODO, chưa bắt đầu. Dừng cho user playtest.

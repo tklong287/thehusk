@@ -151,7 +151,8 @@ namespace Husk.Tests
             layout.SetTestSupply(Vector2Int.zero, Pipeline.M);
             Assert.That(network.State(Vector2Int.right * 2, Pipeline.M), Is.EqualTo(PipelineState.Supplied));
             Assert.That(layout.Cells[Vector2Int.right].Building, Is.EqualTo(ModuleBuilding.House));
-            Assert.That(layout.TryOccupy(Vector2Int.right * 2, ModuleBuilding.WaterPlant, out _), Is.False);
+            Assert.That(layout.TryOccupy(Vector2Int.right * 2, ModuleBuilding.WaterPlant, out _), Is.True);
+            Assert.That(layout.Cells[Vector2Int.right * 2].Pipelines, Is.EqualTo(Pipeline.W | Pipeline.M | Pipeline.E));
         }
         [Test]
         public void TownHallHasNoInventedIoOrSupplyAndFixtureCannotEmitUnsupportedCategory()

@@ -12,11 +12,27 @@ namespace Husk
         private readonly ModuleLayout layout;
         private readonly Dictionary<(Vector2Int, Pipeline), int> components = new();
         private readonly HashSet<(Pipeline, int)> supplied = new();
+        private readonly Dictionary<Vector2Int, Pipeline> operationalSources = new();
+        private readonly bool useTestSupply;
+        private int sourceRevision, resolvedSourceRevision = -1, stateRevision;
         private int revision = -1;
-        public ModuleNetwork(ModuleLayout layout) { this.layout = layout; }
+        public int Revision { get { Refresh(); return stateRevision; } }
+        public ModuleNetwork(ModuleLayout layout, bool useTestSupply = true)
+        { this.layout = layout; this.useTestSupply = useTestSupply; }
+        // Production publishes actual active endpoints; Phase 1 fixtures stay separate.
+        public void SetOperationalSources(IReadOnlyDictionary<Vector2Int, Pipeline> sources)
+        {
+            bool changed = sources.Count != operationalSources.Count;
+            foreach (var pair in sources)
+                if (!operationalSources.TryGetValue(pair.Key, out var old) || old != pair.Value) changed = true;
+            if (!changed) return;
+            operationalSources.Clear();
+            foreach (var pair in sources) operationalSources.Add(pair.Key, pair.Value);
+            sourceRevision++;
+        }
         private void Refresh()
         {
-            if (revision == layout.Revision) return;
+            if (revision == layout.Revision && resolvedSourceRevision == sourceRevision) return;
             components.Clear(); supplied.Clear();
             var queue = new Queue<Vector2Int>();
             foreach (var type in Types)
@@ -30,7 +46,9 @@ namespace Husk
                     while (queue.Count > 0)
                     {
                         var position = queue.Dequeue();
-                        if ((layout.Cells[position].TestSupply & type) != 0) supplied.Add((type, id));
+                        if ((useTestSupply && (layout.Cells[position].TestSupply & type) != 0)
+                            || (operationalSources.TryGetValue(position, out var output) && (output & type) != 0))
+                            supplied.Add((type, id));
                         foreach (var direction in ModuleLayout.Directions)
                         {
                             var next = position + direction;
@@ -41,6 +59,8 @@ namespace Husk
                 }
             }
             revision = layout.Revision;
+            resolvedSourceRevision = sourceRevision;
+            stateRevision++;
         }
         public int Component(Vector2Int position, Pipeline type)
         { Refresh(); return components.TryGetValue((position, type), out int id) ? id : -1; }

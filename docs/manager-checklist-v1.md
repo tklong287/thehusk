@@ -2,7 +2,7 @@
 
 ## Purpose và nguồn thiết kế
 
-Active prototype: **Prototype V1 — Module Network & Planning**. V0 Phase 0–7 COMPLETE là lịch sử, không chuyển checklist V0 thành V1. Phase 1 đã DONE; Phase 2–4 vẫn TODO, chờ user playtest và giao task tiếp theo.
+Active prototype: **Prototype V1 — Module Network & Planning**. V0 Phase 0–7 COMPLETE là lịch sử, không chuyển checklist V0 thành V1. Phase 1 đã DONE và user chấp nhận; Phase 2 DONE sau corrective contract validation; Phase 3–4 TODO, chưa bắt đầu.
 
 Đọc theo priority: latest explicit user decision → AGENTS.md → docs/prototype-v1-module-network.md → checklist này → docs/manager-status-v1.md. Đúng bốn phase lớn; mỗi phase là một task coherent, không chia micro-phase. Checkbox đã đánh dấu có evidence nghiệm thu trong manager-status-v1.md; checkbox còn trống chưa được nghiệm thu.
 
@@ -35,7 +35,7 @@ STATUS: DONE
 
 ## V1 Phase 2 — Networked Production + Starting City
 
-STATUS: TODO
+STATUS: DONE
 
 **Goal:** starting city và bốn mạng vận hành bằng actual production/supply, có hậu quả khi mất input.
 
@@ -43,17 +43,17 @@ STATUS: TODO
 
 **Acceptance Criteria:**
 
-- [ ] Fresh city đúng sáu building/số lượng/trạng thái trên. Town Hall dùng storage foundation Phase 1, click xem concrete items/100 Module Core; không tự gán Town Hall I/O.
-- [ ] Water Plant/Recycler bắt đầu Damaged; Repair trước, sau Repair vẫn kiểm required inputs. Exact repair cost/time từng loại TBD/provisional/configurable, không final balance.
-- [ ] I/O đúng bảng: Harbor M → F; Water E+M → W; Recycler E → M; Solar không input → E; House F+W → không output. Module support union INPUT+OUTPUT và optional pass-through.
-- [ ] Từng required input phải có compatible continuous path và actual supply. Thiếu một input → Disabled/Unsupplied; đủ điều kiện mới Operational. Repair không bypass network.
-- [ ] Fish giữ concrete item identity, feed F và trực tiếp đáp ứng generic Food trong V1; không Food Processing/class diet. M giữ Wood/Iron/Recyclable Material riêng.
-- [ ] Reuse nhiều boat độc lập/build khoảng 5s/trip khoảng 30s/unload 5 Fish/repeat; không reset boat cũ hoặc duplicate unload khi integrate. Behavior phụ thuộc M phải được kiểm, không mở fleet framework.
-- [ ] Water/Recycler reuse production/conversion; concrete input không bị bỏ qua, debit/credit đúng. Output feed đúng W/M; Solar source E thật. Không global stock bypass path.
-- [ ] Source/path mất và hồi phục cập nhật đúng downstream building và bright/dim lanes. Branch còn alternate source/path vẫn hoạt động; không tắt toàn map sai hoặc double-count stock.
-- [ ] House F/W supply state sẵn sàng cho Phase 3; minimum compatibility không trở thành population simulation triển khai sớm.
-- [ ] Kiểm startup supply setup cho target Population 100/100 của Phase 3 đồng thời Water/Recycler Damaged; không fake supplied hoặc invent Town Hall I/O. Quyết định gameplay thiếu phải được báo trước acceptance liên quan.
-- [ ] Manager chạy regression tests phù hợp và Play/Stop thực tế trên intended scene: production/output/input-loss/repair/recovery, compile PASS, Console không implementation errors, scene không unrelated dirty state; review source/diff/metas.
+- [x] Fresh city đúng sáu building/số lượng/trạng thái trên. Town Hall dùng storage foundation Phase 1, click xem concrete items/100 Module Core; không tự gán Town Hall I/O.
+- [x] Water Plant/Recycler bắt đầu Damaged; Repair trước, sau Repair vẫn kiểm required inputs. Exact repair cost/time từng loại TBD/provisional/configurable, không final balance.
+- [x] I/O đúng bảng: Harbor M → F; Water E+M → W; Recycler E → M; Solar không input → E; House F+W → không output. Module support và lock union INPUT+OUTPUT trong UI/domain; optional pass-through editable. Placement tự thêm required pipelines, deterministic optional drop, giữ đúng 3/4 và tối đa config cũ; không popup/manual prerequisite.
+- [x] Operational chỉ kiểm INPUT có compatible continuous path + actual supply, cộng Damaged/Repair/concrete conditions hiện có. OUTPUT không là prerequisite: Harbor có M tự cấp F, Solar tự cấp E, Recycler repaired+có E tự cấp M, Water repaired+có E/M tự cấp W. Thiếu input → Disabled và output dừng; Repair không bypass network.
+- [x] Fish giữ concrete item identity, feed F và trực tiếp đáp ứng generic Food trong V1; không Food Processing/class diet. M giữ Wood/Iron/Recyclable Material riêng.
+- [x] Reuse nhiều boat độc lập/build khoảng 5s/trip khoảng 30s/unload 5 Fish/repeat; không reset boat cũ hoặc duplicate unload khi integrate. Behavior phụ thuộc M phải được kiểm, không mở fleet framework.
+- [x] Water/Recycler reuse production/conversion; concrete input không bị bỏ qua, debit/credit đúng. Output feed đúng W/M; Solar source E thật. Không global stock bypass path.
+- [x] Source/path mất và hồi phục cập nhật đúng downstream building và bright/dim lanes. Branch còn alternate source/path vẫn hoạt động; không tắt toàn map sai hoặc double-count stock.
+- [x] House F/W supply state sẵn sàng cho Phase 3; minimum compatibility không trở thành population simulation triển khai sớm.
+- [x] Kiểm startup supply setup cho target Population 100/100 của Phase 3 đồng thời Water/Recycler Damaged; không fake supplied hoặc invent Town Hall I/O. Quyết định gameplay thiếu phải được báo trước acceptance liên quan.
+- [x] Manager chạy regression tests phù hợp và Play/Stop thực tế trên intended scene: production/output/input-loss/repair/recovery, compile PASS, Console không implementation errors, scene không unrelated dirty state; review source/diff/metas.
 
 **Guardrails:** Không economy balance; không throughput/congestion/capacity/pressure, voltage/battery/day-night solar. Không population simulation ngoài minimum compatibility. Ghi provisional test stock/rates đủ thử routing.
 
