@@ -59,7 +59,7 @@ STATUS: TODO
 
 ## Goal
 
-Tạo foundation gameplay nhỏ nhất để fresh run biểu diễn đúng starting state và Water problem.
+Tạo prototype shell, resource state và initial Water problem representation nhỏ nhất để test fresh run. Phase 1 không chịu trách nhiệm Recycler behavior/repair hoặc Water Plant build requirements.
 
 ## Required State
 
@@ -71,10 +71,12 @@ Fresh prototype start phải có:
 - Wood = provisional configurable value
 - Iron = provisional configurable value
 
-Ngoài ra:
+Context cho fresh start của V0 hoàn chỉnh, không phải implementation requirement của Phase 1:
 
-- Recycler tồn tại nhưng Broken.
-- Water Plant chưa được xây.
+- Recycler có sẵn nhưng Broken: Phase 3 triển khai trạng thái, behavior Broken/Operational và Repair; Phase 4 triển khai processing/conversion.
+- Water Plant chưa được xây: Phase 2 triển khai build requirements và Wood bottleneck; Phase 5 triển khai successful construction và production.
+
+Phase 1 chỉ cần resource state và Water problem representation; không yêu cầu tạo Recycler hoặc Water Plant behavior để PASS phase này.
 
 ## Acceptance Criteria
 
@@ -87,7 +89,7 @@ Ngoài ra:
 - [ ] Wood và Iron initial values dễ chỉnh.
 - [ ] UI/developer UI đủ để nhìn thấy resource state trong Play Mode.
 - [ ] Player có feedback đủ để nhận ra Water là initial problem.
-- [ ] Không implement Recycler processing ở phase này.
+- [ ] Không implement Recycler behavior/repair/processing hoặc Water Plant build requirements ở phase này.
 - [ ] Không implement Collection ở phase này.
 - [ ] Unity compile PASS.
 - [ ] Console không có error phát sinh từ implementation.
