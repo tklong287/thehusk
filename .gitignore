@@ -1,0 +1,25 @@
+# Unity generated folders (project lives in Game/Husk)
+/Game/Husk/[Ll]ibrary/
+/Game/Husk/[Tt]emp/
+/Game/Husk/[Oo]bj/
+/Game/Husk/[Bb]uild/
+/Game/Husk/[Bb]uilds/
+/Game/Husk/[Ll]ogs/
+/Game/Husk/[Uu]ser[Ss]ettings/
+
+# Local IDE settings
+.vs/
+.vscode/
+
+# Generated solution, project, and debug files
+*.csproj
+*.sln
+*.slnx
+*.user
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
