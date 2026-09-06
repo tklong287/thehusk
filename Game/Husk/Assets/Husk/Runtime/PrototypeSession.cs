@@ -12,9 +12,11 @@ namespace Husk
         [SerializeField, Min(0)] private int startingWood = 100;
         [SerializeField, Min(0)] private int startingIron = 100;
 
+        [SerializeField, Min(0)] private int startingFish = 100;
+
         private ResourceState resources;
         public ResourceState Resources => resources ??= new ResourceState(startingWood, startingIron,
-            startingFood, startingWater, startingRecyclableMaterial);
+            startingFood, startingWater, startingRecyclableMaterial, startingFish);
 
         private void Awake()
         {

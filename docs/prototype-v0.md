@@ -58,7 +58,7 @@ Visual placeholder được chấp nhận. Không production gameplay trong Phas
 
 Fishing Harbor tồn tại sẵn ở fresh run từ Phase 2, có thể select/click và cho feedback chọn rõ ràng. Action gameplay đầu tiên là **Build Fishing Boat** tại Harbor.
 
-Không yêu cầu player xây Harbor; không worker assignment hoặc fleet management framework.
+Một Harbor cho phép xây nhiều Fishing Boat; mỗi thuyền hoạt động độc lập. Đây là yêu cầu user xác nhận ngày 2026-09-06, thay thế assumption một Harbor chỉ có một thuyền. Không yêu cầu player xây Harbor; không worker assignment hoặc fleet management framework.
 
 ## 7. Fishing Boat Construction
 
@@ -66,7 +66,7 @@ Player chọn Harbor → Build Fishing Boat → construction khoảng **5 giây*
 
 Build progress/time và completion phải đọc được. Build time configurable. Không cần balance cost; nếu có cost thì cost provisional/configurable và starting resources đủ để test, không tạo bottleneck.
 
-Phase 2 dừng ở boat completion. Autonomous departure/cycle thuộc Phase 3.
+Sau khi hoàn thành một thuyền, Harbor cho phép xây thêm thuyền; việc xây mới không reset hoặc dừng các thuyền đã hoàn thành. Implementation tối thiểu dùng một lượt construction tại một thời điểm, giữ khoảng 5s mỗi thuyền. Phase 2 dừng ở boat completion. Autonomous departure/cycle thuộc Phase 3.
 
 ## 8. Fishing Boat Autonomous Cycle
 
@@ -76,7 +76,7 @@ At Harbor → Depart → Fishing / Out at sea → Return → Harbor → repeat.
 
 Một complete trip/cycle khoảng **30 giây**, gồm hành trình rời Harbor và quay lại; không coi 30s là thời gian fishing cộng thêm vào một trip chưa được định nghĩa. Các chi tiết phân bổ thời gian/chuyển động là implementation detail nhỏ, tunable.
 
-Boat nhìn thấy được rời Husk, làm việc và quay lại. Có thể dùng waypoint, simple destination hoặc minimal state machine để behavior dễ đọc. Boat tự lặp, không cần player redispatch mỗi trip.
+Boat nhìn thấy được rời Husk, làm việc và quay lại. Có thể dùng waypoint, simple destination hoặc minimal state machine để behavior dễ đọc. Mỗi boat có trạng thái và thời gian chuyến đi riêng, tự lặp độc lập, không cần player redispatch mỗi trip.
 
 Không world navigation framework, pathfinding architecture không cần thiết, route logistics, fuel, maintenance hoặc fishing-area simulation phức tạp.
 
@@ -90,6 +90,8 @@ Cargo per trip configurable. Resource credit đúng một lần cho mỗi lần 
 
 Không cộng Fish chỉ vì boat được build; Fish production gắn với return/unload. Fish lưu riêng với Food, storage unlimited.
 
+Phase 4 implementation: mỗi boat credit khi Return chuyển sang Harbor (giây 28 trong cycle default 30s, rồi dừng tại Harbor 2s). Cargo được lấy từ cấu hình Harbor khi boat hoàn thành; default 5 Fish. Starting Fish nằm trên PrototypeSession, default 100. Feedback giao hàng ở Harbor, danh sách từng boat và world label kéo dài 4s, configurable/provisional. Mỗi boat đếm lượt về riêng để không bỏ sót khi một frame vượt nhiều cycles.
+
 ## 10. Water Production Loop
 
 Test một building-based production loop độc lập:
@@ -100,6 +102,10 @@ Player đủ resources để dùng mechanic. Placement/build interaction chỉ �
 
 Production/cost/construction values configurable, provisional. Không dùng Water shortage, Recycler prerequisite, electricity, workers, logistics hoặc construction chain phức tạp.
 
+Water Plant chiếm 1×1 module: toàn bộ đế nằm trong một ô sàn, đặt tại tâm ô; không đặt vắt qua đường nối giữa các module. Site hiện tại là Deck Module -1,-1 (tâm world x=-6, z=-6).
+
+Phase 5 implementation dùng một site Water Plant cố định trên sàn: select → Build Water Plant → construction 5s → Operational → +1 Water mỗi 2s. First production sau construction đủ một interval, không cộng Water ngay khi build. Build không tốn resource trong test setup hiện tại. Build time, interval, lượng Water và feedback 4s là configurable/provisional; không phụ thuộc Harbor, thuyền hoặc Recycler.
+
 ## 11. Recycler Production Loop
 
 Test resource transformation:
@@ -109,6 +115,8 @@ Recyclable Material → Recycler → Wood.
 Recycler accessible/buildable theo implementation nhỏ nhất. Processing làm Recyclable Material giảm, Wood tăng theo conversion values đã cấu hình, state/HUD và feedback cập nhật đúng.
 
 Không cần Broken/Repair mechanic. Recycler không unlock Water Plant. Không Collection hoặc generic production-chain framework; conversion/processing values là tunable prototype values.
+
+Phase 6 implementation: một fixed Recycler site nằm gọn trong Deck Module 1,-1, tâm world(6,0.7,-6). Select → build5s không cost → xử lý mỗi4s: 2Recyclable Material thành1Wood. Debit/credit cùng lúc khi batch hoàn thành; không tạo Wood miễn phí. Khi không đủ đầu vào, chờ và tự tiếp tục khi bổ sung; thời gian chờ không tích thành backlog. Build time, processing interval, input/output amounts và feedback là provisional/configurable.
 
 ## 12. Storage Rules
 
@@ -125,7 +133,7 @@ Resource state vẫn phải đúng khi add/remove/query. Unlimited storage khôn
 | Fishing Boat build time | ≈ 5s, configurable |
 | Complete fishing trip/cycle | ≈ 30s, configurable |
 | Cargo per trip | 5 Fish, configurable |
-| Water production values | Provisional/configurable; chưa chốt exact rate |
+| Water production values | Test +1 Water/2s, build5s, feedback4s; configurable/provisional |
 | Recycler conversion/processing values | Provisional/configurable; chưa chốt exact ratio/rate |
 | Costs/construction values | Provisional/configurable; không intentional bottleneck |
 
@@ -173,3 +181,7 @@ V0 complete khi Phase 0–7 trong `docs/manager-checklist.md` đều DONE theo s
 - Integration/feel review đủ để user đánh giá game; không còn blocker chưa giải quyết.
 
 Success phụ thuộc core loops đủ trực quan và ổn định để đánh giá feel, không phụ thuộc economy balance hoặc kết luận rằng final game đã hấp dẫn. Tôn trọng checkpoint/stop của user; không tự chạy phase kế tiếp khi user yêu cầu dừng.
+
+## 17. V0 Review Checkpoint — 2026-09-06
+
+Phase0–7 đã được Manager nghiệm thu. Fresh-run tích hợp bằng các nút trong game xác nhận hai boat tự lặp/unload, Water và Recycler cùng chạy đúng; restart tái lập. Chi tiết tests, resource reconciliation và feel review nằm trong docs/manager-status.md, mục Last Completed Phase / Feel review. V0 đủ để user playtest core loops; placeholder art, berth overlap và mức độ hoạt hình của Water/Recycler vẫn là điểm iteration được ghi nhận, không thay đổi scope hoặc final balance.

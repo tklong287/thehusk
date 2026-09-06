@@ -120,6 +120,7 @@ World shell
 - Interaction đầu tiên: chọn Harbor → Build Fishing Boat → construction khoảng 5 giây → boat hoàn thành.
 - Boat tự rời Harbor, thực hiện trip khoảng 30 giây rồi quay về.
 - Khi Fish production được triển khai ở Phase 4, mỗi lần về unload 5 Fish, resource/HUD cập nhật.
+- Một Harbor có thể xây nhiều Fishing Boat; mỗi boat giữ trạng thái/chuyến đi riêng và hoạt động độc lập. Xây thêm không reset hoặc dừng boat cũ.
 - Boat tự bắt đầu cycle tiếp theo, không manual redispatch.
 - Build time ≈ 5s, complete trip/cycle ≈ 30s và cargo 5 Fish là tunable prototype values.
 - Không worker assignment, fuel, maintenance, route logistics, fleet management framework hoặc fishing-area simulation phức tạp.

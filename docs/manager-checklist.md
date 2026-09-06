@@ -80,7 +80,7 @@ Không tutorial/scarcity/balance; không thêm production của các phase sau. 
 
 # Phase 2 — Fishing Harbor & Build Fishing Boat
 
-STATUS: TODO
+STATUS: DONE
 
 ## Goal
 
@@ -92,16 +92,17 @@ Harbor có sẵn từ fresh run; select/click Harbor; action Build Fishing Boat;
 
 ## Acceptance Criteria
 
-- [ ] Fishing Harbor tồn tại từ fresh run; player không cần xây Harbor.
-- [ ] Select/click Harbor hoạt động và selection/action feedback rõ.
-- [ ] Action Build Fishing Boat bắt đầu construction với progress/time nhìn thấy được.
-- [ ] Default build time khoảng 5s, configurable; completion tạo Fishing Boat nhìn thấy được.
-- [ ] Nếu có build cost, cost configurable/provisional và starting resources đủ để dùng mechanic, không bottleneck.
-- [ ] Không fishing autonomous trip hoặc Fish production trong Phase 2.
-- [ ] Manager tự dùng Unity MCP kiểm fresh Harbor, interaction, timed construction và boat completion trong Play Mode.
-- [ ] Unity compilation PASS; Editor ready.
-- [ ] Console không có compile/runtime error từ implementation; mọi warning mới được review.
-- [ ] Sau validation đã Exit Play Mode; intended scene/assets đã save, không còn unrelated dirty state.
+- [x] Fishing Harbor tồn tại từ fresh run; player không cần xây Harbor.
+- [x] Select/click Harbor hoạt động và selection/action feedback rõ.
+- [x] Action Build Fishing Boat bắt đầu construction với progress/time nhìn thấy được.
+- [x] Default build time khoảng 5s, configurable; completion tạo Fishing Boat nhìn thấy được.
+- [x] Multi-boat revision: một Harbor xây được thêm nhiều boat; mỗi completion tạo đúng một boat, construction mới không làm gián đoạn boat cũ.
+- [x] Nếu có build cost, cost configurable/provisional và starting resources đủ để dùng mechanic, không bottleneck.
+- [x] Không fishing autonomous trip hoặc Fish production trong Phase 2.
+- [x] Manager tự dùng Unity MCP kiểm fresh Harbor, interaction, timed construction và boat completion trong Play Mode.
+- [x] Unity compilation PASS; Editor ready.
+- [x] Console không có compile/runtime error từ implementation; mọi warning mới được review.
+- [x] Sau validation đã Exit Play Mode; intended scene/assets đã save, không còn unrelated dirty state.
 
 ## Guardrails
 
@@ -111,7 +112,7 @@ Chỉ Harbor + build boat. Không workers, fleet management framework, manual di
 
 # Phase 3 — Fishing Boat Autonomous Cycle
 
-STATUS: TODO
+STATUS: DONE
 
 ## Goal
 
@@ -123,15 +124,16 @@ At Harbor → Depart → Fishing / Out at sea → Return → Harbor → repeat. 
 
 ## Acceptance Criteria
 
-- [ ] Boat hoàn thành construction tự bắt đầu cycle; không cần player dispatch.
-- [ ] Depart, hoạt động ngoài biển và Return về Harbor nhìn thấy được, dễ phân biệt.
-- [ ] Complete trip khoảng 30s ở default configuration; timing dễ chỉnh.
-- [ ] Boat tự bắt đầu cycle tiếp theo và chạy nhiều consecutive cycles không player redispatch.
-- [ ] Không Fish production trước Phase 4, trừ interface tối thiểu thực sự cần; không credit resource trong phase này.
-- [ ] Manager tự quan sát nhiều cycles qua Unity MCP Play Mode, kiểm state/timing và movement readability.
-- [ ] Unity compilation PASS; Editor ready.
-- [ ] Console không có compile/runtime error từ implementation; mọi warning mới được review.
-- [ ] Sau validation đã Exit Play Mode; intended scene/assets đã save, không còn unrelated dirty state.
+- [x] Boat hoàn thành construction tự bắt đầu cycle; không cần player dispatch.
+- [x] Depart, hoạt động ngoài biển và Return về Harbor nhìn thấy được, dễ phân biệt.
+- [x] Complete trip khoảng 30s ở default configuration; timing dễ chỉnh.
+- [x] Boat tự bắt đầu cycle tiếp theo và chạy nhiều consecutive cycles không player redispatch.
+- [x] Multi-boat revision: nhiều boat giữ clock/state riêng, chạy độc lập qua nhiều cycles và có feedback phân biệt từng boat.
+- [x] Không Fish production trước Phase 4, trừ interface tối thiểu thực sự cần; không credit resource trong phase này.
+- [x] Manager tự quan sát nhiều cycles qua Unity MCP Play Mode, kiểm state/timing và movement readability.
+- [x] Unity compilation PASS; Editor ready.
+- [x] Console không có compile/runtime error từ implementation; mọi warning mới được review.
+- [x] Sau validation đã Exit Play Mode; intended scene/assets đã save, không còn unrelated dirty state.
 
 ## Guardrails
 
@@ -141,7 +143,7 @@ Không world navigation framework, fleet manager lớn, pathfinding architecture
 
 # Phase 4 — Fish Production & Unload Feedback
 
-STATUS: TODO
+STATUS: DONE
 
 ## Goal
 
@@ -153,15 +155,15 @@ Fish resource riêng; cargo default 5 Fish/trip configurable; unload tại Harbo
 
 ## Acceptance Criteria
 
-- [ ] Fish là resource riêng với Food; starting Fish default 100 và configurable như các resource test khác.
-- [ ] Boat returns rồi unload 5 Fish/trip theo default cargo configurable.
-- [ ] Mỗi lần unload credit đúng một lần; Fish state và HUD tăng đúng cargo, delivery feedback rõ.
-- [ ] Không storage capacity limit chặn unload/production.
-- [ ] Boat tự rời Harbor cho cycle kế tiếp; nhiều consecutive cycles tiếp tục tăng Fish đúng.
-- [ ] Manager tự dùng Unity MCP kiểm Fish trước/sau unload và qua nhiều cycles, đối chiếu cargo, HUD và feedback.
-- [ ] Unity compilation PASS; Editor ready.
-- [ ] Console không có compile/runtime error từ implementation; mọi warning mới được review.
-- [ ] Sau validation đã Exit Play Mode; intended scene/assets đã save, không còn unrelated dirty state.
+- [x] Fish là resource riêng với Food; starting Fish default 100 và configurable như các resource test khác.
+- [x] Boat returns rồi unload 5 Fish/trip theo default cargo configurable.
+- [x] Mỗi lần unload credit đúng một lần; Fish state và HUD tăng đúng cargo, delivery feedback rõ.
+- [x] Không storage capacity limit chặn unload/production.
+- [x] Boat tự rời Harbor cho cycle kế tiếp; nhiều consecutive cycles tiếp tục tăng Fish đúng.
+- [x] Manager tự dùng Unity MCP kiểm Fish trước/sau unload và qua nhiều cycles, đối chiếu cargo, HUD và feedback.
+- [x] Unity compilation PASS; Editor ready.
+- [x] Console không có compile/runtime error từ implementation; mọi warning mới được review.
+- [x] Sau validation đã Exit Play Mode; intended scene/assets đã save, không còn unrelated dirty state.
 
 ## Guardrails
 
@@ -171,7 +173,7 @@ Không tự bắt đầu Water loop; không workers, fuel, maintenance, storage 
 
 # Phase 5 — Water Production Loop
 
-STATUS: TODO
+STATUS: DONE
 
 ## Goal
 
@@ -183,15 +185,15 @@ Build/select Water Plant → construction/activation đơn giản → Operationa
 
 ## Acceptance Criteria
 
-- [ ] Player đủ resource để sử dụng Water Plant mechanic; không starting shortage hoặc Recycler prerequisite.
-- [ ] Build/select và construction/activation đơn giản hoạt động; placement tối thiểu nếu cần.
-- [ ] Operational state nhìn thấy được; Water tăng theo production values đã cấu hình.
-- [ ] Water HUD và production feedback cập nhật đúng.
-- [ ] Costs/construction/production values provisional, configurable.
-- [ ] Manager tự dùng Unity MCP kiểm interaction, operational state và Water tăng qua thời gian trong Play Mode.
-- [ ] Unity compilation PASS; Editor ready.
-- [ ] Console không có compile/runtime error từ implementation; mọi warning mới được review.
-- [ ] Sau validation đã Exit Play Mode; intended scene/assets đã save, không còn unrelated dirty state.
+- [x] Player đủ resource để sử dụng Water Plant mechanic; không starting shortage hoặc Recycler prerequisite.
+- [x] Build/select và construction/activation đơn giản hoạt động; placement tối thiểu nếu cần.
+- [x] Operational state nhìn thấy được; Water tăng theo production values đã cấu hình.
+- [x] Water HUD và production feedback cập nhật đúng.
+- [x] Costs/construction/production values provisional, configurable.
+- [x] Manager tự dùng Unity MCP kiểm interaction, operational state và Water tăng qua thời gian trong Play Mode.
+- [x] Unity compilation PASS; Editor ready.
+- [x] Console không có compile/runtime error từ implementation; mọi warning mới được review.
+- [x] Sau validation đã Exit Play Mode; intended scene/assets đã save, không còn unrelated dirty state.
 
 ## Guardrails
 
@@ -201,7 +203,7 @@ Không electricity, workers, logistics, construction chain phức tạp, economy
 
 # Phase 6 — Recycler Production Loop
 
-STATUS: TODO
+STATUS: DONE
 
 ## Goal
 
@@ -213,15 +215,15 @@ Recycler accessible/buildable theo implementation nhỏ nhất; processing input
 
 ## Acceptance Criteria
 
-- [ ] Recycler accessible/buildable để player test bằng resources có sẵn.
-- [ ] Processing tiêu hao Recyclable Material và tạo Wood đúng configured conversion; không resource credit/debit sai.
-- [ ] Processing state/feedback và resource HUD cập nhật rõ input/output.
-- [ ] Conversion/processing và costs nếu có là provisional/configurable; storage unlimited.
-- [ ] Recycler hoạt động độc lập, không prerequisite để dùng Water Plant; không Broken/Repair mechanic, Collection hoặc balance/dependency systems.
-- [ ] Manager tự dùng Unity MCP kiểm input giảm, Wood tăng và processing feedback trong Play Mode.
-- [ ] Unity compilation PASS; Editor ready.
-- [ ] Console không có compile/runtime error từ implementation; mọi warning mới được review.
-- [ ] Sau validation đã Exit Play Mode; intended scene/assets đã save, không còn unrelated dirty state.
+- [x] Recycler accessible/buildable để player test bằng resources có sẵn.
+- [x] Processing tiêu hao Recyclable Material và tạo Wood đúng configured conversion; không resource credit/debit sai.
+- [x] Processing state/feedback và resource HUD cập nhật rõ input/output.
+- [x] Conversion/processing và costs nếu có là provisional/configurable; storage unlimited.
+- [x] Recycler hoạt động độc lập, không prerequisite để dùng Water Plant; không Broken/Repair mechanic, Collection hoặc balance/dependency systems.
+- [x] Manager tự dùng Unity MCP kiểm input giảm, Wood tăng và processing feedback trong Play Mode.
+- [x] Unity compilation PASS; Editor ready.
+- [x] Console không có compile/runtime error từ implementation; mọi warning mới được review.
+- [x] Sau validation đã Exit Play Mode; intended scene/assets đã save, không còn unrelated dirty state.
 
 ## Guardrails
 
@@ -231,7 +233,7 @@ Không generic production-chain framework nếu không cần; không economy bal
 
 # Phase 7 — Prototype Integration & Feel Pass
 
-STATUS: TODO
+STATUS: DONE
 
 ## Goal
 
@@ -243,18 +245,18 @@ Fresh run: world visible → resources available → Harbor exists → build boa
 
 ## Acceptance Criteria
 
-- [ ] Fresh run có world/Husk visible, resources default 100/configurable, storage unlimited và Harbor có sẵn.
-- [ ] Player build boat; boat tự fishing/return/unload/repeat qua nhiều cycles mà không manual redispatch.
-- [ ] Water production và Recycler transformation sử dụng được độc lập, resource state/HUD cập nhật đúng.
-- [ ] Manager review camera readability và scale của Husk/buildings/boats.
-- [ ] Manager review movement, select/click, construction và production feedback cùng HUD readability.
-- [ ] Manager ghi nhận feel của khoảng 5s build, khoảng 30s fishing, world có cảm giác sống và loops có hiểu được qua observation không.
-- [ ] Fresh run/restart tái lập và integrated loops chạy ổn, không cần developer sửa state giữa run.
-- [ ] Manager tự validate integrated run qua Unity MCP và ghi evidence đủ cho user playtest/feel review.
-- [ ] Manager review toàn bộ implementation diff; phù hợp AGENTS/spec và không feature expansion hoặc economy balance pass.
-- [ ] Unity compilation PASS; Editor ready.
-- [ ] Console không có compile/runtime error từ implementation; mọi warning mới được review.
-- [ ] Sau validation đã Exit Play Mode; intended scene/assets đã save, không còn unrelated dirty state.
+- [x] Fresh run có world/Husk visible, resources default 100/configurable, storage unlimited và Harbor có sẵn.
+- [x] Player build boat; boat tự fishing/return/unload/repeat qua nhiều cycles mà không manual redispatch.
+- [x] Water production và Recycler transformation sử dụng được độc lập, resource state/HUD cập nhật đúng.
+- [x] Manager review camera readability và scale của Husk/buildings/boats.
+- [x] Manager review movement, select/click, construction và production feedback cùng HUD readability.
+- [x] Manager ghi nhận feel của khoảng 5s build, khoảng 30s fishing, world có cảm giác sống và loops có hiểu được qua observation không.
+- [x] Fresh run/restart tái lập và integrated loops chạy ổn, không cần developer sửa state giữa run.
+- [x] Manager tự validate integrated run qua Unity MCP và ghi evidence đủ cho user playtest/feel review.
+- [x] Manager review toàn bộ implementation diff; phù hợp AGENTS/spec và không feature expansion hoặc economy balance pass.
+- [x] Unity compilation PASS; Editor ready.
+- [x] Console không có compile/runtime error từ implementation; mọi warning mới được review.
+- [x] Sau validation đã Exit Play Mode; intended scene/assets đã save, không còn unrelated dirty state.
 
 ## Guardrails
 
