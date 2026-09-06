@@ -1,4 +1,5 @@
 {
   "name": "Husk.Runtime",
-  "rootNamespace": "Husk"
+  "rootNamespace": "Husk",
+  "references": ["Unity.InputSystem"]
 }

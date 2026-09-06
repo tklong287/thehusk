@@ -10,7 +10,6 @@ namespace Husk
         private readonly string[] rows = new string[5];
         private GUIStyle titleStyle;
         private GUIStyle resourceStyle;
-        private GUIStyle needStyle;
 
         public string ResourceSummary => string.Join(" | ", rows);
 
@@ -40,22 +39,25 @@ namespace Husk
         {
             if (titleStyle == null)
             {
-                titleStyle = new GUIStyle(GUI.skin.label) { fontSize = 24, fontStyle = FontStyle.Bold };
-                resourceStyle = new GUIStyle(GUI.skin.label) { fontSize = 20 };
-                needStyle = new GUIStyle(GUI.skin.label) { fontSize = 18, wordWrap = true };
-                needStyle.normal.textColor = new Color(1f, 0.8f, 0.35f);
+                titleStyle = new GUIStyle(GUI.skin.label) { fontSize = 21, fontStyle = FontStyle.Bold };
+                resourceStyle = new GUIStyle(GUI.skin.label) { fontSize = 16 };
+                titleStyle.normal.textColor = new Color(0.75f, 0.93f, 0.94f);
+                resourceStyle.normal.textColor = Color.white;
             }
 
             // Scale the small developer panel to fit the Game view.
             var previousMatrix = GUI.matrix;
-            float scale = Mathf.Min(1f, Screen.width / 600f, Screen.height / 440f);
+            float scale = Mathf.Min(1f, Screen.width / 800f, Screen.height / 540f);
             GUI.matrix = Matrix4x4.Scale(new Vector3(scale, scale, 1f));
-            GUI.Box(new Rect(16, 16, 568, 408), GUIContent.none);
-            GUI.Label(new Rect(36, 30, 520, 36), "HUSK | Settlement", titleStyle);
-            GUI.Label(new Rect(36, 78, 520, 28), "WATER SUPPLY NEEDED", needStyle);
-            GUI.Label(new Rect(36, 110, 520, 70), session.WaterNeedMessage, needStyle);
+            Color previousColor = GUI.color;
+            GUI.color = new Color(0.035f, 0.08f, 0.11f, 0.92f);
+            GUI.DrawTexture(new Rect(16, 16, 268, 206), Texture2D.whiteTexture);
+            GUI.color = previousColor;
+            GUI.Label(new Rect(30, 24, 240, 32), "HUSK", titleStyle);
             for (int i = 0; i < rows.Length; i++)
-                GUI.Label(new Rect(36, 196 + i * 36, 520, 32), rows[i], resourceStyle);
+                GUI.Label(new Rect(30, 64 + i * 28, 240, 26), rows[i], resourceStyle);
+            GUI.Label(new Rect(20, Screen.height / scale - 32, 620, 28),
+                "RMB drag: orbit    Scroll: zoom    R: reset view", resourceStyle);
             GUI.matrix = previousMatrix;
         }
     }

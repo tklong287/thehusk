@@ -10,13 +10,17 @@ namespace Husk
         private readonly int[] amounts = new int[5];
         public event Action Changed;
 
-        public ResourceState(int startingWood, int startingIron)
+        public ResourceState(int startingWood = 100, int startingIron = 100,
+            int startingFood = 100, int startingWater = 100, int startingRecyclableMaterial = 100)
         {
             ValidateAmount(startingWood);
             ValidateAmount(startingIron);
-            amounts[(int)ResourceKind.Food] = 0;
-            amounts[(int)ResourceKind.Water] = 5;
-            amounts[(int)ResourceKind.RecyclableMaterial] = 10;
+            ValidateAmount(startingFood);
+            ValidateAmount(startingWater);
+            ValidateAmount(startingRecyclableMaterial);
+            amounts[(int)ResourceKind.Food] = startingFood;
+            amounts[(int)ResourceKind.Water] = startingWater;
+            amounts[(int)ResourceKind.RecyclableMaterial] = startingRecyclableMaterial;
             amounts[(int)ResourceKind.Wood] = startingWood;
             amounts[(int)ResourceKind.Iron] = startingIron;
         }

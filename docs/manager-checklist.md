@@ -4,7 +4,7 @@
 
 Checklist chuyển `docs/prototype-v0.md` thành các phase cho visual/system prototype: world, interaction, autonomous production và game feel. Balance làm sau V0.
 
-Phase 1–7 bên dưới thay thế checklist cũ và đều TODO. Acceptance của implementation trước design reset không tự chuyển sang checklist mới.
+Phase 1–7 bên dưới thay thế checklist cũ. Status từng phase phản ánh review theo direction mới; acceptance trước design reset không tự chuyển sang checklist này.
 
 Manager tự review source/diff, Unity compilation, Console và runtime qua Unity MCP. Report của Implementer không phải acceptance proof.
 
@@ -48,7 +48,7 @@ Không rebuild hoặc redesign technical foundation trừ khi một phase sau th
 
 # Phase 1 — Playable World Shell
 
-STATUS: TODO
+STATUS: DONE
 
 ## Goal
 
@@ -60,17 +60,17 @@ Prototype scene/entry point; water/environment tối thiểu; Husk platform/modu
 
 ## Acceptance Criteria
 
-- [ ] Prototype scene/entry point rõ ràng và mở Play Mode được.
-- [ ] Water/environment và Husk platform/module placeholder nhìn thấy được; visual placeholder được chấp nhận.
-- [ ] Gameplay camera quan sát usable; control tối thiểu nếu cần đủ để quan sát world.
-- [ ] HUD hiển thị resource state; gameplay state độc lập presentation.
-- [ ] Các resource test hiện có bắt đầu ở 100 theo default configuration, dễ chỉnh; fresh run tái lập đúng cấu hình.
-- [ ] Resource state hỗ trợ query/add/remove rõ ràng, không thêm storage capacity limit.
-- [ ] Không production gameplay hoặc Fishing Boat construction trong Phase 1.
-- [ ] Manager tự validate world/camera/HUD và fresh-start values qua Unity MCP Play Mode; kiểm trực quan readability.
-- [ ] Unity compilation PASS; Editor ready.
-- [ ] Console không có compile/runtime error từ implementation; mọi warning mới được review.
-- [ ] Sau validation đã Exit Play Mode; intended scene/assets đã save, không còn unrelated dirty state.
+- [x] Prototype scene/entry point rõ ràng và mở Play Mode được.
+- [x] Water/environment và Husk platform/module placeholder nhìn thấy được; visual placeholder được chấp nhận.
+- [x] Gameplay camera quan sát usable; control tối thiểu nếu cần đủ để quan sát world.
+- [x] HUD hiển thị resource state; gameplay state độc lập presentation.
+- [x] Các resource test hiện có bắt đầu ở 100 theo default configuration, dễ chỉnh; fresh run tái lập đúng cấu hình.
+- [x] Resource state hỗ trợ query/add/remove rõ ràng, không thêm storage capacity limit.
+- [x] Không production gameplay hoặc Fishing Boat construction trong Phase 1.
+- [x] Manager tự validate world/camera/HUD và fresh-start values qua Unity MCP Play Mode; kiểm trực quan readability.
+- [x] Unity compilation PASS; Editor ready.
+- [x] Console không có compile/runtime error từ implementation; mọi warning mới được review.
+- [x] Sau validation đã Exit Play Mode; intended scene/assets đã save, không còn unrelated dirty state.
 
 ## Guardrails
 
