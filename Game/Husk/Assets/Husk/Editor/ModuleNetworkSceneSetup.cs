@@ -13,7 +13,9 @@ namespace Husk.Editor
         public static void CreatePhase2Scene() => Create(true);
         [MenuItem("Husk/Create Phase 3 Housing Scene")]
         public static void CreatePhase3Scene() => Create(true, true);
-        private static void Create(bool production, bool population = false)
+        [MenuItem("Husk/Create Phase 4 Integrated Scene")]
+        public static void CreatePhase4Scene() => Create(true, true, true);
+        private static void Create(bool production, bool population = false, bool integrated = false)
         {
             if (EditorApplication.isPlaying) throw new System.InvalidOperationException("Exit Play before scene setup.");
             if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().isDirty)
@@ -36,13 +38,15 @@ namespace Husk.Editor
             lightObject.transform.rotation = Quaternion.Euler(50, -30, 0);
             var light = lightObject.GetComponent<Light>(); light.type = LightType.Directional; light.intensity = 1.4f;
             RenderSettings.ambientLight = new Color(0.55f, 0.6f, 0.65f);
-            var prototype = new GameObject(population ? "V1 Phase 3 Housing City" : production ? "V1 Phase 2 Networked City" : "V1 Phase 1 Module Network", typeof(ModuleNetworkPrototype));
+            var prototype = new GameObject(integrated ? "V1 Phase 4 Integrated City" : population ? "V1 Phase 3 Housing City" : production ? "V1 Phase 2 Networked City" : "V1 Phase 1 Module Network", typeof(ModuleNetworkPrototype));
             var serialized = new SerializedObject(prototype.GetComponent<ModuleNetworkPrototype>());
             serialized.FindProperty("view").objectReferenceValue = camera;
             serialized.FindProperty("networkedProduction").boolValue = production;
             serialized.FindProperty("populationSimulation").boolValue = population;
+            serialized.FindProperty("integratedPlaytest").boolValue = integrated;
+            if (population) serialized.FindProperty("productionSettings.waterPerCycle").intValue = 20;
             serialized.ApplyModifiedPropertiesWithoutUndo();
-            EditorSceneManager.SaveScene(scene, population ? "Assets/Scenes/V1Phase3.unity" : production ? "Assets/Scenes/V1Phase2.unity" : ScenePath);
+            EditorSceneManager.SaveScene(scene, integrated ? "Assets/Scenes/V1Phase4.unity" : population ? "Assets/Scenes/V1Phase3.unity" : production ? "Assets/Scenes/V1Phase2.unity" : ScenePath);
         }
     }
 }

@@ -150,7 +150,7 @@ Không death, migration, happiness, health, growth slowdown, security hoặc ove
 
 Fishing giữ approximate V0 test loop: build boat khoảng **5s**, complete trip khoảng **30s**, return/unload **5 Fish**, auto repeat. Một Harbor có nhiều boat hoạt động độc lập. Integrate M input và F output; không mở rộng fleet framework.
 
-Water Plant E+M → W, Recycler E → M, Solar → E. Reuse Water timing/output và Recycler Recyclable Material → Wood conversion khi hợp lý. Mapping network không biến conversion thành việc tạo Material item chung.
+Water Plant E+M → W, Recycler E → M, Solar → E. Latest user tuning: active V1 Water Plant tạo20 Water/2s (10/s), giữ configurable. Reuse Water timing/output và Recycler Recyclable Material → Wood conversion khi hợp lý. Mapping network không biến conversion thành việc tạo Material item chung.
 
 Rates/build/repair timing ngoài giá trị confirmed phải configurable/provisional. V0 Water 0.5/s và boat 5 Fish/30s không tự đủ đáp ứng demand 5/s của 100 residents. Chuẩn bị test stock/supply phù hợp để đánh giá routing, ghi preset và không biến thiếu supply do preset thành kết luận topology sai hoặc thành economy balance task.
 
@@ -225,4 +225,4 @@ Không implement Hub, Gas, Network/Data hoặc 2/4 trong V1. Không throughput/n
 
 ## 16. Validation và handoff
 
-Manager tự review toàn bộ source/diff/metas, Unity compile/Console/runtime/tests và từng criterion trước checkpoint; không dùng report Implementer làm acceptance duy nhất. Task Phase3 tích hợp City Hall special storage module và House/population/consumption theo quyết định mới, không bắt đầu Phase4. Giữ scope đúng phase và dừng cho user playtest.
+Manager tự review toàn bộ source/diff/metas, Unity compile/Console/runtime/tests và từng criterion trước checkpoint; không dùng report Implementer làm acceptance duy nhất. Task Phase4 tích hợp/harden và kiểm đầy đủ network planning scenarios trên baseline Phase3, gồm Water20/2s mới. Không bắt đầu prototype mới. Giữ scope đúng phase và dừng cho user playtest.

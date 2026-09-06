@@ -17,6 +17,8 @@ namespace Husk
         [Header("Phase 3 housing / City Hall storage (off preserves earlier scenes)")]
         [SerializeField] private bool populationSimulation;
         [SerializeField] private PopulationSettings populationSettings = new();
+        [SerializeField] private bool integratedPlaytest;
+        [SerializeField, HideInInspector] private Transform runtimeRoot;
         [Header("Provisional F / W / M / E palette")]
         [SerializeField] private Color foodColor = new(0.35f, 1f, 0.32f);
         [SerializeField] private Color waterColor = new(0.1f, 0.75f, 1f);
@@ -25,7 +27,7 @@ namespace Husk
         [SerializeField, Range(0.05f, 0.8f)] private float unsuppliedBrightness = 0.25f;
 
         private readonly Dictionary<Vector2Int, Transform> visuals = new();
-        private readonly List<Material> ownedMaterials = new();
+        [SerializeField, HideInInspector] private List<Material> ownedMaterials = new();
         private readonly Material[,] laneMaterials = new Material[4, 2];
         private Material deckMaterial, hullMaterial, selectionMaterial, validMaterial, invalidMaterial;
         private Transform cursor;
@@ -47,7 +49,29 @@ namespace Husk
         public bool IsScreenPointOverPanel(Vector2 point) => isActiveAndEnabled && PanelRect.Contains(new Vector2(point.x, Screen.height - point.y) / UiScale);
 
         private void Awake()
+        { InitializeFresh(); }
+        private void OnEnable()
         {
+            // Unity restores scene objects after script reload, but not the non-serialized city graph.
+            if (Application.isPlaying && Network == null)
+            {
+                InitializeFresh();
+                feedback = "Scripts reloaded: prototype restarted fresh (development behavior; no saved simulation).";
+            }
+        }
+        public void RestartFresh()
+        {
+            InitializeFresh();
+            feedback = "Fresh run restarted: initial city and stocks restored.";
+        }
+        private void InitializeFresh()
+        {
+            ReleaseRuntime();
+            runtimeRoot = new GameObject("Prototype runtime (owned)").transform;
+            runtimeRoot.SetParent(transform, false);
+            visuals.Clear(); ownedMaterials.Clear();
+            visualRevision = -1; viewportSize = default; scroll = default; City = null;
+            pending = Pipeline.F | Pipeline.W | Pipeline.M;
             if (view == null) view = Camera.main;
             Layout = networkedProduction ? NetworkedCity.CreateLayout(populationSimulation ? 100 : startingWood,
                 populationSimulation ? 100 : productionSettings.startingRecyclableMaterial, populationSimulation) : CreateFresh(startingWood);
@@ -64,9 +88,9 @@ namespace Husk
                 laneMaterials[i, 0] = MakeMaterial(palette[i] * unsuppliedBrightness);
                 laneMaterials[i, 1] = MakeMaterial(palette[i]);
             }
-            Cube("Sea", transform, new Vector3(0, -0.6f, 0), new Vector3(600, 0.2f, 600), MakeMaterial(new Color(0.055f, 0.2f, 0.29f)));
+            Cube("Sea", runtimeRoot, new Vector3(0, -0.6f, 0), new Vector3(600, 0.2f, 600), MakeMaterial(new Color(0.055f, 0.2f, 0.29f)));
             cursor = new GameObject("Selection / build target").transform;
-            cursor.SetParent(transform, false);
+            cursor.SetParent(runtimeRoot, false);
             for (int i = 0; i < 4; i++)
             {
                 bool horizontal = i < 2;
@@ -74,7 +98,7 @@ namespace Husk
                     : new Vector3((i == 2 ? -1 : 1) * moduleSize * 0.48f, 0.84f, 0),
                     horizontal ? new Vector3(moduleSize, 0.06f, 0.08f) : new Vector3(0.08f, 0.06f, moduleSize), selectionMaterial);
             }
-            var port = Cube("PORT clearance - construction blocked", transform, Position(new Vector2Int(0, -2)) + Vector3.up * 0.05f,
+            var port = Cube("PORT clearance - construction blocked", runtimeRoot, Position(new Vector2Int(0, -2)) + Vector3.up * 0.05f,
                 new Vector3(moduleSize * 0.88f, 0.12f, moduleSize * 0.88f), invalidMaterial);
             port.name = "Reserved port sea cell (0,-2)";
             if (City != null) CreateHarbor();
@@ -193,7 +217,7 @@ namespace Husk
                 if (!visuals.TryGetValue(pair.Key, out var root))
                 {
                     root = new GameObject("Module " + pair.Key).transform;
-                    root.SetParent(transform, false); root.position = Position(pair.Key);
+                    root.SetParent(runtimeRoot, false); root.position = Position(pair.Key);
                     visuals.Add(pair.Key, root);
                     Cube("Hull", root, new Vector3(0, 0, 0), new Vector3(moduleSize * 0.99f, 1.2f, moduleSize * 0.99f), hullMaterial);
                     Cube("Deck", root, new Vector3(0, 0.63f, 0), new Vector3(moduleSize * 0.97f, 0.14f, moduleSize * 0.97f), deckMaterial);
@@ -228,7 +252,7 @@ namespace Husk
         private void CreateHarbor()
         {
             var root = new GameObject("Networked Fishing Harbor");
-            root.SetActive(false); root.transform.SetParent(transform, false);
+            root.SetActive(false); root.transform.SetParent(runtimeRoot, false);
             root.transform.localPosition = Position(NetworkedCity.HarborPosition);
             var harbor = root.AddComponent<FishingHarbor>();
             var boat = new GameObject("Boat template"); boat.transform.SetParent(root.transform, false);
@@ -250,7 +274,20 @@ namespace Husk
             cube.GetComponent<Renderer>().sharedMaterial = material;
             Destroy(cube.GetComponent<Collider>()); return cube;
         }
-        private void OnDestroy() { foreach (var material in ownedMaterials) if (material != null) Destroy(material); }
+        private void ReleaseRuntime()
+        {
+            var materials = new HashSet<Material>(ownedMaterials);
+            if (runtimeRoot != null)
+            {
+                // The serialized registry contains only materials created by this component.
+                runtimeRoot.gameObject.SetActive(false);
+                if (Application.isPlaying) Destroy(runtimeRoot.gameObject); else DestroyImmediate(runtimeRoot.gameObject);
+                runtimeRoot = null;
+            }
+            foreach (var material in materials)
+                if (material != null) { if (Application.isPlaying) Destroy(material); else DestroyImmediate(material); }
+        }
+        private void OnDestroy() => ReleaseRuntime();
         private void OnGUI()
         {
             if (Layout == null) return;
@@ -260,11 +297,17 @@ namespace Husk
             GUI.Box(PanelRect, "");
             GUILayout.BeginArea(new Rect(20, 18, 242, PanelRect.height - 16));
             scroll = GUILayout.BeginScrollView(scroll);
-            GUILayout.Label(City == null ? "HUSK V1 / PHASE 1" : City.Population != null ? "HUSK V1 / PHASE 3" : "HUSK V1 / PHASE 2", GUI.skin.box);
+            GUILayout.Label(integratedPlaytest ? "HUSK V1 / PHASE 4" : City == null ? "HUSK V1 / PHASE 1" : City.Population != null ? "HUSK V1 / PHASE 3" : "HUSK V1 / PHASE 2", GUI.skin.box);
+            if (integratedPlaytest)
+            {
+                if (GUILayout.Button("Restart fresh run", GUILayout.Height(25))) RestartFresh();
+                GUILayout.Label("Developer reset: all city edits, stocks, boats and population return to the starting preset.", labelStyle);
+            }
             if (City?.Population != null)
             {
                 var people = City.Population;
                 GUILayout.Label("Population " + people.Display, GUI.skin.box);
+                GUILayout.Label(people.OperationalHouses > 0 ? "Consumption: active" : "Consumption: paused (no Operational House)", labelStyle);
                 GUILayout.Label($"Houses {people.OperationalHouses}/{people.HouseCount} Operational | capacity {people.EffectiveCapacity}\nDemand Food {people.FoodDemand:0.##}/s | Water {people.WaterDemand:0.##}/s\nFood stock {Layout.Storage.FoodAvailable:0.##} | Water {Layout.Storage.GetExact(ResourceKind.Water):0.##}\nGrowth +{populationSettings.growthFraction:P0} / {populationSettings.growthInterval:0.#}s ({people.GrowthElapsed:0.#}s)", labelStyle);
             }
             else GUILayout.Label(City == null ? "Module + Network foundation" : "Networked production / starting city", labelStyle);
@@ -337,7 +380,7 @@ namespace Husk
                     title += "\n" + City.State(pair.Key);
                 WorldLabel(Position(pair.Key) + new Vector3(0, 1f, 2.4f), title);
             }
-            WorldLabel(Position(new Vector2Int(0, -2)) + Vector3.up, "PORT / BLOCKED");
+            WorldLabel(Position(new Vector2Int(0, -2)) + Vector3.up, "PORT / KEEP CLEAR");
             GUI.matrix = oldMatrix;
         }
         private void DrawBuilding(ModuleCell cell)

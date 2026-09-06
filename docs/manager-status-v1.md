@@ -2,11 +2,11 @@
 
 ## Overall Status
 
-ACTIVE
+COMPLETE
 
 ## Current Phase
 
-V1 Phase 4 — Integrated Network Planning Playtest (TODO, chưa bắt đầu)
+V1 Phase 4 — Integrated Network Planning Playtest (DONE; V1 COMPLETE)
 
 ## Phase Status
 
@@ -15,21 +15,21 @@ V1 Phase 4 — Integrated Network Planning Playtest (TODO, chưa bắt đầu)
 | V1 Phase 1 | Module Construction + Pipeline Network | DONE |
 | V1 Phase 2 | Networked Production + Starting City | DONE |
 | V1 Phase 3 | House + Population + Consumption | DONE |
-| V1 Phase 4 | Integrated Network Planning Playtest | TODO |
+| V1 Phase 4 | Integrated Network Planning Playtest | DONE |
 
 ## Last Completed Task
 
-V1 Phase 3 — House + Population + Consumption: PASS ngày 2026-09-07 (Asia/Saigon), gồm City Hall special storage; independent Manager review, 112/112 EditMode tests và runtime acceptance. Last Completed Phase: V1 Phase 3.
+V1 Phase 4 — Integrated Network Planning Playtest: PASS ngày 2026-09-07 (Asia/Saigon), sau independent Manager source/diff review,117/117 EditMode tests,runtime/native UI và actual script reload. Last Completed Phase: V1 Phase 4.
 
 V0 giữ Overall Status COMPLETE và Phase 0–7 DONE trong docs/manager-status.md; spec/checklist/status V0 là lịch sử giữ nguyên. Không chuyển evidence 36 tests V0 thành acceptance V1.
 
 ## Current Phase Goal
 
-Phase3 đã nghiệm thu. Dừng cho user playtest; Phase4 vẫn TODO và chưa triển khai.
+Phase4 đã hoàn tất, V1 COMPLETE. Dừng cho user playtest; không bắt đầu prototype hoặc phase mới.
 
 ## Current Blockers
 
-Startup blocker RESOLVED bởi latest explicit user decision: City Hall special4/4, F/W/M storage IN/OUT từ stock thật; E pass-through only. Mọi concrete storable item hiện có bắt đầu100, không Electric item. F/W paths từ City Hall cấp starting House100/100 trong khi Water/RecyclerDamaged. Không còn blocker đã biết; Phase3 implementation/validation đã PASS.
+Startup blocker RESOLVED bởi latest explicit user decision: City Hall special4/4, F/W/M storage IN/OUT từ stock thật; E pass-through only. Mọi concrete storable item hiện có bắt đầu100, không Electric item. F/W paths từ City Hall cấp starting House100/100 trong khi Water/RecyclerDamaged. Không còn blocker đã biết; Phase4 implementation/validation đã PASS.
 
 Open questions bên dưới phải được giữ mở; nếu exact workflow/acceptance sau này phụ thuộc câu trả lời, báo Manager/user trước phần việc phụ thuộc. Không đánh dấu phase DONE dựa trên assumption chưa được phép.
 
@@ -296,3 +296,63 @@ Mở Game/Husk/Assets/Scenes/V1Phase3.unity và Play. Fresh100/100; click Hall x
 11 implementation files: ModuleLayout.cs, ModuleNetworkPrototype.cs, NetworkedCity.cs, ResourceState.cs, CityPopulation.cs+.meta, CityPopulationTests.cs+.meta, ModuleNetworkSceneSetup.cs, V1Phase3.unity+.meta; cộng3 activeV1docs. Stage explicit14paths, inspect staged diff và git diff --cached --check trước commit. Commit message: Complete V1 Phase 3 population and housing; push origin/main, không force. Hash/push được báo sau transaction.
 
 Art56files và81protected tracked files giữ nguyênSHA256 so với snapshot trước task. Không stage/commit/untrack/discard Art;15untracked Art files vẫn ngoài checkpoint. Không engine/package/ProjectSettings/generated/IDE changes. OverallACTIVE; LastCompletedPhase3DONE; CurrentPhase4TODO chưa bắt đầu. Dừng cho user playtest.
+
+## Post-Phase 3 tuning — Water Plant
+
+Theo yêu cầu user, active V1Phase3 Water Plant tạo20 Water mỗi2s (10/s,600/phút). Scene preset và menu tạo lại Phase3 dùng cùng giá trị; Phase4 vẫn TODO, chưa bắt đầu. Các mốc1 Water/2s ở acceptance history phía trên là rate trước thay đổi này.
+
+Validation: Unity MCP dùng rate đọc từ scene, sau construction hai chu kỳ2s đều credit20; compileFailed=false. Console trước validation có lỗi NullReferenceException tại ModuleNetworkPrototype.RefreshVisuals:190 từ phiên play trước; không thuộc thay đổi rate này. Không chạy lại full suite cho config-only tuning.
+
+## Phase 4 Initial Audit
+
+User đã giaoPhase4 từ current state. Baseline05edfeb63459c5a4d4fe2c91f522c9d1922bb3ac;3tracked modifications là Water20/2s tuning đã được user giao (scene,scene factory,status), được giữ trong checkpoint này. Art56files snapshot riêng ngoài repository, không stage/discard. Reuse đúng một husk_implementer; Manager owns docs/Git/acceptance. Kiểm lifecycle RefreshVisuals NullReference history và integrated scenarios, không giả đạt bằng code-only.
+
+## Phase 4 Manager Playtest Evidence
+
+Manager dùng V1Phase4 Play Mode, Time.timeScale=0 và AdvanceSimulation để kiểm các bước chính xác; không tăng starter stock trong các scenarios dưới đây. Native UI qua computer-use được dùng cho Repair Water, Build House, Restart và camera scroll. MCP dùng cho configuration/build/advance/assertions; không coi ảnh capture bị stale là evidence trạng thái domain.
+
+| Scenario | Independent evidence |
+|---|---|
+| Fresh / stock / port / payment | Native Restart rồi MCP:100/100,10Modules,sáu buildings,7concrete stocks100,Water20/2. Build ởport(0,-2) bị từ chối; hai Modules(2,-2),(2,-3) debit2Core/20Wood. |
+| Repair / arithmetic | Native Repair Water debit5Wood; RepairRecycler debit5Wood. Advance5: cả haiOperational,Wood90/Water75. Thêm4s:2Watercycles +40Water, consumption20Water→95;Food155,Recycler1cycle→Recyclable98/Wood91. |
+| House / pass-through | Native Build House(2,-3) từFME tựFWM+FWlocked, population100 không đổi,capacity100→200; optionalM Supplied. |
+| Water branch failure | Router(2,-2) FWM→FME:House mớiDisabled/missingW,House gốcOperational,capacity100;F vẫnSupplied. W floor material dimRGBA(.025,.188,.25,1), bằng25% palette. RestoreFWM→capacity200. |
+| Water alternate path | Bridge(1,-1) mấtW→cả haiHousecap0. Xây ModuleFWM(2,0) từWaterPlanttớiHouse→capacity200 mà bridgevẫnthiếuW;debit1Core/10Wood. |
+| Independent Food | Bridge(1,-1) đổiWME:F tớiHouseUnsupplied,W vẫnSupplied từalternate path,cap0. RestoreFWM→cap200. |
+| Electric / storage distinction | CắtEbridge(-1,1):Water/RecyclerDisabled,WateroutputNone,HallEUnsupplied,SolarvẫnOperational. HallW vẫnSupplied từstock thật. PlaceSolar(2,0) tựFWE→Ealternate cấp lạiWater/Recycler/Hall. |
+| Real boats / growth / depletion | Build5s hai boatstaggered; qua120simulationseconds có6unloads,2boats độc lập;pop100→110→121 dùFoodcạn/cap0. Tại120s:Water1009.1,Food0,Wood88,Recyclable44. Không reset hoặc injectstock để giữsupply. |
+| Food recovery / no hard lock | TừFood0/cap0, advance từngquantum tớiarrival12s:unloadthứ7 credit5Fish,Food5,capacity0→200. Boat vẫn chạy khihousingdisabled. Stockdepletion không khóa permanently build/repair/reconfigure. |
+| Restart | NativeRestart từ13Modules/2Houses/2boats/121population phục hồi10Modules/1House/0boats/100population/stock100,hai producersDamaged. Lifecycle vàcamera final verification được ghi khi rework kết thúc. |
+
+### 11 playtest questions — Manager assessment
+
+1. **Placement có consequence không?** Có. Router(2,-2) thiếuW chỉ tắtHouse cuối nhánh; bridge(1,-1) ảnh hưởng cả nhóm. Cần đường liên tục, globalstock không bypass.
+2. **Player có phải nghĩ pipeline nào giữ không?** Có. House khóaFW,slotM/E còn lại quyết định pass-through; Solar tại(2,0) giữFWE cung cấp alternateE nhưng bỏM. Quyết định có hậu quả kiểm được.
+3. **3/4 có quá dễ không?** Chưa đủ evidence kết luận. Trong preset nhỏ, thiếuW có thể sửa bằngmộtModule(2,0),nhưngrequired building vàlimited3slots vẫn tạo tradeoff. Không đổi rule từmộtplaytest.
+4. **Grid routing có khiến failure dễ bypass không?** Có tronglayoutnày: một đường vòngW hoặc Solar test bổ sung bypass được điểmngắt. Đây là quan sátpreset/freeplacementtest, chưa chứng minh mọifailuretronglayoutlớn đều dễ.
+5. **Có nên thử2/4 ở prototype sau không?** Có thể là thí nghiệm sau khiuserchốt,mụcđíchso độkhó/routing space. Phase4 chưa cung cấp đủlýdo thay3/4 và không triểnkhai2/4.
+6. **F/W/M/E có readable không?** Màu vàbright/dim phân biệt đượcởcamera play;Wdim trênHouse mấtnguồn được kiểm cảmaterialstate. Cầnzoom/inspect khi nhãn nhỏ hoặcnhánh dài; exactpalette/art vẫnprovisional. UIoverflowtitlephát hiện trongManagerreview và được rework riêng.
+7. **Chẩn đoán broken supply bằng mắt được không?** Có với vị trí nhánh bịngắt: lane mất/dim vàHouseDisabled đi cùng nhau. Cầninspect MissingInput vàstockđểphânbiệtstockcạn vớiđứtpath; màuđơnlẻ không mô tả nguyênnhân đầyđủ.
+8. **Topology tạo districts tự nhiên không?** Bắtđầu có nhómproductionE/M vànhánhHouseFW khác nhau. Mới10–13Modules, chưa đủ đểkếtluận districts tự nhiênởscale lớn.
+9. **Có bớt FarmVille/isometric land grid không?** Vềsystemcó: vị trí thayđổikhả nănghoạtđộng vàinfrastructure xuyênModule. Visualplaceholder vẫn làcubestrêngrid; chưa chứng minh art/feelmegaship hoànchỉnh.
+10. **Build Module có cảm giác lắp ráp megastructure không?** Edgeattachment,cost vàlanesnốithêm cótínhiệu đó. Instantplacement vàcubeplaceholder còntrừutượng; không tựthêmanimation/finalart trongphaseintegration.
+11. **House/population demand làm routing meaningful chưa cầnbalance không?** Có: supplyloss giảmcapacity nhưnggiữdân/demand;reconnect/boatarrival phục hồi. Foodrate5Fish/30s thấp hơn demand100dân,runtime dài bịdepletionchi phối. Ghi nhận limitation thay vì tựrebalance;Water20/2 làlatestuserdecision.
+## Phase 4 Final Acceptance — PASS / DONE
+
+Toàn bộ11criteria được nghiệm thu dựa trên bảng runtime và11playtest answers ở trên. Phase4 đã kết thúc; OverallV1 COMPLETE, cả4phases DONE. Không có phase tiếp theo được bắt đầu.
+
+- **Source / diff / assets:** Manager review code lifecycle, owned root/material cleanup, scene factory,5integration tests và scene/metas. Runtime giữ graph/production hiện có; scenePhase4 bật integrated UI, stocks100 vàWater20/2. Water tuning Phase3 theo user được bao gồm trong checkpoint. Không thêm hệ thống mới.
+- **Tests:** Manager Unity MCP EditMode117/117 PASS,0failed/skipped/inconclusive,1.93s; Implementer117/117,2.4s. Rework cuối chỉ rút gọn title UI; không đổi logic simulation hoặc camera nên không chạy lặp toàn suite.
+- **Actual reload:** Manager tự tạo100/200 trong Play rồi RequestScriptReload: về100/100,10Modules,1runtimeRoot,1Harbor,0boats,14ownedMaterials. UI báo rõ scripts reloaded/fresh restart. Implementer trước đó cũng kiểm reload và restart lặp không duplicate. Đây là development reset, không persistence/save feature.
+- **UI rework:** Title dài tạo horizontal scrollbar đã được Manager phát hiện và Implementer sửa thành HUSK V1 / PHASE 4. Manager xem lại native screenshot sau reload: không còn scrollbar ngang. PORT / KEEP CLEAR mô tả vùng cấm xây; consumption active/paused phân biệt nhu cầu với debit thực tế.
+- **Camera:** Native scroll được Manager nhận: size23→23.05. Native Sky key R không làm Unity nhận reset trong lần kiểm; không báo native R PASS. Implementer kiểm chính PrototypeCamera.Update bằng synthetic Unity Input System events: R23.05→23, W dịch0.05210828, RMB/mouse delta orbit4.471968°, R phục hồi vị trí(-19.19,37.66,-27.41). Không thấy lỗi logic camera, không thay code camera.
+- **Compile / Console:** Final compileFailed=false, missing scripts0. Console retained historyNRE tới9052 và tooling transition timeout9062; interval9062→9067 không warning/error mới, Manager final reload cũng không thêm lỗi. Không clear Console hoặc gọi history sạch. Editor cuốiSTOP, V1Phase4saved/dirtyfalse, prototype component children0 ngoàiPlay; timeScale1/runInBackgroundfalse được trả lại.
+- **Preservation:** Art56files SHA256 không đổi;81protected tracked files không đổi. V0/V1Phase1/V1Phase2 scenes, V0 docs, engine/packages/settings giữ nguyên.Final review có26untracked Art files:15Harbor baseline và11House files do concurrent work tạo trongtask.56Artfiles baseline vẫn nguyênhash; tất cảArt giữ ngoài checkpoint. Không stage generated/IDE files.
+
+### Final handoff / limits
+
+Mở Game/Husk/Assets/Scenes/V1Phase4.unity và Play. Repair Water/Recycler (5Wood/5s mỗi loại), xây Modules/House, thử ngắt và nối lại F/W/E. Nhánh mẫu(2,-2)→(2,-3), alternateW qua(2,0). Dùng Restart fresh run để bắt đầu lại toàn bộ preset khi playtest; script reload cũng reset và thông báo rõ.
+
+Water20/2s là quyết định user; boat5Fish/30s, repair5Wood/5s, freeinstant reconfigure/House/Solar test placement, display1decimal vàquantum0.05s vẫn là preset/provisional ngoài các giá trị đãconfirmed. Dân vẫn tăng khi cap0; demand không mất, debit dừng khi không có HouseOperational. Food có thể cạn nhanh hơn boats cấp; boat arrival vẫn phục hồi housing tạm thời, không hard-lock. Không dùng developer reset để thay bằng chứng repair/production recovery. Layout nhỏ chưa chứng minh final balance, art, districts hoặc game feel ởscale lớn; chưa standalone player build.
+
+Checkpoint gồm10files: ModuleNetworkPrototype.cs, ModuleNetworkSceneSetup.cs, IntegratedPlanningTests.cs+.meta, V1Phase4.unity+.meta, V1Phase3.unity (Water tuning), và3activeV1docs. Stage explicit paths, review staged content và git diff --cached --check trước commit. Commit: Complete V1 Phase 4 integrated network playtest; push origin/main khôngforce. Hash/push verification được báo sau transaction. DỪNG.

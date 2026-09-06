@@ -2,7 +2,7 @@
 
 ## Purpose và nguồn thiết kế
 
-Active prototype: **Prototype V1 — Module Network & Planning**. V0 Phase 0–7 COMPLETE là lịch sử, không chuyển checklist V0 thành V1. Phase 1 đã DONE và user chấp nhận; Phase 2 DONE sau corrective contract validation; Phase 3 DONE; Phase 4 TODO (chưa bắt đầu).
+Active prototype: **Prototype V1 — Module Network & Planning**. V0 Phase 0–7 COMPLETE là lịch sử, không chuyển checklist V0 thành V1. Phase 1 đã DONE và user chấp nhận; Phase 2 DONE sau corrective contract validation; Phase 3 DONE; Phase 4 DONE; V1 COMPLETE.
 
 Đọc theo priority: latest explicit user decision → AGENTS.md → docs/prototype-v1-module-network.md → checklist này → docs/manager-status-v1.md. Đúng bốn phase lớn; mỗi phase là một task coherent, không chia micro-phase. Checkbox đã đánh dấu có evidence nghiệm thu trong manager-status-v1.md; checkbox còn trống chưa được nghiệm thu. Phase1–2 giữ acceptance history tại thời điểm checkpoint; rule City Hall/starting stock mới thay thế các ghi chú TBD lịch sử, được kiểm ở Phase3.
 
@@ -88,7 +88,7 @@ STATUS: DONE
 
 ## V1 Phase 4 — Integrated Network Planning Playtest
 
-STATUS: TODO
+STATUS: DONE
 
 **Goal:** đánh giá Husk có cảm giác quy hoạch/lắp ráp connected megastructure thay vì đặt các building độc lập trên đất không.
 
@@ -96,17 +96,17 @@ STATUS: TODO
 
 **Required Scenarios / Acceptance:**
 
-- [ ] Fresh run đúng city/100 Core/100 population và state; xây coastline branch, trả 1 Core + 10 Wood mỗi Module, port block đúng; chọn 3/4 configuration.
-- [ ] Build supplied House trên F/W Module, kiểm third pipeline pass-through, demand và capacity.
-- [ ] Chủ động ngắt Water route: House Disabled, Water lanes downstream tắt/dim đúng branch, branch còn nguồn khác không bị tắt sai.
-- [ ] Restore/reroute Water: House supplied lại, lane sáng đúng. Chỉ dùng configuration workflow được chốt; không tự thêm free reconfiguration/demolition/refund để làm scenario.
-- [ ] Ngắt Food: House Disabled đúng lý do, Water state độc lập. Khôi phục Food phục hồi supply đúng.
-- [ ] Ngắt Electric tới production: dependent building Disabled, downstream output supply/visual phản ánh nguồn thực tế; alternate source/path được tôn trọng.
-- [ ] Repair Water Plant/Recycler; chứng minh thiếu network input vẫn chưa Operational, đủ input mới hoạt động.
-- [ ] Thêm Houses, quan sát +10% compound growth và consumption; disable House làm effective capacity giảm, population không mất và có thể vượt capacity; tất cả Disabled không dừng growth.
-- [ ] Kiểm no soft-lock với preset đã ghi; routing/placement có consequence nhìn thấy được. Không ép scarcity hoặc cân bằng economy để đạt tiêu chí.
-- [ ] Tích hợp production/resource reconciliation, restart/fresh state, camera/readability/interaction ổn; tests/Unity compile/Console/Play/Stop phù hợp đạt, scene không unrelated dirty state.
-- [ ] Manager trả lời đủ 11 playtest questions bên dưới với evidence, ghi limits/provisional values và quyết định còn mở; review source/diff/metas. Không tự implement future system từ kết quả playtest.
+- [x] Fresh run đúng city/100 Core/100 population và state; xây coastline branch, trả 1 Core + 10 Wood mỗi Module, port block đúng; chọn 3/4 configuration.
+- [x] Build supplied House trên F/W Module, kiểm third pipeline pass-through, demand và capacity.
+- [x] Chủ động ngắt Water route: House Disabled, Water lanes downstream tắt/dim đúng branch, branch còn nguồn khác không bị tắt sai.
+- [x] Restore/reroute Water: House supplied lại, lane sáng đúng. Chỉ dùng configuration workflow được chốt; không tự thêm free reconfiguration/demolition/refund để làm scenario.
+- [x] Ngắt Food: House Disabled đúng lý do, Water state độc lập. Khôi phục Food phục hồi supply đúng.
+- [x] Ngắt Electric tới production: dependent building Disabled, downstream output supply/visual phản ánh nguồn thực tế; alternate source/path được tôn trọng.
+- [x] Repair Water Plant/Recycler; chứng minh thiếu network input vẫn chưa Operational, đủ input mới hoạt động.
+- [x] Thêm Houses, quan sát +10% compound growth và consumption; disable House làm effective capacity giảm, population không mất và có thể vượt capacity; tất cả Disabled không dừng growth.
+- [x] Kiểm no soft-lock với preset đã ghi; routing/placement có consequence nhìn thấy được. Không ép scarcity hoặc cân bằng economy để đạt tiêu chí.
+- [x] Tích hợp production/resource reconciliation, restart/fresh state, camera/readability/interaction ổn; tests/Unity compile/Console/Play/Stop phù hợp đạt, scene không unrelated dirty state.
+- [x] Manager trả lời đủ 11 playtest questions bên dưới với evidence, ghi limits/provisional values và quyết định còn mở; review source/diff/metas. Không tự implement future system từ kết quả playtest.
 
 **Stop:** Hoàn tất report và dừng. Không tự bắt đầu prototype mới.
 
