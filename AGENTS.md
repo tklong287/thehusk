@@ -6,7 +6,7 @@ Husk là game city-builder / survival management lấy bối cảnh Trái Đất
 
 Mục tiêu hiện tại không phải xây full game hoặc vertical slice lớn.
 
-Mục tiêu hiện tại là xây visual/system prototype nhỏ nhất để nhìn thấy các core production loops hoạt động và đánh giá game feel.
+Mục tiêu hiện tại là Prototype V1 — Module Network & Planning: kiểm chứng placement và expansion qua Module, pipeline connectivity, supply và quy hoạch một megastructure thống nhất.
 
 Repository root:
 `D:\TheHusk`
@@ -79,84 +79,50 @@ Tránh:
 - allocation không cần thiết mỗi frame;
 - GetComponent/Find lặp lại mỗi frame nếu có thể cache reference.
 
-## Prototype Design Principle
+## Active Prototype — V1: Module Network & Planning
 
-V0 trả lời câu hỏi: nếu các system cơ bản của Husk chạy trực tiếp trước mắt, game có bắt đầu trông và cảm thấy giống một game thú vị hay không?
+Prototype V0 đã COMPLETE, Phase 0–7 DONE. V0 là lịch sử đã hoàn thành; không rewrite `docs/prototype-v0.md` hoặc `docs/manager-checklist.md`. `docs/manager-status.md` giữ completion history V0. V1 đang ACTIVE ở mức specification/planning; implementation chưa bắt đầu.
 
-Ưu tiên V0:
+Source priority cho active V1 work:
 
-1. Nhìn thấy game world.
-2. Camera và interaction cơ bản.
-3. Nhìn thấy building, boat và resource production hoạt động.
-4. Autonomous production loop.
-5. Visual/readability/feel.
-6. Iteration nhanh.
+1. User's latest explicit decision.
+2. `AGENTS.md` — project/engineering rules.
+3. `docs/prototype-v1-module-network.md` — active design specification.
+4. `docs/manager-checklist-v1.md` — phase acceptance.
+5. `docs/manager-status-v1.md` — operational state.
 
-V0 không test tutorial flow, scarcity, economy balance, resource bottleneck hoặc production dependency puzzle. Balance làm sau V0. Không tạo shortage để ép progression; không cần tutorial system cho developer/user tự test.
+Không dùng rule V0 đã được V1 thay thế để chặn network, population hoặc Repair trong scope V1. Không biến status hoặc assumption thành design canon.
 
-Thứ tự triển khai:
+## Confirmed V1 Rules
 
-World shell
-→ build Fishing Boat
-→ autonomous fishing cycle
-→ Fish production
-→ Water production
-→ Recycler production
-→ integration/feel pass.
+- Một built cell là một physical Module; ngoài Module là biển. Build Module gắn vào edge hiện có tiếp giáp biển, không chiếm edge/vị trí Fishing Harbor/port.
+- Mỗi Module tốn 1 Module Core + 10 Wood từ global city Item Storage; không cần Material pipeline tới construction site. Construction time TBD.
+- Town Hall là Item Storage: click để xem concrete items. Fresh start có 1 stack 100 Module Core; storage unlimited. Exact starting Wood chưa chốt, có thể dùng current/provisional configurable test stock.
+- Đúng bốn pipeline categories: F = Food, W = Water, M = Material, E = Electric. Luôn dùng M cho Material.
+- Standard Module support đúng 3/4 categories. Đây là confirmed V1 playtest rule, chưa final balance. Category không phải concrete item: Fish dùng F và trực tiếp đáp ứng generic Food demand; Wood/Iron/Recyclable Material dùng M nhưng giữ item identity.
+- Module chứa building phải support toàn bộ required INPUT + OUTPUT; slots còn lại player chọn. Supported pipelines vẫn pass-through; không conversion giữa categories.
+- I/O: Fishing Harbor M → F; Water Plant E+M → W; Recycler E → M; Solar không input → E; House F+W → không output. Town Hall I/O TBD, không tự invent.
+- Required inputs phải có continuous compatible path và actual supply; thiếu bất kỳ input nào thì Disabled/Unsupplied. Output feed đúng category. Stock tồn tại toàn thành phố không thay thế network path/supply.
+- Fresh city: 1 Town Hall, 1 Fishing Harbor, 1 Solar Power Plant, 1 House, 1 Water Plant Damaged, 1 Recycler Damaged. Hai building Damaged phải Repair và sau đó vẫn cần đủ network inputs; repair cost/time TBD.
+- Population bắt đầu 100/100 (current population / effective operational housing capacity); mỗi House capacity 100. Tăng compound +10%/minute theo current population, kể cả vượt capacity hoặc capacity = 0.
+- Mỗi resident cần 0.05 Food/s và 0.05 Water/s. House thiếu F hoặc W thì Disabled; residents vẫn tồn tại và được coi là reallocated sang Operational Houses. Chỉ cần overall population và effective capacity, không detailed assignment simulation.
+- Pipeline floor cross thuộc Module; F/W/M/E phân biệt được, supplied sáng, supported-unsupplied dim, unsupported inactive. Visual phản ánh topology/supply thật và đúng downstream branch. Exact colors TBD.
+- Reuse V0 production khi phù hợp: nhiều boat độc lập, build khoảng 5s, trip khoảng 30s, unload 5 Fish và tự lặp. Các timing/rates reuse là configurable/provisional; không rewrite working loops khi chỉ cần integrate network.
 
-Đây là thứ tự phase triển khai, không phải tutorial ordering hoặc dependency bắt player unlock từng loop.
+## V1 Scope and Phase Discipline
 
-## Starting Test State and Storage
+V1 test spatial planning/connectivity và visible infrastructure, không economy balance pass. Chỉ thực hiện phase hiện tại được giao trong đúng bốn phase lớn:
 
-- Các resource test mặc định bắt đầu ở 100, configurable.
-- Food, Water, Recyclable Material, Wood, Iron và Fish khi có trong resource state đều theo cùng default 100; Fish là resource riêng.
-- Storage unlimited trong V0: không capacity limit hoặc nâng cấp storage.
-- Costs/rates/timing là test/provisional values, dễ chỉnh, không phải final balance.
-- Starting resources phải cho phép test mechanic; không tạo intentional bottleneck.
+1. Module Construction + Pipeline Network.
+2. Networked Production + Starting City.
+3. House + Population + Consumption.
+4. Integrated Network Planning Playtest.
 
-## Fishing — Confirmed V0 Direction
+Manager sở hữu acceptance/progression và dừng sau mỗi phase để user playtest. Không tự implement phase sau; chuyển Current Phase không tự cấp quyền bắt đầu code.
 
-- Fishing Harbor có sẵn từ fresh run khi triển khai Phase 2; player không cần xây Harbor.
-- Interaction đầu tiên: chọn Harbor → Build Fishing Boat → construction khoảng 5 giây → boat hoàn thành.
-- Boat tự rời Harbor, thực hiện trip khoảng 30 giây rồi quay về.
-- Khi Fish production được triển khai ở Phase 4, mỗi lần về unload 5 Fish, resource/HUD cập nhật.
-- Một Harbor có thể xây nhiều Fishing Boat; mỗi boat giữ trạng thái/chuyến đi riêng và hoạt động độc lập. Xây thêm không reset hoặc dừng boat cũ.
-- Boat tự bắt đầu cycle tiếp theo, không manual redispatch.
-- Build time ≈ 5s, complete trip/cycle ≈ 30s và cargo 5 Fish là tunable prototype values.
-- Không worker assignment, fuel, maintenance, route logistics, fleet management framework hoặc fishing-area simulation phức tạp.
+Không Hub trong V1. Không Gas, Network/Data, 2/4 standard Module, throughput, congestion, pressure, voltage, batteries, day/night solar, distance loss, construction logistics, storage capacity hoặc final balance/art. Không Food Processing/class-based diet, advanced citizen simulation, mortality/migration/happiness/health/growth slowdown/security/overcrowding penalties. Không thêm tutorial, Collection, tech tree, combat, exploration, procedural generation, multiplayer, live service hoặc future-scale frameworks.
 
-## Water and Recycler — Independent Production Loops
-
-- Water Plant dùng build/select và construction/activation đơn giản; khi Operational, Water tăng theo thời gian với feedback rõ.
-- Recycler chuyển Recyclable Material thành Wood với processing feedback và configurable conversion values.
-- Water và Recycler là independent production loops trong V0; Recycler không là prerequisite để dùng Water Plant.
-- Không cần Recycler Broken/Repair mechanic.
-- Player có resources để test; không Water shortage, construction chain phức tạp hoặc economy balancing.
-
-## Current Prototype Scope
-
-Các mục sau không thuộc Prototype V0; chỉ thay scope khi user yêu cầu rõ ràng:
-
-- tutorial system
-- scarcity/economy balance hoặc production dependency puzzle
-- Collection
-- storage capacity system
-- tech tree
-- complex citizen simulation
-- combat
-- security/policing
-- morality system
-- electricity network
-- logistics network
-- fleet management framework
-- world exploration
-- procedural generation
-- multiplayer
-- live-service systems
-- advanced save architecture
-- optimization framework cho scale tương lai
-
-Các ý tưởng này có thể thuộc full game sau này nhưng không thuộc playable prototype hiện tại.
+Hub, Gas/Data, 2/4 và Trị an/food preferences chỉ là future considerations chưa chốt; không chuẩn bị implementation cho chúng.
 
 ## Decision Rules
 
