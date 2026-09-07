@@ -2,232 +2,525 @@
 
 ## Status
 
-ACTIVE SPECIFICATION. V1 is COMPLETE historical baseline.
+ACTIVE IMPLEMENTATION SPECIFICATION. Prototype V1 is COMPLETE historical/regression baseline.
+
+Prototype V2 is authorized as **one continuous implementation pass**. Internal milestones exist only to keep implementation/test work ordered; the Implementer does **not** stop for user playtest between milestones. Implement the full V2 scope, test continuously, fix failures as they appear, then return one final implementation report for Manager acceptance.
 
 ## Goal
 
-Prototype V2 tests the next core management loop on top of V1:
+V2 adds the next core management loop on top of V1:
 
-1. Small-boat Harbor supports multiple boat roles instead of being a fishing-only extractor.
-2. Salvage creates recoverable material inputs.
-3. Factories process salvage through local input storage.
-4. Power is a shared capacity/demand system; enabled buildings consume rated kW.
-5. Shortage is legible before failure through local-storage bars and trend arrows.
-6. Factory productivity falls when power or required material inputs are insufficient.
+1. one shared Harbor supports multiple small-boat roles;
+2. Salvage Boats recover material inputs;
+3. recovered material is buffered locally and processed into usable construction material;
+4. powered buildings create shared electric demand against available capacity;
+5. material shortage and electric shortage reduce factory productivity;
+6. local-storage UI exposes both current buffer level and whether that buffer is rising or falling;
+7. the integrated prototype creates visible tradeoffs between Fishing, Salvage, processing throughput and electric load.
 
-V2 is still a prototype. It is not an economy-balance pass and not the citizen happiness/class/nutrition prototype.
+V2 is still a prototype. It is **not** a final economy-balance pass and **not** the citizen happiness/class/nutrition prototype.
+
+---
 
 ## Design Principles
 
-- Reuse working V1 systems where possible; do not rewrite working network/production loops without need.
-- Prefer one readable rule reused across consumers/factories rather than bespoke systems.
-- Gameplay values remain configurable/provisional unless explicitly confirmed.
-- UI should explain current state and direction of change without requiring the player to inspect formulas.
+- Reuse working V1 Module/Pipeline/Production/Population foundations where possible.
+- Do not rewrite working systems merely to make V2 architecture more generic.
+- Prefer one transparent rule reused across factories/consumers rather than bespoke hidden multipliers.
+- Gameplay constants remain configurable/provisional unless explicitly confirmed below.
+- UI should answer “what is happening?” and “is it getting better or worse?” without exposing implementation internals.
+- Correctness and playable iteration speed beat future-proof architecture.
+- During the continuous pass, a failing milestone is a bug-fix point, **not** a stop boundary. Fix it, rerun relevant validation, then continue.
 
-## 1. Harbor & Small Boats
+---
 
-The existing fishing harbor becomes a general small-boat Harbor.
+# 1. Shared Harbor & Small Boats
+
+The existing fishing-only facility becomes a general **Harbor** for small boats.
 
 The Harbor owns the small-boat workflow:
 
 - build small boats;
-- dock/dispatch small boats;
-- receive returned cargo.
+- retain/identify their role;
+- dock/dispatch them;
+- receive returned cargo;
+- support multiple independent boats concurrently.
 
 V2 boat roles:
 
-- Fishing Boat → Fish;
-- Salvage Boat → Scrap Metal + Scrap Wood.
+- **Fishing Boat** → returns Fish;
+- **Salvage Boat** → returns Scrap Metal + Scrap Wood.
 
-The Harbor is not dedicated to one resource category. Do not create separate Fishing Port and Salvage Port buildings for V2.
+The Harbor is not resource-specific. Do not create a separate Fishing Port and Salvage Port.
 
-Existing boat timing/build behavior may be reused as provisional values unless V2 acceptance needs a change.
+### Required Harbor behavior
 
-## 2. Salvage Resources & Processing
+- Existing Fishing Boat loop remains functional.
+- Salvage Boat uses the same Harbor workflow/foundation rather than a parallel one-off system.
+- Each boat has independent state/timer/cargo; one boat must not overwrite another.
+- Cargo is credited exactly once on successful return/unload.
+- Fresh/start-reset behavior must recreate deterministic boat/resource state.
+- UI/state must make Fishing vs Salvage role legible enough for playtest.
 
-New recovered inputs:
+### Provisional boat values
 
-- Scrap Metal
-- Scrap Wood
+Existing V1/V0 working values may be reused where practical (for example build time/trip interval/cargo cadence). Salvage cargo amount, build cost and exact timing remain configurable/provisional. Do not invent final balance.
 
-Processed construction materials:
+---
 
-- Scrap Metal → existing usable metal resource (prefer existing `Iron` identity unless a later explicit rename is requested);
-- Scrap Wood → usable construction wood. Keep existing code/resource compatibility; UI may use `Lumber` when appropriate, but do not perform a broad rename migration merely for wording.
+# 2. Salvage Resources & Processing
 
-Recycler/processing buildings receive salvage into local input storage and convert it to usable material.
+New recovered concrete inputs:
 
-Exact conversion ratios, local-storage capacity and cycle interval are provisional/configurable.
+- **Scrap Metal**
+- **Scrap Wood**
 
-## 3. Local Storage
+Processed construction outputs:
 
-Local storage is the buffer immediately available to a consumer/building.
+- Scrap Metal → existing usable metal identity, preferably existing `Iron` unless the current code already has a more appropriate processed-metal resource;
+- Scrap Wood → usable construction wood. UI may say `Lumber`, but do not perform a broad code/resource rename merely for wording if existing `Wood` is the compatible usable item.
 
-Core visual rule for every displayed local input:
+The player-facing semantic distinction is:
 
-- progress bar = current local storage level / local storage target or capacity;
-- up arrow = local storage trending upward;
-- down arrow = local storage trending downward;
-- neutral state = approximately stable.
+- Scrap Metal / Scrap Wood = recovered raw salvage;
+- Iron / Wood-or-Lumber = processed, ready-to-use construction material.
 
-Trend exists to communicate direction, not only current quantity. Exact averaging/smoothing window is an implementation detail; keep it simple and stable enough to avoid noisy frame-by-frame flicker.
+### Processing rule
 
-### Citizen in V2
+A processing factory:
 
-Citizen/House input UI shows only the two V2 essential input buffers already relevant to V1:
+1. receives required salvage into local input storage;
+2. draws from that local buffer while producing;
+3. outputs the processed concrete item through the existing compatible material/storage foundation;
+4. is affected by local material availability and power productivity rules below.
 
-- Food local storage bar + trend;
-- Water local storage bar + trend.
+Exact conversion ratio, base interval and storage capacity are provisional/configurable.
 
-Do NOT add total citizen Satisfaction, Happiness, nutrition, class diet, penalties, mortality or other advanced citizen consequences in V2.
+Do not create unnecessary distinct factory frameworks if the existing Recycler can be extended/instanced/configured cleanly for metal/wood processing.
 
-### Factory in V2
+---
 
-Factory UI shows:
+# 3. Local Storage
 
-- Productivity %;
-- one local-storage progress bar + trend per required material input;
-- power status/efficiency where useful for diagnosing productivity.
+Local storage is the **buffer immediately available to one consumer/building**, distinct from city/global stock.
 
-The player should be able to see both the bottleneck outcome (Productivity) and the local input buffers causing it.
+The purpose is to create readable delay between city-level supply changes and local consequences.
 
-## 4. Power Model
+## 3.1 Core buffer behavior
 
-Power is capacity, not a stock item consumed from storage.
+For each displayed local input:
 
-Each enabled powered building has a rated power demand in kW.
+- `LocalQuantity` = current amount in that local buffer;
+- `LocalCapacity` (or target) = configured maximum/normal buffer amount;
+- `LocalRatio = clamp01(LocalQuantity / LocalCapacity)`.
 
-`BuildingPowerDemand = RatedPowerKW * Enabled`
+Progress bar displays `LocalRatio`.
 
-where `Enabled` is 1 when the building is switched on and 0 when switched off.
+If capacity is zero because of invalid configuration, implementation must fail safely and never produce NaN/Infinity.
 
-A powered building consumes its rated demand while enabled, even if its local input storage is currently low. V2 does not need a separate idle-power state.
+### Feeding local storage
 
-City totals:
+Local storage must be filled only from valid existing V1 supply/resource paths and concrete available stock/output. It must not create resources from nothing.
 
-`TotalPowerDemand = sum(EnabledBuildingRatedPowerKW)`
+Preserve V1 pipeline connectivity semantics: having a global item somewhere is not enough if the building/consumer does not have the compatible required network path/supply.
 
-`PowerEfficiency = min(1, TotalPowerCapacity / TotalPowerDemand)`
+Use the smallest integration compatible with current architecture. Do not add detailed logistics vehicles/haulers in V2.
 
-When TotalPowerDemand is 0, PowerEfficiency is 1.
+### Consuming local storage
 
-Example provisional building value discussed for Recycler: 2 kW while enabled. Keep exact rated values configurable.
+Factory and House/Citizen consumption draws from local storage, not directly from an abstract infinite supply flag.
 
-## 5. Factory Productivity
+Local stock therefore acts as a buffer:
 
-Factories use one bottleneck rule.
+`upstream shortage -> local buffer drains -> UI trend warns -> consequence appears when/while buffer becomes insufficient`
 
-For every required material input, calculate an input satisfaction value from its local storage availability. Power contributes another satisfaction value through `PowerEfficiency`.
+A temporary upstream interruption should not instantly erase remaining local stock.
 
-`FactoryProductivity = min(PowerEfficiency, RequiredInputSatisfaction...)`
+---
 
-The most deficient required input determines current productivity.
+# 4. Local Storage Trend UI
 
-Production speed:
+Every displayed local-input bar has a trend indicator.
+
+Required states:
+
+- **Up**: buffer is increasing;
+- **Down**: buffer is decreasing;
+- **Neutral**: approximately stable.
+
+Presentation convention:
+
+- Up arrow: green/positive;
+- Down arrow: red/negative;
+- Neutral: neutral/no alarm.
+
+Exact final palette is not V2 art scope.
+
+Trend should represent a short, stable recent net change rather than instantaneous frame noise. A small rolling/sample window or simple hysteresis is acceptable. Choose the smallest implementation that does not flicker during bursty boat deliveries/consumption.
+
+Trend is diagnostic only; it must not affect simulation.
+
+---
+
+# 5. House / Citizen Input UI in V2
+
+V2 does **not** implement total citizen Satisfaction/Happiness.
+
+For the existing House/Citizen consumption layer, V2 adds only local-buffer feedback for the two current essential inputs:
+
+- Food local-storage progress bar + trend;
+- Water local-storage progress bar + trend.
+
+The bars represent local storage ratio, not Happiness and not a nutrition score.
+
+Do not add:
+
+- overall Satisfaction;
+- Happiness;
+- Calories/Protein/Vitamins;
+- Diet Diversity;
+- class-specific diet requirements;
+- mortality/migration/health/security consequences.
+
+Those belong to a later prototype.
+
+---
+
+# 6. Factory Productivity
+
+Factory UI shows an overall **Productivity %** plus local input bars.
+
+Productivity is the current throughput factor from required bottlenecks.
+
+## 6.1 Material input satisfaction
+
+For each required material input, derive a transparent satisfaction value from its local availability.
+
+V2 default rule:
+
+`InputSatisfaction = LocalRatio`
+
+where `LocalRatio = clamp01(LocalQuantity / LocalCapacity)`.
+
+This intentionally avoids additional hidden modifiers.
+
+If a factory has multiple required material inputs:
+
+`MaterialSatisfaction = min(InputSatisfaction_1, InputSatisfaction_2, ...)`
+
+The most deficient required material input is the material bottleneck.
+
+A factory with no required material input contributes no material penalty (material factor = 1).
+
+## 6.2 Final productivity
+
+After power integration:
+
+`FactoryProductivity = min(MaterialSatisfaction, PowerEfficiency)`
+
+For factories with additional already-existing mandatory operational gates (Damaged, disconnected required pipeline, explicitly Disabled), those gates remain authoritative. V2 productivity must not accidentally bypass V1 operational rules.
+
+Display:
+
+`ProductivityPercent = round/format(FactoryProductivity * 100)`
+
+Exact display rounding is implementation detail.
+
+## 6.3 Interval scaling
+
+Confirmed behavior:
 
 `ActualInterval = DefaultInterval / FactoryProductivity`
 
-At 100% productivity, interval is unchanged. At 50%, the interval doubles.
+Examples:
 
-If productivity reaches 0, production cannot progress until the bottleneck recovers. Avoid divide-by-zero in implementation.
+- 100% productivity → default interval unchanged;
+- 80% → interval × 1.25;
+- 50% → interval × 2;
+- 25% → interval × 4.
 
-Exact mapping from local-storage level to InputSatisfaction should be the smallest readable implementation consistent with the displayed local-storage ratio; do not add extra hidden multipliers in V2.
+If productivity <= 0, production progress stops safely until productivity recovers. Never divide by zero or generate NaN/Infinity.
 
-## 6. Player Decisions V2 Must Expose
+Do not accumulate duplicate outputs while stopped/recovering.
 
-The prototype should create understandable decisions such as:
+---
 
-- send Harbor capacity toward Fishing or Salvage;
-- salvage more Scrap Metal vs Scrap Wood according to bottleneck;
-- process recovered material into usable construction resources;
-- switch buildings off to reduce grid demand;
-- recognize a future shortage from a falling local-storage bar before productivity collapses;
-- identify whether low factory productivity is caused by power or material input.
+# 7. Electric Capacity + Demand
 
-## 7. V2 UI Feedback
+Power is **capacity**, not a concrete inventory item and not kWh consumed per production cycle.
 
-Required prototype feedback:
+A powered building has configurable:
 
-### Local input
+- `RatedPowerKW`;
+- `Enabled` state.
 
-`Resource Name  [progress bar]  %  trend-arrow`
+Demand rule:
 
-Direction convention:
+`BuildingPowerDemand = Enabled ? RatedPowerKW : 0`
 
-- up: positive/increasing (green in final presentation; exact palette remains provisional);
-- down: negative/decreasing (red in final presentation; exact palette remains provisional);
-- neutral: stable.
+An enabled powered building continues to count its rated demand even if its local material buffer is low. V2 does not add a separate idle-power state.
 
-### Factory
+Example discussed for a Recycler/processor: `2 kW` enabled demand. Treat exact rated values as configurable/provisional unless already confirmed by existing data.
 
-At minimum:
+## 7.1 Capacity
 
-- building name/state;
-- Enabled on/off control/state;
-- Productivity %;
-- material local-storage bars and trends;
-- power information sufficient to diagnose grid shortage.
+Power-producing buildings contribute configurable capacity in kW while operational.
 
-### Citizen/House
+Use the existing V1 Electric pipeline/topology rather than inventing a separate invisible grid.
 
-At minimum:
+A powered consumer that has no valid supplied Electric path receives:
 
-- Food local-storage bar + trend;
-- Water local-storage bar + trend.
+`PowerEfficiency = 0`
 
-No total Satisfaction/Happiness metric in V2.
+For a valid supplied Electric connected component/grid, calculate:
 
-## 8. Out of Scope
+`TotalPowerCapacity = sum(operational generator capacity in that connected Electric component)`
 
-Do not add in V2 unless explicitly reopened by user:
+`TotalPowerDemand = sum(enabled powered-building rated demand in that connected Electric component)`
 
-- citizen Happiness/Satisfaction score;
-- class-based nutrition;
+Then:
+
+- if `TotalPowerDemand <= 0`, `PowerEfficiency = 1`;
+- otherwise `PowerEfficiency = min(1, TotalPowerCapacity / TotalPowerDemand)`.
+
+If current architecture makes per-E-component aggregation disproportionately invasive, the Implementer may use the smallest equivalent integration that still preserves V1 Electric connectivity and does not let disconnected buildings consume remote capacity. Report the chosen implementation explicitly.
+
+## 7.2 Shared slowdown behavior
+
+If capacity >= demand, powered factories run at 100% power factor.
+
+If demand > capacity, all enabled powered factories sharing that grid/component receive the same `PowerEfficiency` factor.
+
+Example:
+
+- capacity = 100 kW;
+- demand = 150 kW;
+- PowerEfficiency = 100 / 150 = 0.6667.
+
+A factory otherwise fully supplied therefore runs at ~66.7% productivity and its interval becomes ~1.5× default.
+
+## 7.3 Enable/disable management
+
+The player must be able to switch relevant powered processing buildings on/off.
+
+Turning a building off:
+
+- its demand becomes 0;
+- it does not produce;
+- city/grid demand recalculates;
+- remaining enabled factories may recover power efficiency.
+
+Turning it back on restores rated demand and normal operational checks.
+
+No power priority automation in V2.
+
+---
+
+# 8. Factory UI Contract
+
+When inspecting/selecting a processing factory, V2 UI must expose at minimum:
+
+- building name;
+- operational/Enabled state;
+- Enabled on/off control where applicable;
+- **Productivity %**;
+- one progress bar per required material local storage;
+- percentage or sufficiently clear fill state for each bar;
+- Up/Down/Neutral trend indicator per local storage;
+- power information sufficient to diagnose whether power is the bottleneck.
+
+Example conceptual display:
+
+```text
+METAL RECYCLER
+Enabled: ON
+Productivity: 62%
+
+Scrap Metal  [████████████--------] 62%  ↓
+Power        80%
+```
+
+If material is 62% and power 80%, productivity is 62%.
+
+If material is 90% and power 55%, productivity is 55%.
+
+Do not make the player infer the bottleneck from hidden debug values only.
+
+---
+
+# 9. V2 Integrated Scenario / Player Decisions
+
+The playable V2 scenario should make these decisions observable:
+
+- build/use Fishing Boats to protect Food supply;
+- build/use Salvage Boats to obtain Scrap Metal + Scrap Wood;
+- notice which salvage input/local buffer is falling;
+- process salvage into usable construction materials;
+- recognize material shortage through falling bars before complete stoppage;
+- recognize power overload through reduced Productivity;
+- switch a powered factory off to relieve demand;
+- observe another factory recover productivity after load shedding;
+- choose between additional production and available electric capacity.
+
+Do not require a final polished tutorial; UI state and playtest setup only need to make the loop understandable.
+
+---
+
+# 10. Continuous Implementation Milestones
+
+These are implementation order/checkpoints, **not stop gates**.
+
+## Milestone A — Harbor + Salvage
+
+- generalize Fishing Harbor to shared Harbor;
+- preserve Fishing Boat;
+- add Salvage Boat;
+- add Scrap Metal/Scrap Wood accounting;
+- validate multi-boat independence and reset behavior.
+
+Run targeted tests/compile/runtime checks. Fix failures, then continue directly.
+
+## Milestone B — Processing + Local Buffers
+
+- add/configure salvage processors;
+- local input storage foundation;
+- refill/consume semantics through valid existing network/resource paths;
+- local progress bars + stable trend arrows;
+- House Food/Water local bars/trends only;
+- material-driven Productivity + safe interval behavior.
+
+Run targeted + regression tests. Fix failures, then continue directly.
+
+## Milestone C — Power
+
+- rated generation capacity;
+- rated enabled-building demand;
+- enable/disable control;
+- PowerEfficiency;
+- integrate power into factory Productivity and interval scaling;
+- expose diagnostic power UI.
+
+Run formula/runtime overload/recovery tests. Fix failures, then continue directly.
+
+## Milestone D — Full Integration / Hardening
+
+Demonstrate and validate in one V2 scene/scenario:
+
+1. Fishing Boat functioning;
+2. Salvage Boat returning both scrap types;
+3. salvage local storage filling/draining;
+4. processing into usable material;
+5. falling input buffer + down trend;
+6. material bottleneck productivity reduction;
+7. electric overload productivity reduction;
+8. disabling one powered factory reduces demand and recovers another;
+9. re-enabling restores demand;
+10. House Food/Water bars/trends remain informational only;
+11. V0/V1 regression suite remains green.
+
+Fix implementation-caused failures until final validation passes or a genuine design blocker is encountered.
+
+---
+
+# 11. Required Tests / Validation
+
+Implementer must use tests where current project architecture supports them. At minimum cover the behaviors below either through automated tests or explicit runtime validation when automation is impractical.
+
+### Harbor / boat
+
+- Fishing Boat still unloads Fish exactly once per return;
+- Salvage Boat unloads Scrap Metal and Scrap Wood exactly once;
+- multiple boats maintain independent role/state/timer/cargo;
+- reset/fresh session deterministic.
+
+### Local storage
+
+- buffer never becomes NaN/Infinity;
+- fill respects capacity;
+- consume does not go below zero;
+- global/upstream shortage drains local buffer rather than deleting it instantly;
+- trend reports rising/falling/stable correctly with noise tolerance;
+- material satisfaction maps transparently to local ratio.
+
+### Productivity
+
+- multiple required material inputs use minimum factor;
+- 100%, 80%, 50%, 25% values scale interval predictably;
+- 0% stops safely;
+- recovery does not duplicate production.
+
+### Power
+
+- disabled powered building contributes zero demand;
+- enabled building contributes rated demand;
+- zero demand => 100% power efficiency;
+- capacity >= demand => 100%;
+- demand > capacity => capacity/demand;
+- disconnected/unsupplied Electric path cannot use remote capacity;
+- power bottleneck combines with material bottleneck through `min()`;
+- disabling load can recover power efficiency.
+
+### Regression
+
+- relevant V0/V1 EditMode tests remain passing;
+- Module/Pipeline connectivity required by V1 still functions;
+- existing House/Population baseline remains compatible;
+- no unrelated generated/IDE files are introduced.
+
+### Unity validation
+
+Before final report:
+
+1. inspect `ProjectVersion.txt`, `Packages/manifest.json`, current project structure;
+2. inspect git status/diff before and after implementation;
+3. allow Unity refresh/recompile;
+4. check compilation state;
+5. inspect Console and distinguish pre-existing historical messages from new implementation-caused errors;
+6. run relevant automated test suite;
+7. enter Play Mode and execute integrated V2 scenarios;
+8. exit Play Mode cleanly;
+9. inspect final diff/status;
+10. do not claim success while implementation-caused compile/test/runtime errors remain.
+
+---
+
+# 12. Explicitly Out of Scope for V2
+
+Do not add unless user explicitly reopens scope:
+
+- total citizen Satisfaction/Happiness;
 - Calories / Protein / Vitamins;
 - Diet Diversity;
-- Worker/Technician/Upper Class expectations;
-- mortality, migration, health, security or political systems;
-- luxury food requirements;
-- detailed logistics vehicles between global and local storage;
-- batteries, voltage, distance loss, power priority automation or advanced grid simulation;
-- production-quality art/final balance;
-- new future-proof frameworks unrelated to V2 acceptance.
+- Worker / Technician / Upper Class dietary expectations;
+- luxury food;
+- mortality, migration, health, security, politics;
+- detailed citizen assignment simulation;
+- detailed logistics vehicles/haulers between storages;
+- batteries;
+- voltage;
+- power distance loss;
+- automated power priority/load shedding;
+- fuel simulation unless already strictly required by an existing power building;
+- final economy balance;
+- production-quality final art;
+- tech tree/tutorial/combat/exploration;
+- generic future-scale factory/logistics framework not necessary for this prototype.
 
-## 9. Phase Plan
+---
 
-### Phase 1 — Harbor + Salvage Loop
+# 13. Final V2 Acceptance Questions
 
-Implement/rework the Harbor as the shared small-boat facility and add Salvage Boat flow producing Scrap Metal and Scrap Wood. Preserve Fishing Boat behavior through the same Harbor.
+V2 is successful if a player can answer by inspecting/playing the prototype:
 
-Stop for playtest.
-
-### Phase 2 — Processing + Local Storage
-
-Add salvage processing, local input storage, shortage-driven factory productivity foundation, and local-storage UI bars/trends. Add Food/Water local-storage bars/trends for House/Citizen without total satisfaction.
-
-Stop for playtest.
-
-### Phase 3 — Power Capacity + Demand
-
-Add rated kW demand for enabled powered buildings, total capacity/demand, PowerEfficiency, enabled on/off behavior, and integrate power as a factory-productivity bottleneck affecting interval.
-
-Stop for playtest.
-
-### Phase 4 — Integrated V2 Playtest
-
-Harden and validate the combined loop: Fishing vs Salvage, material processing, local-storage warnings, building enable/disable, overload and bottleneck readability. No major feature expansion.
-
-Stop for user acceptance.
-
-## 10. V2 Success Questions
-
-V2 succeeds if a player can answer, by looking at the prototype:
-
-1. What is the Harbor doing and which small boats exist?
+1. Is this Harbor shared by Fishing and Salvage boats?
 2. Where do Scrap Metal and Scrap Wood come from?
-3. Which processed material is currently limiting construction/production?
-4. Is a local input buffer rising or falling?
-5. Which factory is underperforming and by how much?
-6. Is that productivity loss caused by power or by a material input?
-7. Can switching off a building relieve power shortage in a predictable way?
-8. Does the prototype create a clear Fishing-versus-Salvage allocation decision?
+3. How does salvage become usable construction material?
+4. How full is each important local input buffer?
+5. Is that buffer currently rising, falling or stable?
+6. What is a selected factory's current Productivity?
+7. Which material input is currently limiting it?
+8. Is electric shortage limiting it instead?
+9. Does switching a powered building off reduce demand and improve the remaining grid predictably?
+10. Can the player perceive the core tradeoff between Fishing, Salvage, processing capacity and electric capacity?
+
+If these are legible and the relevant regression/Unity validation is clean, V2 is ready for Manager/user playtest and acceptance.
