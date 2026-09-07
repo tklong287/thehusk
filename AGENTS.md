@@ -4,9 +4,9 @@
 
 Husk là game city-builder / survival management lấy bối cảnh Trái Đất bị ngập nước.
 
-Mục tiêu hiện tại không phải xây full game hoặc vertical slice lớn.
+Mục tiêu hiện tại không phải full game hoặc vertical slice lớn.
 
-Prototype V0 và V1 đã COMPLETE. Active work hiện tại là Prototype V2 — Salvage, Material & Power: kiểm chứng shared Harbor/small boats, salvage material loop, local storage readability, factory productivity và shared power capacity/demand.
+Prototype V0 và V1 đã COMPLETE. Active work hiện tại là **Prototype V2 — Salvage, Material & Power**: shared Harbor/small boats, salvage material loop, local storage readability, factory productivity và shared electric capacity/demand.
 
 Repository root:
 `D:\TheHusk`
@@ -26,13 +26,13 @@ Unity project root:
 Trước khi sửa Unity code hoặc asset configuration, kiểm tra:
 - `Game/Husk/ProjectSettings/ProjectVersion.txt`
 - `Game/Husk/Packages/manifest.json`
-- cấu trúc project hiện tại
+- cấu trúc project hiện tại.
 
-Không giả định package hoặc system tồn tại nếu chưa kiểm tra.
+Không giả định package/system tồn tại nếu chưa kiểm tra.
 
 ## Unity Repository Rules
 
-Không sửa hoặc commit các thư mục/file Unity-generated như:
+Không sửa hoặc commit Unity-generated/IDE-generated:
 - Library/
 - Temp/
 - Logs/
@@ -42,22 +42,15 @@ Không sửa hoặc commit các thư mục/file Unity-generated như:
 - generated .csproj
 - generated .sln / .slnx
 
-Không sửa file IDE-generated.
+Không xóa/làm mất `.meta` file. Khi move Unity asset phải giữ/move `.meta` tương ứng.
 
-Không xóa hoặc làm mất `.meta` file.
+Runtime code không đặt trong `Editor`. Editor-only code phải nằm trong `Editor`.
 
-Khi di chuyển Unity asset:
-- phải giữ/move `.meta` tương ứng.
-
-Runtime code không được đặt trong thư mục `Editor`.
-
-Code chỉ dùng trong Unity Editor phải nằm trong thư mục `Editor`.
-
-Không thêm package hoặc thay đổi render pipeline chỉ để giải quyết vấn đề có thể xử lý bằng Unity/package hiện tại.
+Không thêm package hoặc đổi render pipeline để giải quyết vấn đề có thể làm bằng project hiện tại.
 
 ## Engineering Principles
 
-Ưu tiên theo thứ tự:
+Ưu tiên:
 
 1. Correctness
 2. Playable iteration speed
@@ -66,116 +59,233 @@ Không thêm package hoặc thay đổi render pipeline chỉ để giải quy�
 
 Không over-engineer.
 
-Không tạo abstraction, framework, service layer hoặc extensibility chỉ vì có thể cần trong tương lai.
+Không tạo abstraction/framework/service layer/extensibility chỉ vì có thể dùng trong tương lai.
 
-Không refactor unrelated code trong khi đang thực hiện một task cụ thể.
+Không refactor unrelated code trong khi làm V2.
 
-Không mở rộng scope bằng các feature "tiện thể".
+Không mở rộng scope bằng feature “tiện thể”.
 
-Gameplay constants có khả năng thay đổi phải dễ chỉnh và không được rải magic number tùy tiện khắp code.
+Gameplay constants có khả năng thay đổi phải dễ chỉnh/configurable, không rải magic number.
 
-Tránh:
-- scene-wide searches trong hot path;
-- allocation không cần thiết mỗi frame;
-- GetComponent/Find lặp lại mỗi frame nếu có thể cache reference.
+Tránh scene-wide searches trong hot path, allocation không cần thiết mỗi frame, và repeated GetComponent/Find nếu có thể cache.
 
-## Active Prototype — V2: Salvage, Material & Power
+---
 
-V0 và V1 là completed history. Không rewrite `docs/prototype-v0.md`, `docs/manager-checklist.md`, `docs/manager-status.md`, `docs/prototype-v1-module-network.md`, `docs/manager-checklist-v1.md`, hoặc `docs/manager-status-v1.md` trừ khi user/Manager explicit yêu cầu sửa historical docs.
+# Active Prototype — V2: Salvage, Material & Power
 
-Source priority cho active V2 work:
+V0/V1 là completed history và regression baseline. Không rewrite historical spec/checklist/status nếu user/Manager không explicit yêu cầu.
+
+Source priority:
 
 1. User's latest explicit decision.
-2. `AGENTS.md` — project/engineering rules.
-3. `docs/prototype-v2-salvage-material-power.md` — active design specification.
-4. `docs/manager-checklist-v2.md` — phase acceptance.
-5. `docs/manager-status-v2.md` — operational state.
+2. `AGENTS.md`.
+3. `docs/prototype-v2-salvage-material-power.md`.
+4. `docs/manager-checklist-v2.md`.
+5. `docs/manager-status-v2.md`.
 
-V1 systems là baseline để reuse/integrate, không phải scope để rewrite.
+V1 systems là nền để reuse/integrate, không phải mục tiêu rewrite.
 
-## Confirmed V2 Rules
+## V2 Continuous-Pass Authorization
 
-- Một shared Harbor phục vụ small boats; không tách Fishing Port và Salvage Port theo resource.
-- Fishing Boat và Salvage Boat dùng cùng Harbor workflow/build/dock/dispatch/receive foundation.
-- Salvage Boat trả về Scrap Metal + Scrap Wood.
-- Processing dùng salvage để tạo usable construction materials; ưu tiên compatibility với existing Iron/Wood identities, không broad rename nếu không cần.
-- Local storage là buffer gần consumer/factory; progress bar biểu diễn local storage ratio, arrow biểu diễn xu hướng up/down/neutral.
-- House/Citizen trong V2 chỉ hiển thị Food + Water local-storage bars/trends. Không total Satisfaction/Happiness trong V2.
-- Factory hiển thị Productivity % + local-storage bars/trends cho required material inputs.
-- Power là capacity/demand, không phải concrete stock item.
-- Powered building bật thì demand = rated kW; tắt thì demand = 0. Không cần separate idle-power state trong V2.
-- `TotalPowerDemand = sum(enabled rated kW)`.
-- `PowerEfficiency = min(1, TotalPowerCapacity / TotalPowerDemand)`, zero demand = 100%.
-- Factory productivity lấy bottleneck thấp nhất giữa PowerEfficiency và required material input satisfaction.
-- Production interval tăng khi productivity giảm; 0 productivity phải stop an toàn, không NaN/divide-by-zero.
-- Exact rates/capacities/timings/conversion ratios/rated kW là configurable/provisional nếu user chưa chốt.
+V2 hiện được giao **làm liền một mạch**.
 
-## V2 Scope and Phase Discipline
+Implementer được phép thực hiện toàn bộ Milestone A → B → C → D trong một task, không cần dừng chờ user playtest giữa milestones.
 
-Chỉ thực hiện phase hiện tại được giao trong đúng bốn phase lớn:
+Workflow bắt buộc:
 
-1. Harbor + Salvage Loop.
-2. Processing + Local Storage.
-3. Power Capacity + Demand.
-4. Integrated V2 Playtest.
+1. implement milestone hiện tại;
+2. test/compile/runtime validate phần vừa làm;
+3. sửa implementation-caused errors;
+4. chạy lại validation liên quan;
+5. tiếp tục milestone kế tiếp;
+6. sau Milestone D chạy final full relevant validation;
+7. trả một implementation report hoàn chỉnh;
+8. dừng cho Manager review/acceptance.
 
-Manager sở hữu acceptance/progression và dừng sau mỗi phase để user playtest. Không tự implement phase sau; chuyển Current Phase không tự cấp quyền bắt đầu code.
+Milestone là checkpoint nội bộ, không phải phase permission gate.
 
-Không thêm trong V2 nếu chưa explicit reopen:
-- citizen Satisfaction/Happiness score;
+Implementer vẫn **không** được tự tuyên bố V2 PASS/DONE, tự sửa Manager checklist/status, tự commit/push/merge hoặc mở rộng ngoài V2 spec.
+
+---
+
+# Confirmed V2 Rules
+
+## Harbor / boats
+
+- Một shared Harbor phục vụ small boats; không tách Fishing Port và Salvage Port.
+- Fishing Boat và Salvage Boat dùng chung Harbor workflow/build/dock/dispatch/receive foundation.
+- Fishing Boat tiếp tục trả Fish.
+- Salvage Boat trả Scrap Metal + Scrap Wood.
+- Multiple boats độc lập về role/state/timer/cargo.
+- Cargo chỉ credit một lần mỗi return/unload.
+
+## Material / local storage
+
+- Scrap Metal và Scrap Wood là raw salvage concrete items.
+- Processing tạo usable construction materials; ưu tiên existing Iron/Wood identity nếu phù hợp, không broad rename chỉ vì wording.
+- Local storage là buffer riêng của consumer/factory, không phải alias của global stock.
+- Local storage chỉ được fill từ valid existing resource/network supply, không tự sinh resource.
+- Progress bar = `LocalQuantity / LocalCapacity` clamp 0..1.
+- Arrow = xu hướng local buffer Up/Down/Neutral trong short stable window.
+- House/Citizen V2 chỉ hiển thị Food + Water local-storage bars/trends; chưa có total Satisfaction/Happiness.
+
+## Factory productivity
+
+- Factory hiển thị Productivity % + local material bars/trends.
+- `InputSatisfaction = LocalRatio` cho V2.
+- Multiple required material inputs lấy minimum làm material bottleneck.
+- Power là thêm một bottleneck factor.
+- `FactoryProductivity = min(MaterialSatisfaction, PowerEfficiency)` trong khi giữ nguyên V1 operational/damaged/network gates.
+- `ActualInterval = DefaultInterval / FactoryProductivity`.
+- Productivity <= 0 phải stop an toàn, không divide-by-zero/NaN/duplicate output.
+
+## Electric
+
+- Power là capacity/demand, không phải concrete inventory hoặc kWh consumed per interval.
+- Generator operational đóng góp rated kW capacity.
+- Powered building bật => demand = rated kW; tắt => demand = 0.
+- Không separate idle-power state: bật thì vẫn count rated demand dù input material thấp.
+- Existing V1 Electric connectivity vẫn authoritative; disconnected consumer không được dùng remote capacity.
+- Trong valid Electric component/grid:
+  - `TotalPowerCapacity = sum(operational generator capacity)`;
+  - `TotalPowerDemand = sum(enabled powered-building rated demand)`;
+  - demand <= 0 => efficiency 1;
+  - otherwise `PowerEfficiency = min(1, Capacity / Demand)`.
+- Khi thiếu capacity, powered factories cùng grid/component bị cùng PowerEfficiency slowdown.
+- Player có thể disable powered processing building để giảm demand và phục hồi grid.
+- Không power priority automation trong V2.
+
+## Configurable/provisional
+
+Exact salvage amounts, boat timings/costs, processor conversion ratios, local capacities, base intervals, generator capacities và rated kW vẫn configurable/provisional nếu user chưa chốt.
+
+---
+
+# V2 Milestones
+
+## A — Shared Harbor + Salvage
+
+- generalize Harbor;
+- preserve Fishing Boat;
+- add Salvage Boat;
+- Scrap Metal + Scrap Wood accounting;
+- multi-boat independence;
+- role UI/state;
+- targeted tests/runtime validation.
+
+Sau khi pass targeted validation, tiếp tục B ngay.
+
+## B — Processing + Local Storage
+
+- salvage processing;
+- factory local buffers;
+- House Food/Water local buffers;
+- progress bars + stable trend arrows;
+- material shortage → Productivity;
+- safe interval scaling/zero state;
+- tests/runtime validation.
+
+Sau khi pass targeted validation, tiếp tục C ngay.
+
+## C — Power Capacity + Demand
+
+- generator capacity;
+- powered building rated demand;
+- on/off state/control;
+- V1 Electric connectivity integration;
+- PowerEfficiency;
+- combine power/material bottleneck;
+- power diagnostic UI;
+- overload/recovery tests.
+
+Sau khi pass targeted validation, tiếp tục D ngay.
+
+## D — Integrated V2 Hardening
+
+Playtest/harden full loop:
+
+Fishing + Salvage → local buffers → processing → material shortage / power overload → productivity → building disable/recovery.
+
+House Food/Water bars remain informational only.
+
+Run full relevant V0/V1/V2 tests plus Unity compile/Console/Play Mode and final diff/status inspection.
+
+---
+
+# V2 Out of Scope
+
+Không thêm nếu chưa explicit reopen:
+
+- citizen total Satisfaction/Happiness;
 - Calories/Protein/Vitamins;
-- Diet Diversity hoặc class food expectations;
+- Diet Diversity;
+- Worker/Technician/Upper Class food expectations;
 - luxury food;
 - mortality/migration/health/security/politics;
-- detailed logistics vehicles;
-- batteries/voltage/distance loss/power-priority automation;
+- detailed citizen assignment;
+- detailed logistics vehicles/haulers;
+- batteries/voltage/distance loss/power priority automation;
 - final economy balance/art;
-- future-scale frameworks không cần cho acceptance hiện tại.
+- tech tree/tutorial/combat/exploration;
+- future-scale generic frameworks không cần cho V2 acceptance.
 
-## V1 Baseline to Preserve
+---
 
-- Unity/network/module foundation và V1 accepted behavior đang là regression baseline.
-- V1 complete status nằm ở `docs/manager-status-v1.md`.
-- Không dùng rule planning-era đã được latest V1/V2 decision thay thế để chặn current work.
-- Reuse working production/boat/resource/network/UI code khi phù hợp; integrate nhỏ nhất thay vì rewrite.
+# Decision Rules
 
-## Decision Rules
-
-Nếu vấn đề là implementation detail không ảnh hưởng đáng kể đến player experience:
+Nếu là implementation detail không ảnh hưởng đáng kể player experience:
 - chọn giải pháp nhỏ nhất;
-- dễ thay đổi;
-- phù hợp architecture hiện tại.
+- reversible;
+- phù hợp architecture hiện tại;
+- tiếp tục không cần hỏi.
 
-Nếu vấn đề yêu cầu quyết định game design mới:
-- không tự biến assumption thành canon;
-- báo rõ assumption/blocker;
-- hỏi người dùng hoặc Manager.
+Nếu thiếu một design decision thật sự thay đổi player experience/dependency loop:
+- không tự invent canon;
+- ghi blocker rõ ràng;
+- báo Manager/user.
 
-Nếu một gameplay value chưa được chốt:
-- giữ configurable;
-- ghi rõ nó là provisional.
+Nếu gameplay value chưa chốt:
+- giữ configurable/provisional;
+- không mô tả là final balance.
 
-## Validation
+---
 
-Sau mỗi implementation task:
+# Validation
 
-1. Kiểm tra diff.
-2. Chạy test/validation phù hợp nếu project hiện hỗ trợ.
-3. Kiểm tra Unity compile errors nếu có thể.
-4. Không báo hoàn thành chỉ vì code đã được viết.
-5. Báo rõ:
-   - files changed;
-   - validation đã chạy;
-   - kết quả;
-   - assumptions;
-   - blockers.
+Sau mỗi milestone:
 
-## Scope Discipline
+1. inspect diff/status liên quan;
+2. Unity refresh/recompile;
+3. kiểm compilation state;
+4. inspect Console;
+5. chạy targeted tests;
+6. runtime validation nếu phù hợp;
+7. sửa lỗi implementation;
+8. rerun validation;
+9. nếu sạch thì tiếp tục milestone kế tiếp.
 
-Agent chỉ được thực hiện task hiện tại.
+Trước final report:
 
-Không tự bắt đầu phase tiếp theo.
+- run full relevant regression suite;
+- run integrated Play Mode V2 scenario;
+- verify no implementation-caused errors;
+- inspect final diff/status;
+- verify no unrelated/generated/IDE files;
+- preserve `.meta` integrity.
 
-Không tự thêm feature để "chuẩn bị cho tương lai".
+Không báo hoàn thành chỉ vì code đã viết xong.
 
-Một implementation nhỏ, rõ, chơi được và dễ sửa tốt hơn một architecture lớn chưa được chứng minh cần thiết.
+---
+
+# Git Discipline
+
+Implementer được sửa files cần thiết cho V2 nhưng không được:
+
+- commit;
+- push;
+- merge;
+- reset;
+- force checkout;
+- discard unrelated user changes.
+
+Manager sở hữu final acceptance/checklist/status/commit checkpoint.
