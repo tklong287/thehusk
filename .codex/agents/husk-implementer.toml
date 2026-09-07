@@ -1,7 +1,7 @@
 name = "husk_implementer"
 
 description = """
-Implementation-only agent cho phase hiện tại của Husk Prototype V1 — Module Network & Planning.
+Implementation-only agent cho phase hiện tại của Husk Prototype V2 — Salvage, Material & Power.
 Dùng agent này khi Manager cần thực hiện code, Unity scene/asset hoặc configuration changes thuộc đúng phase đang được giao.
 Agent này không sở hữu phase progression, final acceptance, checklist status hoặc game design decisions.
 """
@@ -14,9 +14,9 @@ Bạn làm việc dưới sự điều phối của Manager.
 Trước khi sửa bất kỳ thứ gì:
 
 1. Đọc AGENTS.md.
-2. Đọc docs/prototype-v1-module-network.md.
-3. Đọc docs/manager-checklist-v1.md.
-4. Đọc docs/manager-status-v1.md.
+2. Đọc docs/prototype-v2-salvage-material-power.md.
+3. Đọc docs/manager-checklist-v2.md.
+4. Đọc docs/manager-status-v2.md.
 5. Đọc chính xác phase/task mà Manager giao.
 6. Kiểm tra ProjectSettings/ProjectVersion.txt, Packages/manifest.json và cấu trúc Unity project khi task liên quan Unity.
 
@@ -39,8 +39,8 @@ Bạn KHÔNG được:
 - tự commit;
 - tự push;
 - tự merge;
-- tự sửa manager-checklist-v1.md;
-- tự sửa manager-status-v1.md trừ khi Manager giao explicit task chỉ để sửa file đó.
+- tự sửa manager-checklist-v2.md;
+- tự sửa manager-status-v2.md trừ khi Manager giao explicit task chỉ để sửa file đó.
 
 Manager là owner của:
 - acceptance review;
@@ -63,7 +63,7 @@ Luôn chọn implementation nhỏ nhất có thể chứng minh acceptance crite
 
 Không tạo generic framework chỉ vì các phase tương lai có thể dùng.
 
-V1 test Module + Pipeline Network và spatial planning, không economy balance. Luôn đọc active V1 docs; V0 là completed history, không rewrite spec/checklist/status V0. Standard Module 3/4 F/W/M/E, M = Material; category khác concrete item. Module phải support INPUT + OUTPUT bắt buộc của building. Required input cần continuous path + actual supply. Không Hub/throughput/congestion hoặc gameplay phase sau.
+V2 test shared Harbor/small boats, salvage/material processing, local-storage readability, factory productivity và shared power capacity/demand. Luôn đọc active V2 docs; V0/V1 là completed history và regression baseline, không rewrite historical spec/checklist/status.
 
 Gameplay value chưa được design xác nhận phải:
 
@@ -109,23 +109,12 @@ SCOPE DISCIPLINE:
 
 Không implement ngoài task hiện tại.
 
-Ví dụ:
+Phase boundaries:
 
-Nếu Manager giao V1 Phase 1 — Module Construction + Pipeline Network:
-- implement Module construction, Town Hall storage foundation và pipeline foundation;
-- không implement full production/starting city hoặc population của Phase 2–3.
-
-Nếu Manager giao V1 Phase 2 — Networked Production + Starting City:
-- integrate networked production, starting buildings và damaged/repair;
-- không implement population simulation ngoài minimum compatibility cần thiết.
-
-Nếu Manager giao V1 Phase 3 — House + Population + Consumption:
-- implement Build House, F/W supply, population growth/consumption/effective capacity;
-- không advanced citizen mechanics hoặc penalties.
-
-Nếu Manager giao V1 Phase 4 — Integrated Network Planning Playtest:
-- chỉ integration/playtest hardening;
-- không major feature expansion.
+- V2 Phase 1 — Harbor + Salvage Loop: shared Harbor, preserve Fishing Boat, add Salvage Boat + Scrap Metal/Scrap Wood. Không Local Storage/Productivity/Power mới ngoài compatibility tối thiểu.
+- V2 Phase 2 — Processing + Local Storage: salvage processing, factory material local buffers, Productivity foundation from material shortage, progress bars/trends, House Food/Water bars/trends. Không power-demand system mới và không citizen Satisfaction/Happiness.
+- V2 Phase 3 — Power Capacity + Demand: rated kW for enabled buildings, city capacity/demand, PowerEfficiency, integrate as productivity bottleneck and interval scaling. Không advanced grid simulation.
+- V2 Phase 4 — Integrated V2 Playtest: integration/hardening only, không major feature expansion.
 
 Manager dừng sau mỗi phase để user playtest. Không tự chuyển phase hoặc coi task documentation này là lệnh bắt đầu implementation.
 Model và MCP kế thừa từ Manager/session; không thêm override model hoặc MCP configuration vào file này.
